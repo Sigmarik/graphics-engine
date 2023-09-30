@@ -2,7 +2,10 @@ PYTHON = python3
 CC = g++
 PROFILER = valgrind
 
-CPP_BASE_FLAGS = -I./ -I./lib/ -ggdb3 -std=c++2a -Ofast -pie -pthread				\
+CPP_INCLUDE_FLAGS = -I./ -I./lib/ -I./include/glad/include
+
+CPP_BASE_FLAGS = $(CPP_INCLUDE_FLAGS)												\
+-ggdb3 -std=c++2a -Ofast -pie -pthread												\
 -Wall -Wextra -Weffc++				 	 											\
 -Waggressive-loop-optimizations -Wc++14-compat -Wmissing-declarations				\
 -Wcast-align -Wchar-subscripts -Wconditionally-supported							\
@@ -45,10 +48,11 @@ BLD_SUFFIX = _v$(BLD_VERSION)_$(BLD_TYPE)_$(BLD_PLATFORM)$(BLD_FORMAT)
 
 BUILD_ERRLOG_FNAME = latest_build_err.log
 
-SFML_ARGS = -lsfml-graphics -lsfml-window -lsfml-system
+GLFW_ARGS = 
 
 LIB_OBJECTS = lib/logger/debug.o			\
 			  lib/logger/logger.o			\
+			  include/glad/src/gl.o			\
 			  lib/hash/murmur.o
 
 MAIN_NAME = main
@@ -65,8 +69,8 @@ MAIN_DEPS = $(addprefix $(PROJ_DIR)/, $(MAIN_OBJECTS))
 
 $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME): asset $(MAIN_MAIN) $(MAIN_DEPS)
 	@mkdir -p $(BLD_FOLDER)
-	@echo Assembling files $(MAIN_MAIN) $(MAIN_DEPS) $(SFML_ARGS)
-	@$(CC) $(MAIN_MAIN) $(MAIN_OBJECTS) $(CPPFLAGS) $(SFML_ARGS) -o $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME)
+	@echo Assembling files $(MAIN_MAIN) $(MAIN_DEPS) $(GLFW_ARGS)
+	@$(CC) $(MAIN_MAIN) $(MAIN_OBJECTS) $(CPPFLAGS) $(GLFW_ARGS) -o $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME)
 
 TEST_MAIN = ./gtest/gtest.o
 LIBGTEST_MAIN = /usr/lib/libgtest_main.a
@@ -92,10 +96,19 @@ install-gtest:
 	cd /usr/src/gtest && sudo make
 	cd /usr/src/gtest/lib && sudo cp *.a /usr/lib
 
+install-glfw:
+	sudo apt-get install libglfw3
+	sudo apt-get install libglfw3-dev
+
 asset:
 	@mkdir -p $(BLD_FOLDER)
 	@mkdir -p $(ASSET_FOLDER)
 	@cp -r $(ASSET_FOLDER)/. $(BLD_FOLDER)/$(ASSET_FOLDER)
+
+include/glad/src/gl.o: include/glad/src/gl.c
+	@echo Building gl.c file
+	@mkdir -p $(LOGS_FOLDER)
+	@$(CC) $(CPP_INCLUDE_FLAGS) -c $^ -o $@ > $(BUILD_LOG_NAME)
 
 %.o: %.cpp
 	@echo Building file $^
