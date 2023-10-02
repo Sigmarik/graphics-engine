@@ -9,7 +9,7 @@
  *
  */
 
-#include "graphics/libs.h"
+#include "graphics/primitives/vbo.hpp"
 #include "io/main_io.h"
 #include "logger/debug.h"
 #include "logger/logger.h"

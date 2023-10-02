@@ -2,10 +2,10 @@ PYTHON = python3
 CC = g++
 PROFILER = valgrind
 
-CPP_INCLUDE_FLAGS = -I./ -I./lib/ -I./include/glad/include
+CPP_INCLUDE_FLAGS = -I./ -I./lib/ -isystem ./include -isystem ./include/glad/include
 
 CPP_BASE_FLAGS = $(CPP_INCLUDE_FLAGS)												\
--ggdb3 -std=c++2a -Ofast -pie -pthread												\
+-ggdb3 -std=c++17 -Ofast -pie -pthread												\
 -Wall -Wextra -Weffc++				 	 											\
 -Waggressive-loop-optimizations -Wc++14-compat -Wmissing-declarations				\
 -Wcast-align -Wchar-subscripts -Wconditionally-supported							\
@@ -48,11 +48,16 @@ BLD_SUFFIX = _v$(BLD_VERSION)_$(BLD_TYPE)_$(BLD_PLATFORM)$(BLD_FORMAT)
 
 BUILD_ERRLOG_FNAME = latest_build_err.log
 
-GLFW_ARGS = 
+LIB_FLAGS = -lassimp
 
-LIB_OBJECTS = lib/logger/debug.o			\
-			  lib/logger/logger.o			\
-			  include/glad/src/gl.o			\
+LIB_OBJECTS = lib/logger/debug.o						\
+			  lib/logger/logger.o						\
+			  include/glad/src/gl.o						\
+			  lib/graphics/primitives/matrix_stack.o	\
+			  lib/graphics/primitives/shader.o			\
+			  lib/graphics/primitives/mesh.o			\
+			  lib/graphics/primitives/camera.o			\
+			  lib/io/mmap.o								\
 			  lib/hash/murmur.o
 
 MAIN_NAME = main
@@ -69,8 +74,8 @@ MAIN_DEPS = $(addprefix $(PROJ_DIR)/, $(MAIN_OBJECTS))
 
 $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME): asset $(MAIN_MAIN) $(MAIN_DEPS)
 	@mkdir -p $(BLD_FOLDER)
-	@echo Assembling files $(MAIN_MAIN) $(MAIN_DEPS) $(GLFW_ARGS)
-	@$(CC) $(MAIN_MAIN) $(MAIN_OBJECTS) $(CPPFLAGS) $(GLFW_ARGS) -o $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME)
+	@echo Assembling files $(MAIN_MAIN) $(MAIN_DEPS) $(LIB_FLAGS)
+	@$(CC) $(MAIN_MAIN) $(MAIN_OBJECTS) $(CPPFLAGS) $(LIB_FLAGS) -o $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME)
 
 TEST_MAIN = ./gtest/gtest.o
 LIBGTEST_MAIN = /usr/lib/libgtest_main.a
