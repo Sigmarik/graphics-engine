@@ -31,7 +31,7 @@ CPP_SANITIZER_FLAGS = -fcheck-new 													\
 
 CPP_DEBUG_FLAGS = -D _DEBUG
 
-CPPFLAGS = $(CPP_BASE_FLAGS) $(CPP_SANITIZER_FLAGS)
+CPPFLAGS = $(CPP_BASE_FLAGS) $(CPP_DEBUG_FLAGS)
 
 BLD_FOLDER = build
 ASSET_FOLDER = assets
@@ -48,22 +48,25 @@ BLD_SUFFIX = _v$(BLD_VERSION)_$(BLD_TYPE)_$(BLD_PLATFORM)$(BLD_FORMAT)
 
 BUILD_ERRLOG_FNAME = latest_build_err.log
 
-LIB_FLAGS = -lassimp
+LIB_FLAGS = -lassimp -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 
 LIB_OBJECTS = lib/logger/debug.o						\
 			  lib/logger/logger.o						\
-			  include/glad/src/gl.o						\
+			  include/glad/src/glad.o					\
 			  lib/graphics/primitives/matrix_stack.o	\
 			  lib/graphics/primitives/shader.o			\
 			  lib/graphics/primitives/mesh.o			\
 			  lib/graphics/primitives/camera.o			\
+			  lib/graphics/primitives/texture.o			\
+			  lib/graphics/primitives/framebuffer.o		\
+			  lib/graphics/managers/asset_shelf.o		\
 			  lib/io/mmap.o								\
 			  lib/hash/murmur.o
 
 MAIN_NAME = main
 MAIN_BLD_FULL_NAME = $(MAIN_NAME)$(BLD_SUFFIX)
 
-MAIN_MAIN = src/main.cpp
+MAIN_MAIN = src/main.o
 
 MAIN_OBJECTS = $(LIB_OBJECTS)							\
 	src/utils/main_utils.o								\
@@ -72,7 +75,7 @@ MAIN_OBJECTS = $(LIB_OBJECTS)							\
 
 MAIN_DEPS = $(addprefix $(PROJ_DIR)/, $(MAIN_OBJECTS))
 
-$(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME): asset $(MAIN_MAIN) $(MAIN_DEPS)
+$(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME): asset $(MAIN_DEPS) $(MAIN_MAIN)
 	@mkdir -p $(BLD_FOLDER)
 	@echo Assembling files $(MAIN_MAIN) $(MAIN_DEPS) $(LIB_FLAGS)
 	@$(CC) $(MAIN_MAIN) $(MAIN_OBJECTS) $(CPPFLAGS) $(LIB_FLAGS) -o $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME)
@@ -110,8 +113,8 @@ asset:
 	@mkdir -p $(ASSET_FOLDER)
 	@cp -r $(ASSET_FOLDER)/. $(BLD_FOLDER)/$(ASSET_FOLDER)
 
-include/glad/src/gl.o: include/glad/src/gl.c
-	@echo Building gl.c file
+include/glad/src/glad.o: include/glad/src/glad.c
+	@echo Building glad.c
 	@mkdir -p $(LOGS_FOLDER)
 	@$(CC) $(CPP_INCLUDE_FLAGS) -c $^ -o $@ > $(BUILD_LOG_NAME)
 

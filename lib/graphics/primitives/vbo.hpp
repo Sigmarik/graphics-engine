@@ -16,10 +16,9 @@
 
 struct VBO {
     VBO() : id_(0) { glGenBuffers(1, &id_); }
-    ~VBO() { glDeleteBuffers(1, &id_); }
 
     void fill(const Vertex* vertices, size_t count) {
-        glBufferData(id_, (GLsizeiptr)(sizeof(*vertices) * count),
+        glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(*vertices) * count),
                      (void*)vertices, GL_STATIC_DRAW);
         count_ = count;
     }

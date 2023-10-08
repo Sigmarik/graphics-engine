@@ -12,12 +12,11 @@
 #ifndef VAO_HPP
 #define VAO_HPP
 
-#include "glad/gl.h"
+#include "graphics/libs.h"
 #include "vertex.hpp"
 
 struct VAO {
     VAO() : id(0) { glGenVertexArrays(1, &id); }
-    ~VAO() { glDeleteVertexArrays(1, &id); }
 
     void bind() const { glBindVertexArray(id); }
     void unbind() const { glBindVertexArray(0); }

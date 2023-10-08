@@ -13,7 +13,7 @@
 #define GRAPHLIBS_H
 
 // clang-format off
-#include "glad/include/glad/gl.h"
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 // clang-format on
 

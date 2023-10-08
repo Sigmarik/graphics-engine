@@ -11,13 +11,16 @@
 Mesh::Mesh(const char* path) { load(path); }
 
 void Mesh::load(const char* path) {
-    Assimp::Importer import;
+    static Assimp::Importer import;
+
+    log_printf(STATUS_REPORTS, "status", "Loading model %s\n", path);
+
     const aiScene* scene =
         import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
         !scene->mRootNode) {
-        log_printf(ERROR_REPORTS, "error", "Failed to load model %s", path);
+        log_printf(ERROR_REPORTS, "error", "Failed to load model %s\n", path);
         return;
     }
 
@@ -29,10 +32,14 @@ void Mesh::load(const char* path) {
         aiMesh* mesh = meshes[mesh_id];
         size_t vertex_count = mesh->mNumVertices;
 
-        for (size_t vrt_id = 0; vrt_id < mesh->mNumVertices; ++vrt_id) {
+        unsigned uv_depth = mesh->GetNumUVChannels();
+
+        for (size_t vrt_id = 0; vrt_id < vertex_count; ++vrt_id) {
             aiVector3D pos = mesh->mVertices[vrt_id];
             aiVector3D normal = mesh->mNormals[vrt_id];
-            aiVector3D uv = mesh->mTextureCoords[vrt_id][0];
+            aiVector3D uv = (uv_depth > 0 && mesh->mTextureCoords[0] != nullptr)
+                                ? mesh->mTextureCoords[0][vrt_id]
+                                : aiVector3D(0.0, 0.0, 0.0);
             vertices_.push_back(
                 (Vertex){.position = glm::vec3(pos.x, pos.y, pos.z),
                          .normal = glm::vec3(normal.x, normal.y, normal.z),
@@ -48,6 +55,12 @@ void Mesh::load(const char* path) {
 
         index_shift = vertices_.size();
     }
+
+    log_printf(STATUS_REPORTS, "status",
+               "Loading successful, read %lu vertices and %lu indices.\n",
+               vertices_.size(), indices_.size());
+
+    synch_buffers();
 }
 
 void Mesh::append(const std::vector<Vertex>& vertices,
@@ -65,21 +78,31 @@ void Mesh::append(const std::vector<Vertex>& vertices,
 void Mesh::synch_buffers() {
     vao_.bind();
 
+    poll_gl_errors();
+
     vbo_.bind();
-    vbo_.fill(&vertices_.front(), vertices_.size());
-    vbo_.unbind();
+    vbo_.fill(&vertices_[0], vertices_.size());  //! INVALID_ENUM
+    // vbo_.unbind();
+
+    poll_gl_errors();
 
     ebo_.bind();
-    ebo_.fill(&indices_.front(), indices_.size());
-    ebo_.unbind();
+    ebo_.fill(&indices_[0], indices_.size());
+    // ebo_.unbind();
+
+    poll_gl_errors();
 
     Vertex::configure();
 
     vao_.unbind();
+
+    poll_gl_errors();
 }
 
-void Mesh::render(const glm::mat4& matrix) const {
+void Mesh::render(const glm::mat4& matrix, Shader& shader) const {
     vao_.bind();
+    ebo_.bind();
+    shader.set_uniform_mat4("transform", matrix);
     glDrawElements(GL_TRIANGLES, (GLsizei)indices_.size(), GL_UNSIGNED_INT, 0);
     vao_.unbind();
 }

@@ -13,11 +13,19 @@
 #define MAIN_UTILS_H
 
 #include "common_utils.h"
+#include "graphics/libs.h"
 
 /**
  * @brief Print the label of the program
  *
  */
 void print_label();
+
+/**
+ * @brief Create window, initialize GLFW & GLAD
+ *
+ * @return GLFWwindow* (nullptr on fail)
+ */
+GLFWwindow* create_window();
 
 #endif

@@ -16,7 +16,7 @@
 
 #include "src/config.h"
 
-static const char ARGS_DOC[] = "INPUT_FILE_NAME";
+static const char ARGS_DOC[] = "";
 
 enum OptCodeKey {
     _OPT_CUSTOM_KEYS_SHIFT = 500,

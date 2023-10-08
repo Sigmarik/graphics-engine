@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "ebo.hpp"
+#include "shader.h"
 #include "vao.hpp"
 #include "vbo.hpp"
 #include "vertex.hpp"
@@ -30,7 +31,7 @@ struct Mesh {
 
     void synch_buffers();
 
-    void render(const glm::mat4& matrix) const;
+    void render(const glm::mat4& matrix, Shader& shader) const;
 
    private:
     std::vector<Vertex> vertices_ = {};
