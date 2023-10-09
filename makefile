@@ -59,7 +59,6 @@ LIB_OBJECTS = lib/logger/debug.o						\
 			  lib/graphics/primitives/camera.o			\
 			  lib/graphics/primitives/texture.o			\
 			  lib/graphics/primitives/framebuffer.o		\
-			  lib/graphics/managers/asset_shelf.o		\
 			  lib/io/mmap.o								\
 			  lib/hash/murmur.o
 

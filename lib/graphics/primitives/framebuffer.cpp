@@ -26,7 +26,7 @@ void FrameBuffer::unbind() const { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
 RenderTarget::RenderTarget(unsigned width, unsigned height)
     : FrameBuffer(),
-      texture_(width, height),
+      texture_(width, height, 0),
       rbo_(width, height, GL_DEPTH24_STENCIL8) {
     texture_.attach_to_fb(GL_COLOR_ATTACHMENT0);
     rbo_.attach_to_fb(GL_DEPTH_STENCIL_ATTACHMENT);
@@ -36,7 +36,7 @@ const Texture& RenderTarget::get_texture() const { return texture_; }
 
 DepthMap::DepthMap(unsigned width, unsigned height)
     : FrameBuffer(),
-      texture_(width, height, nullptr, GL_DEPTH24_STENCIL8,
+      texture_(width, height, 0, nullptr, GL_DEPTH24_STENCIL8,
                GL_UNSIGNED_INT_24_8) {
     texture_.attach_to_fb(GL_DEPTH_STENCIL_ATTACHMENT);
 }

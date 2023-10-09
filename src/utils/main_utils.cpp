@@ -19,6 +19,8 @@ GLFWwindow* create_window() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    glfwWindowHint(GLFW_SAMPLES, 4);
+
     GLFWwindow* window = glfwCreateWindow(800, 600, "Window Title", NULL, NULL);
     if (window == NULL) {
         log_printf(ERROR_REPORTS, "error",
@@ -34,8 +36,11 @@ GLFWwindow* create_window() {
                    "Failed to initialize GLAD. Terminating.\n");
         return nullptr;
     }
+    glEnable(GL_MULTISAMPLE);
 
     glEnable(GL_DEPTH_TEST);
+
+    glClearColor(0.1, 0.2, 0.3, 1.0);
 
     return window;
 }

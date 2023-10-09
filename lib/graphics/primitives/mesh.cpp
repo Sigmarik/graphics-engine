@@ -99,10 +99,12 @@ void Mesh::synch_buffers() {
     poll_gl_errors();
 }
 
-void Mesh::render(const glm::mat4& matrix, Shader& shader) const {
+void Mesh::render(const glm::mat4& proj_matrix, const glm::mat4& obj_matrix,
+                  Shader& shader) const {
     vao_.bind();
     ebo_.bind();
-    shader.set_uniform_mat4("transform", matrix);
+    shader.set_uniform_mat4("projection", proj_matrix);
+    shader.set_uniform_mat4("obj_tform", obj_matrix);
     glDrawElements(GL_TRIANGLES, (GLsizei)indices_.size(), GL_UNSIGNED_INT, 0);
     vao_.unbind();
 }

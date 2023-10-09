@@ -9,6 +9,8 @@
  *
  */
 
+#include <glm/ext/matrix_transform.hpp>
+
 #include "graphics/gl_debug.h"
 #include "graphics/primitives/camera.h"
 #include "graphics/primitives/mesh.h"
@@ -21,6 +23,9 @@
 #define MAIN
 
 #include "config.h"
+#include "main.h"
+
+static const unsigned VOLUME_RESOLUTION = 64;
 
 int main(const int argc, char** argv) {
     atexit(log_end_program);
@@ -46,10 +51,10 @@ int main(const int argc, char** argv) {
     Shader basic_shader("assets/shaders/basic.vsh", "assets/shaders/basic.fsh");
     basic_shader.use();
 
-    Texture texture("assets/textures/rock.jpg");
+    Texture texture("assets/textures/rock.jpg", 0);
     texture.bind();
 
-    basic_shader.set_uniform_img("albedo", texture);
+    basic_shader.set_uniform_tex("albedo", texture);
 
     poll_gl_errors();
 
@@ -58,11 +63,20 @@ int main(const int argc, char** argv) {
 
     glViewport(0, 0, 800, 600);
 
+    unsigned tick = 0;
+
+    glm::mat4 obj_transform = glm::mat4(1.0);
+
     log_printf(STATUS_REPORTS, "status", "Entering main game loop.\n");
     while (!glfwWindowShouldClose(window)) {
+        tick++;
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        monkey.render(camera.get_matrix(), basic_shader);
+        obj_transform =
+            glm::rotate(obj_transform, 0.01f, glm::vec3(0.0, 1.0, 0.0));
+
+        monkey.render(camera.get_matrix(), obj_transform, basic_shader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

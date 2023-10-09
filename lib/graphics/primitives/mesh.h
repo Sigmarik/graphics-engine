@@ -31,7 +31,8 @@ struct Mesh {
 
     void synch_buffers();
 
-    void render(const glm::mat4& matrix, Shader& shader) const;
+    void render(const glm::mat4& proj_matrix, const glm::mat4& obj_matrix,
+                Shader& shader) const;
 
    private:
     std::vector<Vertex> vertices_ = {};

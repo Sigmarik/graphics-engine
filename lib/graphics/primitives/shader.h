@@ -31,7 +31,8 @@ struct Shader {
     void set_uniform_vec2(const char* uniform, const glm::vec2& vector);
     void set_uniform_vec3(const char* uniform, const glm::vec3& vector);
     void set_uniform_mat4(const char* uniform, const glm::mat4& matrix);
-    void set_uniform_img(const char* uniform, const Texture& texture);
+    void set_uniform_tex(const char* uniform, const Texture& texture);
+    void set_uniform_tex3d(const char* uniform, const Texture3D& texture);
 
    private:
     GLuint id_ = 0;

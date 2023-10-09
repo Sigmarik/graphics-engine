@@ -104,7 +104,12 @@ void Shader::set_uniform_mat4(const char* uniform, const glm::mat4& matrix) {
     glUniformMatrix4fv(uni, 1, false, &matrix[0][0]);
 }
 
-void Shader::set_uniform_img(const char* uniform, const Texture& texture) {
+void Shader::set_uniform_tex(const char* uniform, const Texture& texture) {
     GLint uni = glGetUniformLocation(id_, uniform);
-    glUniform1i(uni, texture.get_slot());
+    glUniform1i(uni, (GLint)texture.get_slot());
+}
+
+void Shader::set_uniform_tex3d(const char* uniform, const Texture3D& texture) {
+    GLint uni = glGetUniformLocation(id_, uniform);
+    glUniform1i(uni, (GLint)texture.get_slot());
 }
