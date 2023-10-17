@@ -40,7 +40,7 @@ GLFWwindow* create_window() {
 
     glEnable(GL_DEPTH_TEST);
 
-    glClearColor(0.1, 0.2, 0.3, 1.0);
+    glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 
     return window;
 }

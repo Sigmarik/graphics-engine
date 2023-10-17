@@ -19,7 +19,7 @@ CPP_BASE_FLAGS = $(CPP_INCLUDE_FLAGS)												\
 -Wvariadic-macros -Wno-literal-suffix -Wno-missing-field-initializers				\
 -Wno-narrowing -Wno-old-style-cast -Wno-varargs -Wstack-protector					\
 -Wstack-usage=8192 -Wno-unused-parameter -Wno-deprecated-declarations				\
--Wno-unused-variable
+-Wno-unused-variable -Wno-missing-declarations
 
 CPP_SANITIZER_FLAGS = -fcheck-new 													\
 -fsized-deallocation -fstack-protector -fstrict-overflow -flto-odr-type-merging		\
@@ -53,12 +53,15 @@ LIB_FLAGS = -lassimp -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 LIB_OBJECTS = lib/logger/debug.o						\
 			  lib/logger/logger.o						\
 			  include/glad/src/glad.o					\
+			  include/tinyxml2.o						\
 			  lib/graphics/primitives/matrix_stack.o	\
 			  lib/graphics/primitives/shader.o			\
 			  lib/graphics/primitives/mesh.o			\
 			  lib/graphics/primitives/camera.o			\
 			  lib/graphics/primitives/texture.o			\
 			  lib/graphics/primitives/framebuffer.o		\
+			  lib/graphics/importers/importers.o		\
+			  lib/managers/asset_manager.o				\
 			  lib/io/mmap.o								\
 			  lib/hash/murmur.o
 
@@ -87,7 +90,7 @@ test: $(TEST_MAIN) $(MAIN_DEPS)
 	@mkdir -p $(BLD_FOLDER)
 	@mkdir -p $(BLD_FOLDER)/$(ASSET_FOLDER)
 	@cp -r gtest/assets/. $(BLD_FOLDER)/$(ASSET_FOLDER)
-	@$(CC)  $(TEST_MAIN) $(MAIN_DEPS) $(LIBGTEST_MAIN) $(LIBGTEST) $(SFML_ARGS) $(CPPFLAGS) -o $(BLD_FOLDER)/test_$(MAIN_BLD_FULL_NAME)
+	@$(CC)  $(TEST_MAIN) $(MAIN_DEPS) $(LIBGTEST_MAIN) $(LIBGTEST) $(LIB_FLAGS) $(CPPFLAGS) -o $(BLD_FOLDER)/test_$(MAIN_BLD_FULL_NAME)
 	@cd $(BLD_FOLDER) && exec ./test_$(MAIN_BLD_FULL_NAME)
 
 run: asset $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME)
@@ -113,9 +116,14 @@ asset:
 	@cp -r $(ASSET_FOLDER)/. $(BLD_FOLDER)/$(ASSET_FOLDER)
 
 include/glad/src/glad.o: include/glad/src/glad.c
-	@echo Building glad.c
+	@echo Building glad
 	@mkdir -p $(LOGS_FOLDER)
-	@$(CC) $(CPP_INCLUDE_FLAGS) -c $^ -o $@ > $(BUILD_LOG_NAME)
+	@$(CC) -w $(CPP_INCLUDE_FLAGS) -c $^ -o $@ > $(BUILD_LOG_NAME)
+
+include/tinyxml2.o: include/tinyxml2.cpp
+	@echo Building tinyxml2
+	@mkdir -p $(LOGS_FOLDER)
+	@$(CC) -w $(CPP_INCLUDE_FLAGS) -c $^ -o $@ > $(BUILD_LOG_NAME)
 
 %.o: %.cpp
 	@echo Building file $^

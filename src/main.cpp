@@ -12,18 +12,19 @@
 #include <glm/ext/matrix_transform.hpp>
 
 #include "graphics/gl_debug.h"
+#include "graphics/importers/importers.h"
 #include "graphics/primitives/camera.h"
 #include "graphics/primitives/mesh.h"
 #include "graphics/primitives/texture.h"
 #include "io/main_io.h"
 #include "logger/debug.h"
 #include "logger/logger.h"
+#include "managers/asset_manager.h"
 #include "utils/main_utils.h"
 
 #define MAIN
 
 #include "config.h"
-#include "main.h"
 
 static const unsigned VOLUME_RESOLUTION = 64;
 
@@ -48,10 +49,17 @@ int main(const int argc, char** argv) {
     Mesh monkey("assets/models/monkey.obj");
     monkey.synch_buffers();
     Camera camera;
-    Shader basic_shader("assets/shaders/basic.vsh", "assets/shaders/basic.fsh");
+    Shader& basic_shader =
+        ((ShaderAsset*)AssetManager::request("assets/shaders/basic_shader.xml",
+                                             ShaderImporter::get_type_id()))
+            ->shader;
     basic_shader.use();
 
-    Texture texture("assets/textures/rock.jpg", 0);
+    // Texture texture("assets/textures/rock.jpg", 0);
+    Texture& texture = ((TextureAsset*)AssetManager::request(
+                            "assets/textures/rock_texture.xml",
+                            TextureImporter::get_type_id()))
+                           ->texture;
     texture.bind();
 
     basic_shader.set_uniform_tex("albedo", texture);
