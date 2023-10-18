@@ -27,8 +27,16 @@ struct AbstractAsset {
     hash_t hash = 0;
 };
 
-typedef unsigned AssetTypeId;
-static const AssetTypeId ASSET_TYPE_POISON = (AssetTypeId)-1;
+template <typename T>
+struct Asset : public AbstractAsset {
+    template <typename... Ts>
+    Asset<T>(Ts&&... args) : content(args...) {}
+
+    T content;
+};
+
+typedef unsigned ImporterId;
+static const ImporterId ASSET_TYPE_POISON = (ImporterId)-1;
 
 struct AssetImporter {
     virtual ~AssetImporter() = default;
@@ -36,10 +44,13 @@ struct AssetImporter {
 };
 
 struct AssetManager {
-    [[nodiscard("ASSET TYPE IDENTIFIER IGNORED")]] static AssetTypeId
-    register_importer(AssetImporter& importer);
+    static void register_importer(AssetImporter& importer,
+                                  const char* signature);
 
-    static AbstractAsset* request(const char* identifier, AssetTypeId type_id);
+    template <typename T>
+    static T* request(const char* identifier) {
+#include "_am_request.hpp"
+    }
 
     static void unload(const char* identifier);
 
@@ -52,7 +63,7 @@ struct AssetManager {
     AssetManager(const AssetManager& manager) = default;
     AssetManager& operator=(const AssetManager& manager) = default;
 
-    std::vector<AssetImporter*> importers_ = {};
+    std::unordered_map<std::string, AssetImporter*> importers_ = {};
     std::unordered_map<std::string, AbstractAsset*> assets_ = {};
 };
 
@@ -60,41 +71,31 @@ struct AssetManager {
  * @brief Register asset importer
  *
  */
-#define REGISTER(importer)                                                   \
-    AssetTypeId importer::_type_id = ASSET_TYPE_POISON;                      \
-    __attribute__((constructor)) void __register##importer() {               \
-        static importer imp;                                                 \
-                                                                             \
-        static bool initialized = false;                                     \
-                                                                             \
-        if (initialized) return;                                             \
-                                                                             \
-        initialized = true;                                                  \
-                                                                             \
-        importer::_type_id = AssetManager::register_importer(imp);           \
-                                                                             \
-        log_printf(STATUS_REPORTS, "status",                                 \
-                   "Asset importer " #importer " loaded with type id %u.\n", \
-                   importer::_type_id);                                      \
+#define REGISTER(importer, signature)                                         \
+    __attribute__((constructor)) void __register##importer##__##signature() { \
+        static importer imp;                                                  \
+                                                                              \
+        static bool initialized = false;                                      \
+                                                                              \
+        if (initialized) return;                                              \
+                                                                              \
+        initialized = true;                                                   \
+                                                                              \
+        log_printf(STATUS_REPORTS, "status",                                  \
+                   "Registering asset importer " #importer                    \
+                   " to signature " #signature ".\n");                        \
+                                                                              \
+        AssetManager::register_importer(imp, #signature);                     \
     }
 
 /**
  * @brief Create and register asset importer
  *
  */
-#define IMPORTER(name)                                        \
-    struct name : AssetImporter {                             \
-        AbstractAsset* import(const char* path) override;     \
-        static AssetTypeId get_type_id() { return _type_id; } \
-        static AssetTypeId _type_id;                          \
-    };                                                        \
+#define IMPORTER(name)                                    \
+    struct name : AssetImporter {                         \
+        AbstractAsset* import(const char* path) override; \
+    };                                                    \
     __attribute__((constructor)) void __register##name();
-
-// TODO: Think of a way to store and synch type identifiers.
-// Pseudo-members? Dumb yet effective.
-//  AssetTypeId _TextureImporter_type_id;
-//  TextureImporter {
-//      static AssetTypeId get_asset_type() { return _TextureImporter_type_id; }
-// }
 
 #endif

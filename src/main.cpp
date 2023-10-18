@@ -50,16 +50,12 @@ int main(const int argc, char** argv) {
     monkey.synch_buffers();
     Camera camera;
     Shader& basic_shader =
-        ((ShaderAsset*)AssetManager::request("assets/shaders/basic_shader.xml",
-                                             ShaderImporter::get_type_id()))
-            ->shader;
+        *AssetManager::request<Shader>("assets/shaders/basic.shader.xml");
     basic_shader.use();
 
     // Texture texture("assets/textures/rock.jpg", 0);
-    Texture& texture = ((TextureAsset*)AssetManager::request(
-                            "assets/textures/rock_texture.xml",
-                            TextureImporter::get_type_id()))
-                           ->texture;
+    Texture& texture =
+        *AssetManager::request<Texture>("assets/textures/rock.texture.xml");
     texture.bind();
 
     basic_shader.set_uniform_tex("albedo", texture);

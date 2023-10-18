@@ -1,4 +1,4 @@
 <texture>
     <path>assets/textures/rock.jpg</path>
-    <slot>0</slot>
+    <slot>albedo</slot>
 </texture>

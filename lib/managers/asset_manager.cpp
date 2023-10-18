@@ -2,38 +2,19 @@
 
 #include "logger/logger.h"
 
-AssetTypeId AssetManager::register_importer(AssetImporter& importer) {
+void AssetManager::register_importer(AssetImporter& importer,
+                                     const char* signature) {
     AssetManager& instance = get_instance();
 
-    instance.importers_.push_back(&importer);
-
-    return (AssetTypeId)instance.importers_.size() - 1;
-}
-
-AbstractAsset* AssetManager::request(const char* identifier,
-                                     AssetTypeId type_id) {
-    AssetManager& instance = get_instance();
-
-    auto asset = instance.assets_.find(identifier);
-    if (asset != instance.assets_.end()) {
-        return asset->second;
-    }
-
-    log_printf(STATUS_REPORTS, "status", "Loading asset %s (type id %u).\n",
-               identifier, type_id);
-
-    AbstractAsset* loaded = instance.importers_[type_id]->import(identifier);
-
-    if (loaded == nullptr) {
+    if (instance.importers_.find(signature) != instance.importers_.end()) {
         log_printf(ERROR_REPORTS, "error",
-                   "Failed to load asset %s (type id %u).\n", identifier,
-                   type_id);
-        return nullptr;
+                   "Asset importer for signature \"%s\" has already been "
+                   "registered.\n",
+                   signature);
+        return;
     }
 
-    instance.assets_.insert({identifier, loaded});
-
-    return loaded;
+    instance.importers_.insert({signature, &importer});
 }
 
 void AssetManager::unload(const char* identifier) {

@@ -2,8 +2,8 @@
 
 #include <tinyxml2.h>
 
-REGISTER(TextureImporter)
-REGISTER(ShaderImporter)
+REGISTER(TextureImporter, texture)
+REGISTER(ShaderImporter, shader)
 
 AbstractAsset* TextureImporter::import(const char* path) {
     tinyxml2::XMLDocument doc;
@@ -21,7 +21,7 @@ AbstractAsset* TextureImporter::import(const char* path) {
     const char* content_path = element->FirstChildElement("path")->GetText();
     element->FirstChildElement("slot")->QueryUnsignedText(&slot);
 
-    return new TextureAsset(content_path, slot);
+    return new Asset<Texture>(content_path, slot);
 }
 
 AbstractAsset* ShaderImporter::import(const char* path) {
@@ -38,5 +38,5 @@ AbstractAsset* ShaderImporter::import(const char* path) {
     const char* vsh_name = element->FirstChildElement("vsh")->GetText();
     const char* fsh_name = element->FirstChildElement("fsh")->GetText();
 
-    return new ShaderAsset(vsh_name, fsh_name);
+    return new Asset<Shader>(vsh_name, fsh_name);
 }
