@@ -100,7 +100,7 @@ void Shader::set_uniform_vec2(const char* uniform,
 void Shader::set_uniform_vec3(const char* uniform,
                               const glm::vec3& vector) const {
     GLint uni = glGetUniformLocation(id_, uniform);
-    glUniform2f(uni, vector.x, vector.y);
+    glUniform3f(uni, vector.x, vector.y, vector.z);
     poll_gl_errors();
 }
 

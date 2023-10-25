@@ -16,7 +16,7 @@ void main() {
     gl_Position = projection * obj_tform * vec4(i_position, 1.0);
     world_pos = (obj_tform * vec4(i_position, 1.0)).xyz;
     local_pos = i_position;
-    normal = i_normal;
+    normal = (obj_tform * vec4(i_normal, 0.0)).xyz;
     uv = i_uv;
 }
 

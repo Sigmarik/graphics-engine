@@ -8,7 +8,7 @@
 void RenderManager::render(RenderBundle& bundle) const {
     glm::mat4 camera_matrix = viewpoint_.get_matrix();
 
-    bundle.swap_frames();
+    bundle.reset_front();
     bundle.use();
     bundle.clear();
 
@@ -26,6 +26,18 @@ void RenderManager::render(RenderBundle& bundle) const {
     }
 
     glDisable(GL_DEPTH_TEST);
+
+    bundle.swap_frames();
+    bundle.use();
+
+    pass = RP_LIGHT;
+
+    stage_input = (RenderInput){.camera_matrix = camera_matrix, .pass = pass};
+    for (const Renderable* object : objects_) {
+        if (object->is_hidden()) continue;
+
+        object->render(stage_input, bundle);
+    }
 
     bundle.swap_frames();
     bundle.use();

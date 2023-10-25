@@ -13,8 +13,6 @@ void Model::render(const RenderInput& input, const RenderBundle& bundle) const {
 
     bundle.bind_textures(material_->get_shader());
 
-    log_printf(STATUS_REPORTS, "status", "Rendering the model\n");
-
     mesh_->render(input.camera_matrix, object_matrix_, material_->get_shader());
 
     poll_gl_errors();

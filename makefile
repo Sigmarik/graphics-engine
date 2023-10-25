@@ -66,6 +66,7 @@ LIB_OBJECTS = lib/logger/debug.o						\
 			  lib/graphics/objects/material.o			\
 			  lib/graphics/objects/model.o				\
 			  lib/graphics/objects/scene.o				\
+			  lib/graphics/objects/ambient_light.o		\
 			  lib/managers/asset_manager.o				\
 			  lib/io/mmap.o								\
 			  lib/hash/murmur.o

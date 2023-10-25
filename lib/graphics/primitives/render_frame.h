@@ -30,10 +30,19 @@ struct RenderFrame {
     size_t get_height() const { return height_; }
 
    private:
+    void init_texture(GLuint& tex_id, GLenum attachment);
+
     size_t width_, height_;
     GLuint fbo_id_ = 0, rbo_id_ = 0;
     GLuint albedo_tex_id_ = 0, normal_depth_tex_id_ = 0, surface_tex_id_ = 0,
-           output_tex_id_ = 0;
+           final_tex_id_ = 0;
+};
+
+enum BufferSlot {
+    GB_SLOT_ALBEDO = 10,
+    GB_SLOT_NORM_DEPTH = 9,
+    GB_SLOT_SURFACE = 8,
+    GB_SLOT_FINAL = 7,
 };
 
 struct RenderBundle {
@@ -46,6 +55,8 @@ struct RenderBundle {
     void clear() const;
 
     static void reset_to_screen();
+
+    void reset_front() { is_front_ = true; }
 
    private:
     RenderFrame front_, back_;

@@ -15,6 +15,7 @@
 
 #include "graphics/gl_debug.h"
 #include "graphics/importers/importers.h"
+#include "graphics/objects/ambient_light.h"
 #include "graphics/objects/model.h"
 #include "graphics/objects/scene.h"
 #include "graphics/primitives/camera.h"
@@ -51,8 +52,6 @@ int main(const int argc, char** argv) {
 
     poll_gl_errors();
 
-    Mesh monkey("assets/models/monkey.obj");
-    monkey.synch_buffers();
     Camera camera;
 
     RenderManager render_manager(camera);
@@ -61,7 +60,10 @@ int main(const int argc, char** argv) {
     Model& model =
         *AssetManager::request<Model>("assets/models/monkey.model.xml");
 
+    AmbientLight light = AmbientLight(glm::vec3(1.0, 1.0, 1.05));
+
     render_manager.track_object(model);
+    render_manager.track_object(light);
 
     poll_gl_errors();
 
