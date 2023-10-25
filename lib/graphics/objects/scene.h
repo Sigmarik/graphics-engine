@@ -48,7 +48,7 @@ struct Renderable {
      * @param input
      */
     virtual void render(const RenderInput& input,
-                        const RenderFrame& bundle) const = 0;
+                        const RenderBundle& bundle) const = 0;
 
     const glm::mat4& get_object_matrix() const { return object_matrix_; }
     void set_object_matrix(const glm::mat4& matrix) { object_matrix_ = matrix; }
@@ -66,7 +66,7 @@ struct Renderable {
 struct RenderManager {
     RenderManager(Camera& viewpoint) : viewpoint_(viewpoint) {}
 
-    void render(const RenderFrame& bundle) const;
+    void render(RenderBundle& bundle) const;
 
     void set_viewpoint(Camera& viewpoint) { viewpoint_ = viewpoint; }
     const Camera& get_viewpoint() const { return viewpoint_; }

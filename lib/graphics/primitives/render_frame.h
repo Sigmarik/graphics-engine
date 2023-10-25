@@ -31,7 +31,25 @@ struct RenderFrame {
 
    private:
     size_t width_, height_;
-    GLuint fbo_id_ = 0, albedo_tex_id_ = 0, rbo_id_ = 0;
+    GLuint fbo_id_ = 0, rbo_id_ = 0;
+    GLuint albedo_tex_id_ = 0, normal_depth_tex_id_ = 0, surface_tex_id_ = 0,
+           output_tex_id_ = 0;
+};
+
+struct RenderBundle {
+    RenderBundle(unsigned width, unsigned height);
+
+    void bind_textures(const Shader& shader) const;
+    void use() const;
+    void swap_frames();
+
+    void clear() const;
+
+    static void reset_to_screen();
+
+   private:
+    RenderFrame front_, back_;
+    bool is_front_ = true;
 };
 
 #endif

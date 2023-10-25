@@ -50,26 +50,6 @@ struct RenderTarget : public FrameBuffer {
     RenderBuffer rbo_;
 };
 
-struct RenderBundle : public FrameBuffer {
-    RenderBundle(unsigned width, unsigned height);
-
-    const Texture& color_tx() const { return color_; }
-    const Texture& normal_tx() const { return normal_; }
-    const Texture& light_params_tx() const { return surface_; }
-    const Texture& light_tx() const { return light_; }
-
-    void bind_as_input(const Shader& shader) const;
-
-    void clear() const;
-
-   private:
-    Texture color_;
-    Texture normal_;
-    Texture surface_;
-    Texture light_;
-    RenderBuffer depth_stencil_;
-};
-
 struct DepthMap : public FrameBuffer {
     DepthMap(unsigned width, unsigned height);
 

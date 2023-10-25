@@ -5,12 +5,12 @@
 #include "graphics/primitives/flat_renderer.h"
 #include "managers/asset_manager.h"
 
-void RenderManager::render(const RenderFrame& frame) const {
+void RenderManager::render(RenderBundle& bundle) const {
     glm::mat4 camera_matrix = viewpoint_.get_matrix();
 
-    frame.use();
-
-    frame.clear();
+    bundle.swap_frames();
+    bundle.use();
+    bundle.clear();
 
     poll_gl_errors();
 
@@ -22,20 +22,23 @@ void RenderManager::render(const RenderFrame& frame) const {
     for (const Renderable* object : objects_) {
         if (object->is_hidden()) continue;
 
-        object->render(stage_input, frame);
+        object->render(stage_input, bundle);
     }
 
     glDisable(GL_DEPTH_TEST);
+
+    bundle.swap_frames();
+    bundle.use();
 
     //* Copy rendered image to the screen
 
     static Shader& identity_shader =
         *AssetManager::request<Shader>("assets/shaders/RB2SCR.shader.xml");
 
-    RenderFrame::reset_to_screen();
+    RenderBundle::reset_to_screen();
 
     identity_shader.use();
-    frame.bind_textures(identity_shader);
+    bundle.bind_textures(identity_shader);
 
     FlatRenderer::render();
 

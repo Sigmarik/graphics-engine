@@ -9,6 +9,8 @@
  *
  */
 
+#include <unistd.h>
+
 #include <glm/ext/matrix_transform.hpp>
 
 #include "graphics/gl_debug.h"
@@ -68,7 +70,7 @@ int main(const int argc, char** argv) {
 
     glViewport(0, 0, 800, 600);
 
-    RenderFrame gbuffers(800, 600);
+    RenderBundle gbuffers(800, 600);
 
     poll_gl_errors();
 
