@@ -6,12 +6,15 @@
 
 #include <assimp/Importer.hpp>
 
+#include "graphics/gl_debug.h"
 #include "logger/logger.h"
 
 Mesh::Mesh(const char* path) { load(path); }
 
 void Mesh::load(const char* path) {
     static Assimp::Importer import;
+
+    poll_gl_errors();
 
     log_printf(STATUS_REPORTS, "status", "Loading model %s\n", path);
 
@@ -61,11 +64,15 @@ void Mesh::load(const char* path) {
                vertices_.size(), indices_.size());
 
     synch_buffers();
+
+    poll_gl_errors();
 }
 
 void Mesh::append(const std::vector<Vertex>& vertices,
                   const std::vector<unsigned>& indices,
                   const glm::mat4 matrix) {
+    poll_gl_errors();
+
     unsigned index_shift = (unsigned)vertices_.size();
     for (size_t vertex_id = 0; vertex_id < vertices.size(); ++vertex_id) {
         vertices_.push_back(vertices[vertex_id].apply(matrix));
@@ -73,15 +80,19 @@ void Mesh::append(const std::vector<Vertex>& vertices,
     for (size_t index_id = 0; index_id < indices.size(); ++index_id) {
         indices_.push_back(indices[index_id] + index_shift);
     }
+
+    poll_gl_errors();
 }
 
 void Mesh::synch_buffers() {
+    poll_gl_errors();
+
     vao_.bind();
 
     poll_gl_errors();
 
     vbo_.bind();
-    vbo_.fill(&vertices_[0], vertices_.size());  //! INVALID_ENUM
+    vbo_.fill(&vertices_[0], vertices_.size());
     // vbo_.unbind();
 
     poll_gl_errors();
@@ -102,9 +113,11 @@ void Mesh::synch_buffers() {
 void Mesh::render(const glm::mat4& proj_matrix, const glm::mat4& obj_matrix,
                   Shader& shader) const {
     vao_.bind();
+    vbo_.bind();
     ebo_.bind();
     shader.set_uniform_mat4("projection", proj_matrix);
     shader.set_uniform_mat4("obj_tform", obj_matrix);
     glDrawElements(GL_TRIANGLES, (GLsizei)indices_.size(), GL_UNSIGNED_INT, 0);
     vao_.unbind();
+    vbo_.unbind();
 }

@@ -60,7 +60,12 @@ LIB_OBJECTS = lib/logger/debug.o						\
 			  lib/graphics/primitives/camera.o			\
 			  lib/graphics/primitives/texture.o			\
 			  lib/graphics/primitives/framebuffer.o		\
+			  lib/graphics/primitives/flat_renderer.o	\
+			  lib/graphics/primitives/render_frame.o	\
 			  lib/graphics/importers/importers.o		\
+			  lib/graphics/objects/material.o			\
+			  lib/graphics/objects/model.o				\
+			  lib/graphics/objects/scene.o				\
 			  lib/managers/asset_manager.o				\
 			  lib/io/mmap.o								\
 			  lib/hash/murmur.o

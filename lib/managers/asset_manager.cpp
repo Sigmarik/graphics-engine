@@ -1,5 +1,6 @@
 #include "asset_manager.h"
 
+#include "ctype.h"
 #include "logger/logger.h"
 
 void AssetManager::register_importer(AssetImporter& importer,
@@ -38,4 +39,21 @@ AssetManager::~AssetManager() {
     }
 
     assets_.clear();
+}
+
+const char* trim_path(const char* path) {
+    static char trimmed[1024] = "";
+
+    char* out = trimmed;
+
+    for (const char* chr = path; *chr != '\0'; ++chr) {
+        if (!isgraph(*chr)) continue;
+
+        *out = *chr;
+        ++out;
+    }
+
+    *out = '\0';
+
+    return trimmed;
 }

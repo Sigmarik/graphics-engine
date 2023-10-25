@@ -7,6 +7,6 @@ in vec3 world_pos;
 in vec3 normal;
 in vec2 uv;
 
-out vec4 FragColor;
+layout(location = 0) out vec4 AlbedoOutput;
 
-void main() { FragColor = vec4(texture(albedo, uv).xyz, 1.0); }
+void main() { AlbedoOutput = vec4(texture(albedo, uv).xyz, 1.0); }

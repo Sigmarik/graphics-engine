@@ -27,12 +27,13 @@ struct Shader {
 
     void use() const { glUseProgram(id_); }
 
-    void set_uniform_float(const char* uniform, float value);
-    void set_uniform_vec2(const char* uniform, const glm::vec2& vector);
-    void set_uniform_vec3(const char* uniform, const glm::vec3& vector);
-    void set_uniform_mat4(const char* uniform, const glm::mat4& matrix);
-    void set_uniform_tex(const char* uniform, const Texture& texture);
-    void set_uniform_tex3d(const char* uniform, const Texture3D& texture);
+    void set_uniform_float(const char* uniform, float value) const;
+    void set_uniform_vec2(const char* uniform, const glm::vec2& vector) const;
+    void set_uniform_vec3(const char* uniform, const glm::vec3& vector) const;
+    void set_uniform_mat4(const char* uniform, const glm::mat4& matrix) const;
+    void set_uniform_tex(const char* uniform, const Texture& texture) const;
+    void set_uniform_tex3d(const char* uniform, const Texture3D& texture) const;
+    void set_uniform_tex_id(const char* uniform, GLuint tex_slot) const;
 
    private:
     GLuint id_ = 0;

@@ -15,13 +15,14 @@
 #include <glm/mat4x4.hpp>
 #include <set>
 
+#include "graphics/primitives/camera.h"
+#include "graphics/primitives/render_frame.h"
+
 enum RenderPass {
-    RP_OPAQUE,
-    RP_TRANSLUCENT,
-    RP_LIGHT_MAP,
-    RP_GB_POS,
-    RP_GB_NORMAL,
-    RP_GB_ALBEDO,
+    RP_INITIAL,
+    RP_DECAL,
+    RP_LIGHT,
+    RP_POSTPROCESSING,
     _RP_END,
 };
 
@@ -46,7 +47,8 @@ struct Renderable {
      *
      * @param input
      */
-    virtual void render(RenderInput input) const = 0;
+    virtual void render(const RenderInput& input,
+                        const RenderFrame& bundle) const = 0;
 
     const glm::mat4& get_object_matrix() const { return object_matrix_; }
     void set_object_matrix(const glm::mat4& matrix) { object_matrix_ = matrix; }
@@ -54,26 +56,28 @@ struct Renderable {
     bool is_hidden() const { return hidden_; }
     void set_hidden(bool hidden) { hidden_ = hidden; }
 
+    virtual ~Renderable() = default;
+
    protected:
     glm::mat4 object_matrix_ = glm::mat4(1.0);
     bool hidden_ = false;
 };
 
 struct RenderManager {
-    RenderManager(const Camera& viewpoint) : viewpoint_(viewpoint) {}
+    RenderManager(Camera& viewpoint) : viewpoint_(viewpoint) {}
 
-    void render() const;
+    void render(const RenderFrame& bundle) const;
 
-    void set_viewpoint(const Camera& viewpoint) { viewpoint_ = viewpoint; }
+    void set_viewpoint(Camera& viewpoint) { viewpoint_ = viewpoint; }
     const Camera& get_viewpoint() const { return viewpoint_; }
 
     void track_object(const Renderable& object) { objects_.insert(&object); }
     void untrack_object(const Renderable& object) { objects_.erase(&object); }
 
    private:
-    const Camera& viewpoint_;
+    Camera& viewpoint_;
 
-    std::set<const Renderable*> objects_;
+    std::set<const Renderable*> objects_{};
 };
 
 #endif

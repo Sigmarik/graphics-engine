@@ -2,17 +2,38 @@
 
 #include <stdio.h>
 
+#include "graphics/gl_debug.h"
+#include "logger/logger.h"
+
 void Material::use() const {
-    static char tex_uniform_name[32] = "";
-
     shader_.use();
-    for (unsigned id = 0; id < TEXTURE_SLOTS_COUNT; ++id) {
-        if (textures_[id] == nullptr) continue;
 
-        textures_[id].bind();
+    poll_gl_errors();
 
-        sprintf(tex_uniform_name, "tex%u", id);
-
-        shader_.set_uniform_tex(tex_uniform_name, *textures_[id]);
+    for (auto pair : textures_) {
+        pair.second->bind();
+        shader_.set_uniform_tex(pair.first.data(), *pair.second);
     }
+
+    poll_gl_errors();
+}
+
+void Material::add_texture(const char* uniform, Texture* texture) {
+    auto cell = textures_.find(uniform);
+
+    if (cell != textures_.end()) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Material uniform \"%s\" was set twice\n", uniform);
+        return;
+    }
+
+    textures_.insert({uniform, texture});
+}
+
+Texture* Material::get_texture(const char* uniform) const {
+    auto cell = textures_.find(uniform);
+
+    if (cell == textures_.end()) return nullptr;
+
+    return cell->second;
 }

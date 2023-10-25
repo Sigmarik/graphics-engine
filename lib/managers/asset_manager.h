@@ -21,6 +21,8 @@
 #include "hash/murmur.h"
 #include "logger/logger.h"
 
+const char* trim_path(const char* path);
+
 struct AbstractAsset {
     virtual ~AbstractAsset() = default;
 

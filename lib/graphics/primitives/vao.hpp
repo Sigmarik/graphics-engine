@@ -17,6 +17,7 @@
 
 struct VAO {
     VAO() : id(0) { glGenVertexArrays(1, &id); }
+    ~VAO() { glDeleteVertexArrays(1, &id); }
 
     void bind() const { glBindVertexArray(id); }
     void unbind() const { glBindVertexArray(0); }

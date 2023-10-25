@@ -18,8 +18,8 @@
 
 IMPORTER(TextureImporter)
 IMPORTER(ShaderImporter)
-// IMPORTER(MaterialImporter)
-// IMPORTER(MeshImporter)
-// IMPORTER(ModelImporter)
+IMPORTER(MaterialImporter)
+IMPORTER(MeshImporter)
+IMPORTER(ModelImporter)
 
 #endif

@@ -18,6 +18,7 @@
 
 struct EBO {
     EBO() : id_(0) { glGenBuffers(1, &id_); }
+    ~EBO() { glDeleteBuffers(1, &id_); }
 
     void fill(const unsigned* indices, size_t count) {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,

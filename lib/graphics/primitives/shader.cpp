@@ -84,32 +84,49 @@ void Shader::read(const char* vsh_name, const char* fsh_name) {
     poll_gl_errors();
 }
 
-void Shader::set_uniform_float(const char* uniform, float value) {
+void Shader::set_uniform_float(const char* uniform, float value) const {
     GLint uni = glGetUniformLocation(id_, uniform);
     glUniform1f(uni, value);
+    poll_gl_errors();
 }
 
-void Shader::set_uniform_vec2(const char* uniform, const glm::vec2& vector) {
+void Shader::set_uniform_vec2(const char* uniform,
+                              const glm::vec2& vector) const {
     GLint uni = glGetUniformLocation(id_, uniform);
     glUniform2f(uni, vector.x, vector.y);
+    poll_gl_errors();
 }
 
-void Shader::set_uniform_vec3(const char* uniform, const glm::vec3& vector) {
+void Shader::set_uniform_vec3(const char* uniform,
+                              const glm::vec3& vector) const {
     GLint uni = glGetUniformLocation(id_, uniform);
     glUniform2f(uni, vector.x, vector.y);
+    poll_gl_errors();
 }
 
-void Shader::set_uniform_mat4(const char* uniform, const glm::mat4& matrix) {
+void Shader::set_uniform_mat4(const char* uniform,
+                              const glm::mat4& matrix) const {
     GLint uni = glGetUniformLocation(id_, uniform);
     glUniformMatrix4fv(uni, 1, false, &matrix[0][0]);
+    poll_gl_errors();
 }
 
-void Shader::set_uniform_tex(const char* uniform, const Texture& texture) {
+void Shader::set_uniform_tex(const char* uniform,
+                             const Texture& texture) const {
     GLint uni = glGetUniformLocation(id_, uniform);
     glUniform1i(uni, (GLint)texture.get_slot());
+    poll_gl_errors();
 }
 
-void Shader::set_uniform_tex3d(const char* uniform, const Texture3D& texture) {
+void Shader::set_uniform_tex3d(const char* uniform,
+                               const Texture3D& texture) const {
     GLint uni = glGetUniformLocation(id_, uniform);
     glUniform1i(uni, (GLint)texture.get_slot());
+    poll_gl_errors();
+}
+
+void Shader::set_uniform_tex_id(const char* uniform, GLuint tex_slot) const {
+    GLint uni = glGetUniformLocation(id_, uniform);
+    glUniform1i(uni, (GLint)tex_slot);
+    poll_gl_errors();
 }

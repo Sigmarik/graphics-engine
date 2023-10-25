@@ -1,0 +1,4 @@
+<model>
+    <mesh>assets/models/monkey.obj</mesh>
+    <material>assets/materials/rock.material.xml</material>
+</model>
