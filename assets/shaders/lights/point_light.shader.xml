@@ -1,4 +1,4 @@
 <shader>
-    <fsh>assets/shaders/ambient_light.fsh</fsh>
+    <fsh>assets/shaders/lights/point_light.fsh</fsh>
     <vsh>assets/shaders/identity.vsh</vsh>
 </shader>

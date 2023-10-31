@@ -19,7 +19,7 @@ CPP_BASE_FLAGS = $(CPP_INCLUDE_FLAGS)												\
 -Wvariadic-macros -Wno-literal-suffix -Wno-missing-field-initializers				\
 -Wno-narrowing -Wno-old-style-cast -Wno-varargs -Wstack-protector					\
 -Wstack-usage=8192 -Wno-unused-parameter -Wno-deprecated-declarations				\
--Wno-unused-variable -Wno-missing-declarations
+-Wno-missing-declarations
 
 CPP_SANITIZER_FLAGS = -fcheck-new 													\
 -fsized-deallocation -fstack-protector -fstrict-overflow -flto-odr-type-merging		\
@@ -67,6 +67,7 @@ LIB_OBJECTS = lib/logger/debug.o						\
 			  lib/graphics/objects/model.o				\
 			  lib/graphics/objects/scene.o				\
 			  lib/graphics/objects/ambient_light.o		\
+			  lib/graphics/objects/point_light.o		\
 			  lib/managers/asset_manager.o				\
 			  lib/io/mmap.o								\
 			  lib/hash/murmur.o

@@ -37,9 +37,6 @@ struct Asset : public AbstractAsset {
     T content;
 };
 
-typedef unsigned ImporterId;
-static const ImporterId ASSET_TYPE_POISON = (ImporterId)-1;
-
 struct AssetImporter {
     virtual ~AssetImporter() = default;
     virtual AbstractAsset* import(const char* path) = 0;
@@ -70,6 +67,16 @@ struct AssetManager {
 };
 
 /**
+ * @brief Create and register asset importer
+ *
+ */
+#define IMPORTER(name)                                    \
+    struct name : AssetImporter {                         \
+        AbstractAsset* import(const char* path) override; \
+    };                                                    \
+    __attribute__((constructor)) void __register##name();
+
+/**
  * @brief Register asset importer
  *
  */
@@ -89,15 +96,5 @@ struct AssetManager {
                                                                               \
         AssetManager::register_importer(imp, #signature);                     \
     }
-
-/**
- * @brief Create and register asset importer
- *
- */
-#define IMPORTER(name)                                    \
-    struct name : AssetImporter {                         \
-        AbstractAsset* import(const char* path) override; \
-    };                                                    \
-    __attribute__((constructor)) void __register##name();
 
 #endif

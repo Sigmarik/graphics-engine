@@ -6,17 +6,18 @@ layout (location = 2) in vec2 i_uv;
 
 out vec3 local_pos;
 out vec3 world_pos;
-out vec3 normal;
+out vec4 normal_depth;
 out vec2 uv;
 
 uniform mat4 obj_tform;
 uniform mat4 projection;
 
 void main() {
-    gl_Position = projection * obj_tform * vec4(i_position, 1.0);
+    vec4 position = projection * obj_tform * vec4(i_position, 1.0);
+    gl_Position = position;
     world_pos = (obj_tform * vec4(i_position, 1.0)).xyz;
     local_pos = i_position;
-    normal = (obj_tform * vec4(i_normal, 0.0)).xyz;
+    normal_depth = vec4((obj_tform * vec4(i_normal, 0.0)).xyz, position.z);
     uv = i_uv;
 }
 

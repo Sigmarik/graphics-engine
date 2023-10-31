@@ -20,7 +20,7 @@
 struct RenderFrame {
     RenderFrame(size_t width, size_t height);
 
-    void use() const;
+    void use(GLenum target = GL_DRAW_FRAMEBUFFER) const;
     static void reset_to_screen();
     void bind_textures(const Shader& shader) const;
 
@@ -52,11 +52,11 @@ struct RenderBundle {
     void use() const;
     void swap_frames();
 
-    void clear() const;
+    void reset();
+
+    bool is_front() const { return is_front_; }
 
     static void reset_to_screen();
-
-    void reset_front() { is_front_ = true; }
 
    private:
     RenderFrame front_, back_;

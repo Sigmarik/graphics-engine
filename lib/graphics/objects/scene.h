@@ -31,7 +31,7 @@ enum RenderPass {
  *
  */
 struct RenderInput {
-    glm::mat4 camera_matrix;
+    Camera* camera;
     RenderPass pass;
 };
 
@@ -46,9 +46,10 @@ struct Renderable {
      * parameters.
      *
      * @param input
+     * @return 1 if successful
      */
-    virtual void render(const RenderInput& input,
-                        const RenderBundle& bundle) const = 0;
+    virtual int render(const RenderInput& input,
+                       const RenderBundle& bundle) const = 0;
 
     const glm::mat4& get_object_matrix() const { return object_matrix_; }
     void set_object_matrix(const glm::mat4& matrix) { object_matrix_ = matrix; }

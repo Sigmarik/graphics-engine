@@ -36,9 +36,8 @@ GLFWwindow* create_window() {
                    "Failed to initialize GLAD. Terminating.\n");
         return nullptr;
     }
-    glEnable(GL_MULTISAMPLE);
 
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
 
     return window;
 }

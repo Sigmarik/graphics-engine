@@ -6,11 +6,8 @@
 #include "managers/asset_manager.h"
 
 void RenderManager::render(RenderBundle& bundle) const {
-    glm::mat4 camera_matrix = viewpoint_.get_matrix();
-
-    bundle.reset_front();
+    bundle.reset();
     bundle.use();
-    bundle.clear();
 
     poll_gl_errors();
 
@@ -18,7 +15,7 @@ void RenderManager::render(RenderBundle& bundle) const {
     RenderPass pass = RP_INITIAL;
 
     RenderInput stage_input =
-        (RenderInput){.camera_matrix = camera_matrix, .pass = pass};
+        (RenderInput){.camera = &viewpoint_, .pass = pass};
     for (const Renderable* object : objects_) {
         if (object->is_hidden()) continue;
 
@@ -32,15 +29,17 @@ void RenderManager::render(RenderBundle& bundle) const {
 
     pass = RP_LIGHT;
 
-    stage_input = (RenderInput){.camera_matrix = camera_matrix, .pass = pass};
+    stage_input = (RenderInput){.camera = &viewpoint_, .pass = pass};
     for (const Renderable* object : objects_) {
         if (object->is_hidden()) continue;
 
-        object->render(stage_input, bundle);
-    }
+        int rendered = object->render(stage_input, bundle);
 
-    bundle.swap_frames();
-    bundle.use();
+        if (rendered) {
+            bundle.swap_frames();
+            bundle.use();
+        }
+    }
 
     //* Copy rendered image to the screen
 
@@ -53,6 +52,4 @@ void RenderManager::render(RenderBundle& bundle) const {
     bundle.bind_textures(identity_shader);
 
     FlatRenderer::render();
-
-    // TODO: Copy frame color channel to the canvas
 }

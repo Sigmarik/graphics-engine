@@ -17,6 +17,7 @@
 #include "graphics/importers/importers.h"
 #include "graphics/objects/ambient_light.h"
 #include "graphics/objects/model.h"
+#include "graphics/objects/point_light.h"
 #include "graphics/objects/scene.h"
 #include "graphics/primitives/camera.h"
 #include "graphics/primitives/mesh.h"
@@ -60,10 +61,21 @@ int main(const int argc, char** argv) {
     Model& model =
         *AssetManager::request<Model>("assets/models/monkey.model.xml");
 
-    AmbientLight light = AmbientLight(glm::vec3(1.0, 1.0, 1.05));
+    AmbientLight ambient_light = AmbientLight(glm::vec3(0.2, 0.2, 0.23));
+    PointLight point_light = PointLight(glm::vec3(1.0, 1.0, 1.0));
+
+    // clang-format off
+    point_light.set_object_matrix(glm::mat4(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 2.0, 1.0, 1.0
+    ));
+    // clang-format on
 
     render_manager.track_object(model);
-    render_manager.track_object(light);
+    render_manager.track_object(ambient_light);
+    render_manager.track_object(point_light);
 
     poll_gl_errors();
 
@@ -86,8 +98,13 @@ int main(const int argc, char** argv) {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        obj_transform =
-            glm::rotate(obj_transform, 0.01f, glm::vec3(0.0, 1.0, 0.0));
+        // obj_transform =
+        //     glm::rotate(obj_transform, 0.01f, glm::vec3(0.0, 1.0, 0.0));
+
+        camera.set_position(glm::vec3(cos(tick * 0.01), 0.0, sin(tick * 0.01)) *
+                            3.0f);
+        camera.direct(-glm::normalize(camera.get_position()),
+                      glm::vec3(0.0, 1.0, 0.0));
 
         model.set_object_matrix(obj_transform);
 
@@ -97,6 +114,8 @@ int main(const int argc, char** argv) {
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        // sleep(1);
     }
 
     poll_gl_errors();

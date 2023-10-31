@@ -1,0 +1,3 @@
+<material>
+    <shader>assets/shaders/lights/ambient_light.shader.xml</shader>
+</material>

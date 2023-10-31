@@ -60,15 +60,17 @@ void RenderFrame::clear() const {
 void RenderFrame::init_texture(GLuint& tex_id, GLenum attachment) {
     glGenTextures(1, &tex_id);
     glBindTexture(GL_TEXTURE_2D, tex_id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)width_, (GLsizei)height_, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width_, (GLsizei)height_,
+                 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, tex_id,
                            0);
 }
 
-void RenderFrame::use() const { glBindFramebuffer(GL_FRAMEBUFFER, fbo_id_); }
+void RenderFrame::use(GLenum target) const {
+    glBindFramebuffer(target, fbo_id_);
+}
 
 RenderBundle::RenderBundle(unsigned width, unsigned height)
     : front_(width, height), back_(width, height) {}
@@ -76,20 +78,26 @@ RenderBundle::RenderBundle(unsigned width, unsigned height)
 void RenderBundle::bind_textures(const Shader& shader) const {
     const RenderFrame& in = is_front_ ? front_ : back_;
 
+    in.use(GL_READ_FRAMEBUFFER);
     in.bind_textures(shader);
 }
 
 void RenderBundle::use() const {
     const RenderFrame& out = is_front_ ? back_ : front_;
+    const RenderFrame& in = is_front_ ? front_ : back_;
 
-    out.use();
+    out.use(GL_DRAW_FRAMEBUFFER);
+    in.use(GL_READ_FRAMEBUFFER);
 }
 
 void RenderBundle::swap_frames() { is_front_ = !is_front_; }
 
-void RenderBundle::clear() const {
+void RenderBundle::reset() {
+    front_.use();
     front_.clear();
+    back_.use();
     back_.clear();
+    is_front_ = true;
 }
 
 void RenderBundle::reset_to_screen() { RenderFrame::reset_to_screen(); }

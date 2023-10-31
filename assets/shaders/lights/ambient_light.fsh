@@ -21,9 +21,8 @@ void main() {
 
     vec4 prev_final = texture(GB_FINAL, screen_pos);
     vec4 albedo = texture(GB_COLOR, screen_pos);
-    float ao = texture(GB_COLOR, screen_pos).z;
+    float ao = texture(GB_SURFACE, screen_pos).z;
 
-    FinalOutput = vec4(prev_final.rgb + albedo.rgb * light_color, 1.0);
-
-    // FinalOutput = vec4(1.0, 0.5, 0.0, 1.0);
+    FinalOutput = vec4(prev_final.rgb + albedo.rgb * light_color * ao, 1.0);
+    // FinalOutput = vec4(screen_pos, 1.0, 1.0);
 }

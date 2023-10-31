@@ -23,8 +23,8 @@ struct Model : Renderable {
     Model(const Model& model) = default;
     Model& operator=(const Model& model) = default;
 
-    void render(const RenderInput& input,
-                const RenderBundle& bundle) const override;
+    int render(const RenderInput& input,
+               const RenderBundle& bundle) const override;
 
     const Mesh& get_mesh() const { return *mesh_; }
     void set_mesh(const Mesh& mesh) { mesh_ = &mesh; }

@@ -6,6 +6,6 @@ out vec2 screen_pos;
 
 void main() {
     gl_Position = vec4(i_position, 0.0, 1.0);
-    screen_pos = i_position / 2.0 - 0.5;
+    screen_pos = i_position / 2.0 + 0.5;
 }
 

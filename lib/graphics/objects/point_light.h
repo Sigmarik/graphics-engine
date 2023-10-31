@@ -1,22 +1,21 @@
 /**
- * @file ambient_light.h
+ * @file point_light.h
  * @author Kudryashov Ilya (kudriashov.it@phystech.edu)
- * @brief Ambient light source
+ * @brief Point light renderable
  * @version 0.1
- * @date 2023-10-25
+ * @date 2023-10-26
  *
  * @copyright Copyright (c) 2023
  *
  */
 
-#ifndef AMBIENT_LIGHT_H
-#define AMBIENT_LIGHT_H
+#ifndef POINT_LIGHT_H
+#define POINT_LIGHT_H
 
-#include "glm/vec3.hpp"
 #include "scene.h"
 
-struct AmbientLight : Renderable {
-    AmbientLight(const glm::vec3& color) : color_(color) {}
+struct PointLight : Renderable {
+    PointLight(const glm::vec3& color) : color_(color) {}
 
     int render(const RenderInput& input,
                const RenderBundle& bundle) const override;
