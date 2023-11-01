@@ -1,5 +1,7 @@
 #include "asset_manager.h"
 
+#include <string.h>
+
 #include "ctype.h"
 #include "logger/logger.h"
 
@@ -42,11 +44,17 @@ AssetManager::~AssetManager() {
 }
 
 const char* trim_path(const char* path) {
-    static char trimmed[1024] = "";
+    static char trimmed[PATH_LENGTH] = "";
 
-    char* out = trimmed;
+    copy_trimmed(trimmed, path);
 
-    for (const char* chr = path; *chr != '\0'; ++chr) {
+    return trimmed;
+}
+
+void copy_trimmed(char destination[PATH_LENGTH], const char* source) {
+    char* out = destination;
+
+    for (const char* chr = source; *chr != '\0'; ++chr) {
         if (!isgraph(*chr)) continue;
 
         *out = *chr;
@@ -54,6 +62,4 @@ const char* trim_path(const char* path) {
     }
 
     *out = '\0';
-
-    return trimmed;
 }

@@ -21,7 +21,10 @@
 #include "hash/murmur.h"
 #include "logger/logger.h"
 
+static const size_t PATH_LENGTH = 1024;
+
 const char* trim_path(const char* path);
+void copy_trimmed(char destination[PATH_LENGTH], const char* source);
 
 struct AbstractAsset {
     virtual ~AbstractAsset() = default;
@@ -47,9 +50,7 @@ struct AssetManager {
                                   const char* signature);
 
     template <typename T>
-    static T* request(const char* identifier) {
-#include "_am_request.hpp"
-    }
+    static inline T* request(const char* identifier);
 
     static void unload(const char* identifier);
 
@@ -65,6 +66,8 @@ struct AssetManager {
     std::unordered_map<std::string, AssetImporter*> importers_ = {};
     std::unordered_map<std::string, AbstractAsset*> assets_ = {};
 };
+
+#include "_am_request.hpp"
 
 /**
  * @brief Create and register asset importer

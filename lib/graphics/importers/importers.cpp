@@ -26,7 +26,8 @@ AbstractAsset* TextureImporter::import(const char* path) {
 
     unsigned slot = 0;
 
-    const char* content_path = element->FirstChildElement("path")->GetText();
+    const char* content_path =
+        trim_path(element->FirstChildElement("path")->GetText());
     element->FirstChildElement("slot")->QueryUnsignedText(&slot);
 
     return new Asset<Texture>(content_path, slot);
@@ -43,8 +44,11 @@ AbstractAsset* ShaderImporter::import(const char* path) {
     if (element->FirstChildElement("vsh") == nullptr) return nullptr;
     if (element->FirstChildElement("fsh") == nullptr) return nullptr;
 
-    const char* vsh_name = element->FirstChildElement("vsh")->GetText();
-    const char* fsh_name = element->FirstChildElement("fsh")->GetText();
+    static char vsh_name[PATH_LENGTH] = "";
+    static char fsh_name[PATH_LENGTH] = "";
+
+    copy_trimmed(vsh_name, element->FirstChildElement("vsh")->GetText());
+    copy_trimmed(fsh_name, element->FirstChildElement("fsh")->GetText());
 
     return new Asset<Shader>(vsh_name, fsh_name);
 }
@@ -61,7 +65,8 @@ AbstractAsset* MaterialImporter::import(const char* path) {
 
     if (shader_xml == nullptr) return nullptr;
 
-    Shader* shader = AssetManager::request<Shader>(shader_xml->GetText());
+    Shader* shader =
+        AssetManager::request<Shader>(trim_path(shader_xml->GetText()));
 
     if (shader == nullptr) return nullptr;
 
@@ -105,9 +110,9 @@ AbstractAsset* ModelImporter::import(const char* path) {
     if (mesh_xml == nullptr) return nullptr;
     if (material_xml == nullptr) return nullptr;
 
-    Mesh* mesh = AssetManager::request<Mesh>(mesh_xml->GetText());
+    Mesh* mesh = AssetManager::request<Mesh>(trim_path(mesh_xml->GetText()));
     Material* material =
-        AssetManager::request<Material>(material_xml->GetText());
+        AssetManager::request<Material>(trim_path(material_xml->GetText()));
 
     return new Asset<Model>(*mesh, *material);
 }

@@ -63,7 +63,7 @@ int main(const int argc, char** argv) {
         *AssetManager::request<Model>("assets/models/monkey.model.xml");
 
     AmbientLight ambient_light = AmbientLight(glm::vec3(0.3, 0.3, 0.33));
-    PointLight point_light = PointLight(glm::vec3(1.0, 1.0, 1.0));
+    PointLight point_light = PointLight(glm::vec3(0.7, 0.7, 0.7));
     Postprocessor contrast_vignette =
         Postprocessor(AssetManager::request<Material>(
             "assets/materials/postprocessing/contrast_vignette.material.xml"));

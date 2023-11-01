@@ -1,4 +1,5 @@
-{
+template <typename T>
+inline T* AssetManager::request(const char* identifier) {
     AssetManager& instance = get_instance();
 
     auto asset = instance.assets_.find(identifier);
