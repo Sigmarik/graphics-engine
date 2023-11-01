@@ -1,0 +1,3 @@
+<material>
+    <shader>assets/shaders/postprocessing/contrast_vignette.shader.xml</shader>
+</material>

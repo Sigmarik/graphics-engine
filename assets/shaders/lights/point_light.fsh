@@ -72,8 +72,6 @@ void main() {
     vec4 world_space = camera_inv * screen_space;
     world_space /= world_space.w;
 
-    // FinalOutput = world_space;  // World coordinate preview
-
     vec3 light_vector = world_space.xyz - object_pos;
     vec3 camera_vector = world_space.xyz - camera_pos;
 

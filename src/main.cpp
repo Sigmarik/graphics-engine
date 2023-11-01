@@ -18,6 +18,7 @@
 #include "graphics/objects/ambient_light.h"
 #include "graphics/objects/model.h"
 #include "graphics/objects/point_light.h"
+#include "graphics/objects/postprocessor.h"
 #include "graphics/objects/scene.h"
 #include "graphics/primitives/camera.h"
 #include "graphics/primitives/mesh.h"
@@ -61,8 +62,11 @@ int main(const int argc, char** argv) {
     Model& model =
         *AssetManager::request<Model>("assets/models/monkey.model.xml");
 
-    AmbientLight ambient_light = AmbientLight(glm::vec3(0.2, 0.2, 0.23));
+    AmbientLight ambient_light = AmbientLight(glm::vec3(0.3, 0.3, 0.33));
     PointLight point_light = PointLight(glm::vec3(1.0, 1.0, 1.0));
+    Postprocessor contrast_vignette =
+        Postprocessor(AssetManager::request<Material>(
+            "assets/materials/postprocessing/contrast_vignette.material.xml"));
 
     // clang-format off
     point_light.set_object_matrix(glm::mat4(
@@ -76,6 +80,7 @@ int main(const int argc, char** argv) {
     render_manager.track_object(model);
     render_manager.track_object(ambient_light);
     render_manager.track_object(point_light);
+    render_manager.track_object(contrast_vignette);
 
     poll_gl_errors();
 

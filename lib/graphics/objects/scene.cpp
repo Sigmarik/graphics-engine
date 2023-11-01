@@ -41,6 +41,20 @@ void RenderManager::render(RenderBundle& bundle) const {
         }
     }
 
+    pass = RP_POSTPROCESSING;
+
+    stage_input = (RenderInput){.camera = &viewpoint_, .pass = pass};
+    for (const Renderable* object : objects_) {
+        if (object->is_hidden()) continue;
+
+        int rendered = object->render(stage_input, bundle);
+
+        if (rendered) {
+            bundle.swap_frames();
+            bundle.use();
+        }
+    }
+
     //* Copy rendered image to the screen
 
     static Shader& identity_shader =
