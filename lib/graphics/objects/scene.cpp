@@ -16,11 +16,7 @@ void RenderManager::render(RenderBundle& bundle) const {
 
     RenderInput stage_input =
         (RenderInput){.camera = &viewpoint_, .pass = pass};
-    for (const Renderable* object : objects_) {
-        if (object->is_hidden()) continue;
-
-        object->render(stage_input, bundle);
-    }
+    render_everything(bundle, stage_input, false);
 
     glDisable(GL_DEPTH_TEST);
 
@@ -30,30 +26,12 @@ void RenderManager::render(RenderBundle& bundle) const {
     pass = RP_LIGHT;
 
     stage_input = (RenderInput){.camera = &viewpoint_, .pass = pass};
-    for (const Renderable* object : objects_) {
-        if (object->is_hidden()) continue;
-
-        int rendered = object->render(stage_input, bundle);
-
-        if (rendered) {
-            bundle.swap_frames();
-            bundle.use();
-        }
-    }
+    render_everything(bundle, stage_input);
 
     pass = RP_POSTPROCESSING;
 
     stage_input = (RenderInput){.camera = &viewpoint_, .pass = pass};
-    for (const Renderable* object : objects_) {
-        if (object->is_hidden()) continue;
-
-        int rendered = object->render(stage_input, bundle);
-
-        if (rendered) {
-            bundle.swap_frames();
-            bundle.use();
-        }
-    }
+    render_everything(bundle, stage_input);
 
     //* Copy rendered image to the screen
 
@@ -66,4 +44,19 @@ void RenderManager::render(RenderBundle& bundle) const {
     bundle.bind_textures(identity_shader);
 
     FlatRenderer::render();
+}
+
+void RenderManager::render_everything(RenderBundle& bundle,
+                                      const RenderInput& input,
+                                      bool swap_buffers) const {
+    for (const Renderable* object : objects_) {
+        if (object->is_hidden()) continue;
+
+        int rendered = object->render(input, bundle);
+
+        if (rendered && swap_buffers) {
+            bundle.swap_frames();
+            bundle.use();
+        }
+    }
 }

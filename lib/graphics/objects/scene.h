@@ -76,6 +76,9 @@ struct RenderManager {
     void untrack_object(const Renderable& object) { objects_.erase(&object); }
 
    private:
+    void render_everything(RenderBundle& bundle, const RenderInput& input,
+                           bool swap_buffers = true) const;
+
     Camera& viewpoint_;
 
     std::set<const Renderable*> objects_{};
