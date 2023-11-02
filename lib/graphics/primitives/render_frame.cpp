@@ -60,7 +60,7 @@ void RenderFrame::clear() const {
 void RenderFrame::init_texture(GLuint& tex_id, GLenum attachment) {
     glGenTextures(1, &tex_id);
     glBindTexture(GL_TEXTURE_2D, tex_id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width_, (GLsizei)height_,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, (GLsizei)width_, (GLsizei)height_,
                  0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

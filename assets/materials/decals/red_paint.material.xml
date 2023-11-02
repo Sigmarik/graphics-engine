@@ -1,0 +1,7 @@
+<material>
+    <shader>assets/shaders/decals/red_paint.shader.xml</shader>
+
+    <texture uniform="noise">
+        assets/textures/noise.texture.xml
+    </texture>
+</material>

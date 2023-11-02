@@ -69,7 +69,9 @@ LIB_OBJECTS = lib/logger/debug.o						\
 			  lib/graphics/objects/ambient_light.o		\
 			  lib/graphics/objects/point_light.o		\
 			  lib/graphics/objects/postprocessor.o		\
+			  lib/graphics/objects/decal.o				\
 			  lib/managers/asset_manager.o				\
+			  lib/managers/world_timer.o				\
 			  lib/io/mmap.o								\
 			  lib/hash/murmur.o
 
@@ -158,3 +160,6 @@ rm:
 
 doxy:
 	@doxygen Doxyfile
+
+cloc:
+	@cloc src lib gtest assets

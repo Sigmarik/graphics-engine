@@ -4,6 +4,7 @@
 
 #include "graphics/gl_debug.h"
 #include "logger/logger.h"
+#include "managers/world_timer.h"
 
 void Material::use() const {
     shader_.use();
@@ -14,6 +15,8 @@ void Material::use() const {
         pair.second->bind();
         shader_.set_uniform_tex(pair.first.data(), *pair.second);
     }
+
+    shader_.set_uniform_float("WorldTime", WorldTimer::get_time_sec());
 
     poll_gl_errors();
 }

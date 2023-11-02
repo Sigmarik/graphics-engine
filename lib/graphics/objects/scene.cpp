@@ -23,6 +23,11 @@ void RenderManager::render(RenderBundle& bundle) const {
     bundle.swap_frames();
     bundle.use();
 
+    pass = RP_DECAL;
+
+    stage_input = (RenderInput){.camera = &viewpoint_, .pass = pass};
+    render_everything(bundle, stage_input);
+
     pass = RP_LIGHT;
 
     stage_input = (RenderInput){.camera = &viewpoint_, .pass = pass};

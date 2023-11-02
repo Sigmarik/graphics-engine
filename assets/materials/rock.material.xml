@@ -4,4 +4,8 @@
     <texture uniform="albedo">
         assets/textures/rock.texture.xml
     </texture>
+
+    <texture uniform="ao_map">
+        assets/textures/monkey_ao.texture.xml
+    </texture>
 </material>

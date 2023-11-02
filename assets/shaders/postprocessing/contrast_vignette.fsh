@@ -26,7 +26,7 @@ void main() {
     float vignette_parabola = (1.0 - centered_pos.x * centered_pos.x) *
                               (1.0 - centered_pos.y * centered_pos.y);
 
-    final *= 0.5 * (1.0 + pow(vignette_parabola, 1.0 / 5.0));
+    final *= 0.5 * (1.0 + pow(vignette_parabola, 1.0 / 20.0));
 
     FinalOutput = vec4(final, 1.0);
     // FinalOutput = vec4(vignette_parabola);

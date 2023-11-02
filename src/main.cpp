@@ -16,6 +16,7 @@
 #include "graphics/gl_debug.h"
 #include "graphics/importers/importers.h"
 #include "graphics/objects/ambient_light.h"
+#include "graphics/objects/decal.h"
 #include "graphics/objects/model.h"
 #include "graphics/objects/point_light.h"
 #include "graphics/objects/postprocessor.h"
@@ -65,8 +66,12 @@ int main(const int argc, char** argv) {
     AmbientLight ambient_light = AmbientLight(glm::vec3(0.3, 0.3, 0.33));
     PointLight point_light = PointLight(glm::vec3(0.7, 0.7, 0.7));
     Postprocessor contrast_vignette =
-        Postprocessor(AssetManager::request<Material>(
+        Postprocessor(*AssetManager::request<Material>(
             "assets/materials/postprocessing/contrast_vignette.material.xml"));
+    Decal splatter =
+        Decal(*AssetManager::request<Material>(
+                  "assets/materials/decals/red_paint.material.xml"),
+              5.0);
 
     // clang-format off
     point_light.set_object_matrix(glm::mat4(
@@ -77,15 +82,25 @@ int main(const int argc, char** argv) {
     ));
     // clang-format on
 
+    // clang-format off
+    splatter.set_object_matrix(glm::mat4(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        -0.5, 0.5, 0.5, 1.0
+    ));
+    // clang-format on
+
     render_manager.track_object(model);
     render_manager.track_object(ambient_light);
     render_manager.track_object(point_light);
     render_manager.track_object(contrast_vignette);
+    render_manager.track_object(splatter);
 
     poll_gl_errors();
 
     camera.set_position(glm::vec3(0.0, 0.0, 3.0));
-    camera.direct(glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, 1.0, 0.0));
+    camera.direct(glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 1.0, 0.0));
 
     glViewport(0, 0, 800, 600);
 
@@ -106,10 +121,11 @@ int main(const int argc, char** argv) {
         // obj_transform =
         //     glm::rotate(obj_transform, 0.01f, glm::vec3(0.0, 1.0, 0.0));
 
-        camera.set_position(glm::vec3(cos(tick * 0.01), 0.0, sin(tick * 0.01)) *
-                            3.0f);
-        camera.direct(-glm::normalize(camera.get_position()),
-                      glm::vec3(0.0, 1.0, 0.0));
+        // camera.set_position(glm::vec3(cos(tick * 0.01), 0.0, sin(tick *
+        // 0.01)) *
+        //                     3.0f);
+        // camera.direct(-glm::normalize(camera.get_position()),
+        //               glm::vec3(0.0, 1.0, 0.0));
 
         model.set_object_matrix(obj_transform);
 
