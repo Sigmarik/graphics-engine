@@ -26,7 +26,7 @@ float get_dencity(vec3 position) {
     float dencity = 1.0 - length(position);
     dencity *= texture(noise, position.xz * 0.5 + 0.5).x;
 
-    return clamp(dencity * decay * 3.0, 0.0, 1.0);
+    // return clamp(dencity * decay * 3.0, 0.0, 1.0);
 
     if (dencity < 1.0 - decay) return 0.0;
     return 1.0;
@@ -60,5 +60,5 @@ void main() {
 
     float dencity = get_dencity(local_space.xyz);
 
-    AlbedoOutput = mix(albedo, vec4(0.8, 0.1, 0.1, 1.0), dencity);
+    AlbedoOutput = mix(albedo, vec4(0.8, 0.1, 0.8, 1.0), dencity);
 }

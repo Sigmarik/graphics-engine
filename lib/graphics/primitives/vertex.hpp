@@ -27,6 +27,7 @@ struct Vertex final {
     glm::vec3 position;
     glm::vec3 normal;
     glm::vec2 uv;
+    glm::vec3 tangent;
 
     Vertex apply(const glm::mat4& matrix) const {
         glm::vec3 scale = glm::vec3();
@@ -40,13 +41,16 @@ struct Vertex final {
         glm::vec3 norm =
             rotation *
             (glm::vec3(1.0 / scale.x, 1.0 / scale.y, 1.0 / scale.z) * normal);
-        return (Vertex){.position = pos, .normal = norm, .uv = uv};
+        glm::vec3 tang = rotation * scale * tangent;
+        return (Vertex){
+            .position = pos, .normal = norm, .uv = uv, .tangent = tang};
     }
 
     static void configure() {
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
+        glEnableVertexAttribArray(3);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                               (void*)0);
@@ -54,6 +58,8 @@ struct Vertex final {
                               (void*)(sizeof(float) * 3));
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                               (void*)(sizeof(float) * 6));
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                              (void*)(sizeof(float) * 8));
 
         poll_gl_errors();
     }

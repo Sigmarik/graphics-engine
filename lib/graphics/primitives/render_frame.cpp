@@ -78,7 +78,6 @@ RenderBundle::RenderBundle(unsigned width, unsigned height)
 void RenderBundle::bind_textures(const Shader& shader) const {
     const RenderFrame& in = is_front_ ? front_ : back_;
 
-    in.use(GL_READ_FRAMEBUFFER);
     in.bind_textures(shader);
 }
 

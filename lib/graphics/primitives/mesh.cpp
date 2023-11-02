@@ -19,7 +19,8 @@ void Mesh::load(const char* path) {
     log_printf(STATUS_REPORTS, "status", "Loading model %s\n", path);
 
     const aiScene* scene =
-        import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+        import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs |
+                                  aiProcess_CalcTangentSpace);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
         !scene->mRootNode) {
@@ -43,10 +44,12 @@ void Mesh::load(const char* path) {
             aiVector3D uv = (uv_depth > 0 && mesh->mTextureCoords[0] != nullptr)
                                 ? mesh->mTextureCoords[0][vrt_id]
                                 : aiVector3D(0.0, 0.0, 0.0);
-            vertices_.push_back(
-                (Vertex){.position = glm::vec3(pos.x, pos.y, pos.z),
-                         .normal = glm::vec3(normal.x, normal.y, normal.z),
-                         .uv = glm::vec2(uv.x, uv.y)});
+            aiVector3D tangent = mesh->mTangents[vrt_id];
+            vertices_.push_back((Vertex){
+                .position = glm::vec3(pos.x, pos.y, pos.z),
+                .normal = glm::vec3(normal.x, normal.y, normal.z),
+                .uv = glm::vec2(uv.x, uv.y),
+                .tangent = glm::vec3(tangent.x, tangent.y, tangent.z)});
         }
 
         for (size_t face_id = 0; face_id < mesh->mNumFaces; ++face_id) {
