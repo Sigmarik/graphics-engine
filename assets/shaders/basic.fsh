@@ -17,8 +17,8 @@ layout(location = 3) out vec4 FinalColor;
 void main() {
     float ao = texture(ao_map, uv).r;
 
-    AlbedoOutput = vec4(texture(albedo, uv).xyz, 1.0);
-    // AlbedoOutput = vec4(1.0);
+    // AlbedoOutput = vec4(texture(albedo, uv).xyz, 1.0);
+    AlbedoOutput = vec4(1.0);
     NormalDepthOutput = vec4(0.5 + normal_depth.xyz * 0.5,
                              gl_FragCoord.z);  // gl_FragCoord.z
     SurfaceOutput = vec4(0.1, 0.3, ao, 1.0);   // Roughness, Specular, AO

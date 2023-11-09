@@ -7,6 +7,6 @@ clock_t WorldTimer::get_time() {
     return current - SIM_START_;
 }
 
-double WorldTimer::get_time_sec() { return get_time() / CLOCKS_PER_SEC; }
+double WorldTimer::get_time_sec() { return (double)get_time() / 100000.0; }
 
 WorldTimer::WorldTimer() { SIM_START_ = clock(); }

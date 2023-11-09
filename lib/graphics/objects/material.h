@@ -22,7 +22,7 @@
 static const unsigned TEXTURE_SLOT_COUNT = 4;
 
 struct Material {
-    Material(Shader& shader) : shader_(shader) {}
+    explicit Material(Shader& shader) : shader_(shader) {}
 
     void use() const;
 

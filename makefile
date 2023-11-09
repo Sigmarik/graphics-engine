@@ -72,6 +72,7 @@ LIB_OBJECTS = lib/logger/debug.o						\
 			  lib/graphics/objects/decal.o				\
 			  lib/managers/asset_manager.o				\
 			  lib/managers/world_timer.o				\
+			  lib/generation/noise.o					\
 			  lib/io/mmap.o								\
 			  lib/hash/murmur.o
 

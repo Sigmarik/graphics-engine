@@ -16,7 +16,7 @@
 #include "scene.h"
 
 struct AmbientLight : Renderable {
-    AmbientLight(const glm::vec3& color) : color_(color) {}
+    explicit AmbientLight(const glm::vec3& color) : color_(color) {}
 
     int render(const RenderInput& input,
                const RenderBundle& bundle) const override;

@@ -15,7 +15,7 @@
 #include "scene.h"
 
 struct PointLight : Renderable {
-    PointLight(const glm::vec3& color) : color_(color) {}
+    explicit PointLight(const glm::vec3& color) : color_(color) {}
 
     int render(const RenderInput& input,
                const RenderBundle& bundle) const override;
