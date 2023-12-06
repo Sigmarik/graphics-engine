@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef GRAPH_SCENE_H
+#define GRAPH_SCENE_H
 
 #include <glm/mat4x4.hpp>
 #include <set>

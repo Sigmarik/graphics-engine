@@ -29,6 +29,17 @@ CPP_SANITIZER_FLAGS = -fcheck-new 													\
 }returns-nonnull-attribute,shift,signed-integer-overflow,undefined,${strip 			\
 }unreachable,vla-bound,vptr
 
+BOLD = \\033[1m
+STYLE_RESET = \\033[0m
+
+RED 	= \\033[31m
+GREEN 	= \\033[32m
+YELLOW 	= \\033[33m
+BLUE 	= \\033[34m
+PINK 	= \\033[35m
+CYAN 	= \\033[36m
+GREY 	= \\033[37m
+
 CPP_DEBUG_FLAGS = -D _DEBUG
 
 CPPFLAGS = $(CPP_BASE_FLAGS) $(CPP_DEBUG_FLAGS)
@@ -50,47 +61,20 @@ BUILD_ERRLOG_FNAME = latest_build_err.log
 
 LIB_FLAGS = -lassimp -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 
-LIB_OBJECTS = lib/logger/debug.o						\
-			  lib/logger/logger.o						\
-			  include/glad/src/glad.o					\
-			  include/tinyxml2.o						\
-			  lib/graphics/primitives/matrix_stack.o	\
-			  lib/graphics/primitives/shader.o			\
-			  lib/graphics/primitives/mesh.o			\
-			  lib/graphics/primitives/camera.o			\
-			  lib/graphics/primitives/texture.o			\
-			  lib/graphics/primitives/framebuffer.o		\
-			  lib/graphics/primitives/flat_renderer.o	\
-			  lib/graphics/primitives/render_frame.o	\
-			  lib/graphics/importers/importers.o		\
-			  lib/graphics/objects/material.o			\
-			  lib/graphics/objects/model.o				\
-			  lib/graphics/objects/scene.o				\
-			  lib/graphics/objects/ambient_light.o		\
-			  lib/graphics/objects/point_light.o		\
-			  lib/graphics/objects/postprocessor.o		\
-			  lib/graphics/objects/decal.o				\
-			  lib/managers/asset_manager.o				\
-			  lib/managers/world_timer.o				\
-			  lib/generation/noise.o					\
-			  lib/io/mmap.o								\
-			  lib/hash/murmur.o
+LIB_OBJECTS = $(shell cat lib.flist)
 
 MAIN_NAME = main
 MAIN_BLD_FULL_NAME = $(MAIN_NAME)$(BLD_SUFFIX)
 
 MAIN_MAIN = src/main.o
 
-MAIN_OBJECTS = $(LIB_OBJECTS)							\
-	src/utils/main_utils.o								\
-	src/utils/common_utils.o							\
-	src/io/main_io.o
+MAIN_OBJECTS = $(LIB_OBJECTS) $(shell cat src.flist)
 
 MAIN_DEPS = $(addprefix $(PROJ_DIR)/, $(MAIN_OBJECTS))
 
 $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME): asset $(MAIN_DEPS) $(MAIN_MAIN)
 	@mkdir -p $(BLD_FOLDER)
-	@echo Assembling files $(MAIN_MAIN) $(MAIN_DEPS) $(LIB_FLAGS)
+	@echo $(YELLOW)$(BOLD)Assembling $(MAIN_MAIN)$(STYLE_RESET)
 	@$(CC) $(MAIN_MAIN) $(MAIN_OBJECTS) $(CPPFLAGS) $(LIB_FLAGS) -o $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME)
 
 TEST_MAIN = ./gtest/gtest.o
@@ -105,6 +89,7 @@ test: $(TEST_MAIN) $(MAIN_DEPS)
 	@cd $(BLD_FOLDER) && exec ./test_$(MAIN_BLD_FULL_NAME)
 
 run: asset $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME)
+	@echo $(PINK)$(BOLD)Running $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME)$(STYLE_RESET)
 	@cd $(BLD_FOLDER) && exec ./$(MAIN_BLD_FULL_NAME) $(ARGS)
 
 debug: asset $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME)
@@ -127,37 +112,38 @@ asset:
 	@cp -r $(ASSET_FOLDER)/. $(BLD_FOLDER)/$(ASSET_FOLDER)
 
 include/glad/src/glad.o: include/glad/src/glad.c
-	@echo Building glad
+	@echo $(CYAN)Building glad$(STYLE_RESET)
 	@mkdir -p $(LOGS_FOLDER)
 	@$(CC) -w $(CPP_INCLUDE_FLAGS) -c $^ -o $@ > $(BUILD_LOG_NAME)
 
 include/tinyxml2.o: include/tinyxml2.cpp
-	@echo Building tinyxml2
+	@echo $(CYAN)Building tinyxml2$(STYLE_RESET)
 	@mkdir -p $(LOGS_FOLDER)
 	@$(CC) -w $(CPP_INCLUDE_FLAGS) -c $^ -o $@ > $(BUILD_LOG_NAME)
 
 %.o: %.cpp
-	@echo Building file $^
+	@echo $(YELLOW)Building file $^$(STYLE_RESET)
 	@mkdir -p $(LOGS_FOLDER)
 	@$(CC) $(CPPFLAGS) -c $^ -o $@ > $(BUILD_LOG_NAME)
 
 LST_NAME = asm_listing.log
 %.o: %.s
-	@echo Building assembly file $^
+	@echo $(YELLOW)Building assembly file $^$(STYLE_RESET)
 	@mkdir -p $(LOGS_FOLDER)
 	@nasm -f elf64 -l $(LST_NAME) $^ -o $@ > $(BUILD_LOG_NAME)
 
 clean:
+	@echo $(RED)Deleting object files$(STYLE_RESET)
 	@find . -type f -name "*.o" -delete
 	@rm -rf ./$(LOGS_FOLDER)/$(BUILD_LOG_NAME)
 
 rmbld:
+	@echo $(RED)Clearing build and test folders$(STYLE_RESET)
 	@rm -rf $(BLD_FOLDER)
 	@rm -rf $(TEST_FOLDER)
 
-rm:
-	@make clean
-	@make rmbld
+rm: clean rmbld
+	@echo $(RED)$(BOLD)Project cleanup finished$(STYLE_RESET)
 
 doxy:
 	@doxygen Doxyfile

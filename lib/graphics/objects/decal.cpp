@@ -27,14 +27,12 @@ int Decal::render(const RenderInput& input, const RenderBundle& bundle) const {
     shader.set_uniform_vec3("object_pos", object_pos);
 
     float decay_percentage =
-        1.0f - ((float)(WorldTimer::get_time() - spawn_time_) / 100000.0) /
+        1.0f - ((float)(WorldTimer::get_time() - spawn_time_) / 100000.0f) /
                    (float)time_to_live_;
 
     if (decay_percentage < 0.0) {
         return 0;
     }
-
-    // printf("Decay: %g\n", decay_percentage);
 
     shader.set_uniform_float("decay", decay_percentage);
     shader.set_uniform_float("time_to_live", (float)time_to_live_);

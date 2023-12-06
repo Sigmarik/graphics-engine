@@ -16,7 +16,7 @@ void Material::use() const {
         shader_.set_uniform_tex(pair.first.data(), *pair.second);
     }
 
-    shader_.set_uniform_float("WorldTime", WorldTimer::get_time_sec());
+    shader_.set_uniform_float("WorldTime", (float)WorldTimer::get_time_sec());
 
     poll_gl_errors();
 }
