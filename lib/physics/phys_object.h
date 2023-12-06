@@ -12,6 +12,25 @@
 #ifndef PHYS_OBJECT_H
 #define PHYS_OBJECT_H
 
-struct PhysObject
+#include <glm/vec3.hpp>
+
+#include "level_geometry.h"
+
+struct PhysObject {
+    virtual ~PhysObject() = default;
+
+    virtual void tick(const LevelGeometry& geometry, double delta_time) = 0;
+
+    virtual glm::vec3 get_position() const = 0;
+    virtual glm::vec3 get_rotation() const = 0;
+
+    virtual glm::vec3 get_interp_pos([[maybe_unused]] double percentage) const {
+        return get_position();
+    }
+
+    virtual glm::vec3 get_interp_rot([[maybe_unused]] double percentage) const {
+        return get_rotation();
+    }
+};
 
 #endif

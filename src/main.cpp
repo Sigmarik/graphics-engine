@@ -99,24 +99,6 @@ int main(const int argc, char** argv) {
     render_manager.track_object(contrast_vignette);
     render_manager.track_object(splatter);
 
-    // const unsigned LIGHT_COUNT = 40;
-
-    // for (unsigned light_id = 0; light_id < LIGHT_COUNT; ++light_id) {
-    //     PointLight* light = new PointLight(
-    //         glm::vec3(rand_double(), rand_double(), rand_double()));
-    //     // clang-format off
-    //     light->set_object_matrix(glm::mat4(
-    //         1.0, 0.0, 0.0, 0.0,
-    //         0.0, 1.0, 0.0, 0.0,
-    //         0.0, 0.0, 1.0, 0.0,
-    //         rand_double() * 2.0 - 1.0,
-    //         rand_double() * 2.0 - 1.0,
-    //         rand_double() * 2.0 - 1.0, 1.0
-    //     ));
-    //     // clang-format on
-    //     render_manager.track_object(*light);
-    // }
-
     poll_gl_errors();
 
     camera.set_position(glm::vec3(0.0, 0.0, 3.0));
@@ -137,15 +119,6 @@ int main(const int argc, char** argv) {
         tick++;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // obj_transform =
-        //     glm::rotate(obj_transform, 0.01f, glm::vec3(0.0, 1.0, 0.0));
-
-        // camera.set_position(glm::vec3(cos(WorldTimer::get_time_sec()), 0.0,
-        //                               sin(WorldTimer::get_time_sec())) *
-        //                     3.0f);
-        // camera.direct(-glm::normalize(camera.get_position()),
-        //               glm::vec3(0.0, 1.0, 0.0));
 
         model.set_object_matrix(obj_transform);
 
