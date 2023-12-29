@@ -5,9 +5,11 @@ include/glad/src/glad.o
 include/tinyxml2.o
 
 lib/geometry/primitives.o
+lib/geometry/transforms.o
 
 lib/physics/level_geometry.o
 lib/physics/bouncy_object.o
+lib/physics/collider.o
 
 lib/graphics/primitives/matrix_stack.o
 lib/graphics/primitives/shader.o

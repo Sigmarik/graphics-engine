@@ -14,6 +14,16 @@
 
 #include <glm/vec3.hpp>
 
+struct Line {
+    glm::vec3 origin = glm::vec3(0.0, 0.0, 0.0);
+    glm::vec3 direction = glm::vec3(0.0, 1.0, 0.0);
+};
+
+struct Plane {
+    glm::vec3 origin = glm::vec3(0.0, 0.0, 0.0);
+    glm::vec3 normal = glm::vec3(0.0, 1.0, 0.0);
+};
+
 struct Box {
     Box() = default;
     Box(const glm::vec3& center, const glm::vec3& size)
@@ -30,6 +40,10 @@ struct Box {
     }
 
     bool contains(const Box& box) const;
+
+    glm::vec3 get_corner(unsigned id) const;
+    Line get_edge(unsigned id) const;
+    Plane get_face(unsigned id) const;
 
    private:
     glm::vec3 center_ = glm::vec3(0.0, 0.0, 0.0);
