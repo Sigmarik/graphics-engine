@@ -34,3 +34,4 @@ lib/managers/world_timer.o
 lib/generation/noise.o
 lib/io/mmap.o
 lib/hash/murmur.o
+lib/hash/guid.o

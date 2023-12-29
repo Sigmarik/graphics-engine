@@ -9,9 +9,13 @@
  *
  */
 
-#ifndef NOISE_H
-#define NOISE_H
+#ifndef __GENERATION_NOISE_H
+#define __GENERATION_NOISE_H
+
+#include <inttypes.h>
 
 double rand_double();
+
+uint64_t rand_uint64();
 
 #endif
