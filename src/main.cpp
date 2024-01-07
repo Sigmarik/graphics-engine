@@ -29,6 +29,8 @@
 #include "io/main_io.h"
 #include "logger/debug.h"
 #include "logger/logger.h"
+#include "logics/components/visual/static_mesh.h"
+#include "logics/scene.h"
 #include "managers/asset_manager.h"
 #include "managers/world_timer.h"
 #include "utils/main_utils.h"
@@ -59,11 +61,17 @@ int main(const int argc, char** argv) {
 
     Camera camera;
 
-    RenderManager render_manager(camera);
+    Scene world = Scene(100.0, 50.0, 1.0);
+
     poll_gl_errors();
+
+    world.get_renderer().set_viewpoint(&camera);
 
     Model& model =
         *AssetManager::request<Model>("assets/models/monkey.model.xml");
+
+    StaticMesh monkey_head =
+        StaticMesh(world, model.get_mesh(), model.get_material());
 
     AmbientLight ambient_light = AmbientLight(glm::vec3(0.3, 0.3, 0.33));
     PointLight point_light = PointLight(glm::vec3(0.7, 0.7, 0.7));
@@ -93,11 +101,10 @@ int main(const int argc, char** argv) {
     ));
     // clang-format on
 
-    render_manager.track_object(model);
-    render_manager.track_object(ambient_light);
-    render_manager.track_object(point_light);
-    render_manager.track_object(contrast_vignette);
-    render_manager.track_object(splatter);
+    world.get_renderer().track_object(ambient_light);
+    world.get_renderer().track_object(point_light);
+    world.get_renderer().track_object(contrast_vignette);
+    world.get_renderer().track_object(splatter);
 
     poll_gl_errors();
 
@@ -120,9 +127,9 @@ int main(const int argc, char** argv) {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        model.set_object_matrix(obj_transform);
+        monkey_head.set_transform(obj_transform);
 
-        render_manager.render(gbuffers);
+        world.get_renderer().render(gbuffers);
 
         poll_gl_errors();
 

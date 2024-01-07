@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef GRAPH_SCENE_H
-#define GRAPH_SCENE_H
+#ifndef __LIB_GRAPHICS_OBJECTS_SCENE_H
+#define __LIB_GRAPHICS_OBJECTS_SCENE_H
 
 #include <glm/mat4x4.hpp>
 #include <set>
@@ -65,23 +65,27 @@ struct Renderable {
 };
 
 struct RenderManager {
-    RenderManager(Camera& viewpoint) : viewpoint_(viewpoint) {}
+    RenderManager() = default;
+    RenderManager(const RenderManager& instance) = default;
+    ~RenderManager() = default;
+
+    RenderManager& operator=(const RenderManager& instance) = default;
 
     void render(RenderBundle& bundle) const;
 
-    void set_viewpoint(Camera& viewpoint) { viewpoint_ = viewpoint; }
-    const Camera& get_viewpoint() const { return viewpoint_; }
-
     void track_object(const Renderable& object) { objects_.insert(&object); }
     void untrack_object(const Renderable& object) { objects_.erase(&object); }
+
+    void set_viewpoint(Camera* camera) { viewpoint_ = camera; }
+    Camera* get_viewpoint() const { return viewpoint_; }
 
    private:
     void render_everything(RenderBundle& bundle, const RenderInput& input,
                            bool swap_buffers = true) const;
 
-    Camera& viewpoint_;
+    Camera* viewpoint_ = nullptr;
 
     std::set<const Renderable*> objects_{};
 };
 
-#endif
+#endif /* __LIB_GRAPHICS_OBJECTS_SCENE_H */

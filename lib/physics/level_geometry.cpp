@@ -11,6 +11,8 @@ LevelGeometry::LevelGeometry(Box bounding_box, size_t horiz_res,
     : boundary_(bounding_box),
       cells_(new LevelGeometry::LevelCell[horiz_res * horiz_res * vert_res]) {}
 
+LevelGeometry::~LevelGeometry() { delete cells_; }
+
 glm::vec3 LevelGeometry::get_intersection(
     const DynamicCollider& collider) const {
     Box object_box = collider.get_bounding_box();

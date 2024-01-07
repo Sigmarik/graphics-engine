@@ -14,7 +14,7 @@
 
 #include <inttypes.h>
 
-#define GUID_ES "%08X%08X"
+#define GUID_ES "%08lX%08lX"
 #define GUID_OUT(guid) (guid).left, (guid).right
 
 struct GUID {

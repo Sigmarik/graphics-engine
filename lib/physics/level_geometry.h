@@ -15,11 +15,8 @@
 #include <glm/vec3.hpp>
 #include <vector>
 
+#include "collider.h"
 #include "geometry/primitives.h"
-
-struct Intersection;
-struct BoxCollider;
-struct DynamicCollider;
 
 struct LevelGeometry {
     LevelGeometry(Box bounding_box, size_t horiz_res, size_t vert_res);
