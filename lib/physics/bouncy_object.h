@@ -20,14 +20,17 @@ struct BouncyObject : public PhysObject {
 
     void tick(const LevelGeometry& level, double delta_time) override;
 
-    glm::vec3 get_position() const override { return position_; }
+    glm::vec3 get_position() const override { return collider_.get_position(); }
     glm::vec3 get_rotation() const override { return rotation_; }
     glm::vec3 get_velocity() const { return velocity_; }
+
+    glm::vec3 get_interp_pos(double time) const override {
+        return collider_.get_position() + velocity_ * (float)time;
+    }
 
    private:
     SphereCollider collider_;
 
-    glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0);
     glm::vec3 rotation_ = glm::vec3(0.0, 0.0, 0.0);
     glm::vec3 velocity_ = glm::vec3(0.0, 0.0, 0.0);
 };

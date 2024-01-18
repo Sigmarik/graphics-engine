@@ -12,6 +12,8 @@
 #ifndef COLLIDER_H
 #define COLLIDER_H
 
+#include <stdio.h>
+
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
@@ -31,26 +33,22 @@ struct Collider {
     virtual Box get_bounding_box() const { return Box(); };
 
     virtual ~Collider() = default;
-
-   private:
-    glm::vec3 origin_ = glm::vec3(0.0, 0.0, 0.0);
 };
 
 struct BoxCollider : public Collider {
-    BoxCollider(const Box& box, const glm::mat4& transform)
-        : box_(box), transform_(transform) {}
+    BoxCollider(const Box& box, const glm::mat4& transform);
 
     Box get_bounding_box() const override;
 
     Box get_box() const { return box_; }
     void set_box(const Box& box) { box_ = box; }
 
-    glm::mat4 get_transform() const { return transform_; }
-    void set_transform(const glm::mat4& transform) { transform_ = transform; }
+    const glm::mat4& get_transform() const { return transform_; }
+    void set_transform(const glm::mat4& transform);
 
    private:
     Box box_;
-    glm::mat4 transform_;
+    glm::mat4 transform_ = glm::mat4(1.0);
 };
 
 struct DynamicCollider : public Collider {
@@ -61,6 +59,12 @@ struct SphereCollider : public DynamicCollider {
     SphereCollider() = default;
     SphereCollider(double radius, const glm::vec3& origin)
         : radius_(radius), origin_(origin) {}
+
+    double get_radius() const { return radius_; }
+    void set_radius(double radius) { radius_ = radius; }
+
+    const glm::vec3& get_position() const { return origin_; }
+    void set_position(const glm::vec3& position) { origin_ = position; }
 
     Box get_bounding_box() const override;
 

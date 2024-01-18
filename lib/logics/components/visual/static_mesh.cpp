@@ -8,6 +8,5 @@ StaticMesh::StaticMesh(Scene& scene, const Mesh& mesh, const Material& material)
 }
 
 void StaticMesh::set_transform(const glm::mat4& transform) {
-    transform_ = transform;
-    model_.set_object_matrix(transform_);
+    model_.set_object_matrix(transform);
 }

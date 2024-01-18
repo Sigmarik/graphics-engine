@@ -24,11 +24,11 @@ struct PhysObject {
     virtual glm::vec3 get_position() const = 0;
     virtual glm::vec3 get_rotation() const = 0;
 
-    virtual glm::vec3 get_interp_pos([[maybe_unused]] double percentage) const {
+    virtual glm::vec3 get_interp_pos([[maybe_unused]] double time) const {
         return get_position();
     }
 
-    virtual glm::vec3 get_interp_rot([[maybe_unused]] double percentage) const {
+    virtual glm::vec3 get_interp_rot([[maybe_unused]] double time) const {
         return get_rotation();
     }
 };

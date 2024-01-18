@@ -1,8 +1,15 @@
 #include "collider.h"
 
 #include <math.h>
+#include <stdio.h>
 
 #include <glm/geometric.hpp>
+
+#include "logger/logger.h"
+
+Box SphereCollider::get_bounding_box() const {
+    return Box(origin_, glm::vec3(radius_, radius_, radius_) * 2.0f);
+}
 
 static Intersection intersect_point(const Box& box, const glm::vec3& center,
                                     double radius, unsigned id) {
@@ -39,6 +46,22 @@ static Intersection intersect_face(const Box& box, const glm::vec3& center,
 
     glm::vec3 relative = center - face.origin;
 
+    float shift = glm::dot(relative, face.normal);
+    glm::vec3 projected = relative - face.normal * shift;
+
+    return (Intersection){
+        .overlap = abs(shift) < radius,
+        .center = face.origin + projected,
+        .delta = (relative - projected) * (float)(radius / abs(shift) - 1.0),
+    };
+}
+
+static Intersection intersect_volume(const Box& box, const glm::vec3& center,
+                                     double radius, unsigned id) {
+    Plane face = box.get_face(id);
+
+    glm::vec3 relative = center - face.origin;
+
     double distance = glm::dot(relative, face.normal);
     glm::vec3 projected = relative - face.normal * (float)distance;
 
@@ -52,14 +75,15 @@ static Intersection intersect_face(const Box& box, const glm::vec3& center,
 typedef Intersection intersector_t(const Box& box, const glm::vec3& center,
                                    double radius, unsigned id);
 
-Box SphereCollider::get_bounding_box() const {
-    return Box(origin_, glm::vec3(radius_, radius_, radius_) * 2.0f);
-}
-
 Intersection SphereCollider::intersect_box(const BoxCollider& box) const {
-    glm::vec4 local_center =
-        glm::inverse(box.get_transform()) * glm::vec4(origin_, 1.0);
-    glm::vec3 local = glm::vec3(local_center.x, local_center.y, local_center.z);
+    glm::mat4 world_to_collider = glm::inverse(box.get_transform());
+
+    glm::vec4 local_center = world_to_collider * glm::vec4(origin_, 1.0);
+    glm::vec3 local =
+        glm::vec3(local_center.x, local_center.y, local_center.z) /
+        local_center.w;
+
+    local -= box.get_box().get_center();
 
     unsigned intersects = 0;
 
@@ -80,7 +104,7 @@ Intersection SphereCollider::intersect_box(const BoxCollider& box) const {
         intersect_point,
         intersect_edge,
         intersect_face,
-        intersect_face,
+        intersect_volume,
     };
 
     intersector_t* intersect = INTERSECTORS[intersects];
@@ -92,7 +116,9 @@ Intersection SphereCollider::intersect_box(const BoxCollider& box) const {
 
         if (!intersection.overlap) continue;
 
-        if (intersection.delta.length() <= closest.delta.length()) continue;
+        if (glm::length(intersection.delta) <= glm::length(closest.delta) &&
+            closest.overlap)
+            continue;
 
         closest = intersection;
     }
@@ -113,14 +139,24 @@ static float max(float alpha, float beta) {
     return alpha > beta ? alpha : beta;
 }
 
+BoxCollider::BoxCollider(const Box& box, const glm::mat4& transform)
+    : box_(box), transform_(transform) {
+    printf("Transform determinant: %g\n", glm::determinant(transform_));
+    if (abs(glm::determinant(transform_)) < 1e-4f) {
+        log_printf(
+            WARNINGS, "warning",
+            "Trying to construct a box collider with singular transform\n");
+    }
+}
+
 Box BoxCollider::get_bounding_box() const {
-    glm::vec3 start = transform(transform_, box_.get_corner(0));
+    glm::vec3 start = transform(get_transform(), box_.get_corner(0));
 
     glm::vec3 low = start;
     glm::vec3 high = start;
 
     for (unsigned id = 1; id < 8; ++id) {
-        glm::vec3 point = transform(transform_, box_.get_corner(id));
+        glm::vec3 point = transform(get_transform(), box_.get_corner(id));
 
         low.x = min(point.x, low.x);
         low.y = min(point.y, low.y);
@@ -132,4 +168,14 @@ Box BoxCollider::get_bounding_box() const {
     }
 
     return Box((high + low) / 2.0f, high - low);
+}
+
+void BoxCollider::set_transform(const glm::mat4& transform) {
+    transform_ = transform;
+
+    if (abs(glm::determinant(transform_)) < 1e-4f) {
+        log_printf(
+            WARNINGS, "warning",
+            "Trying to assign singular matrix as a box collider transform\n");
+    }
 }

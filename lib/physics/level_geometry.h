@@ -50,7 +50,7 @@ struct LevelGeometry {
 
     size_t get_cell_id(size_t id_x, size_t id_y, size_t id_z) const;
 
-    LevelCell* cells_;
+    LevelCell* cells_ = nullptr;
 
     std::vector<const BoxCollider*> global_colliders_ = {};
     std::vector<BoxCollider> colliders_ = {};

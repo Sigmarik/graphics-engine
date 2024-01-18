@@ -13,6 +13,7 @@
 
 #include <glm/ext/matrix_transform.hpp>
 
+#include "components/misc/bouncy_head.h"
 #include "generation/noise.h"
 #include "graphics/gl_debug.h"
 #include "graphics/importers/importers.h"
@@ -29,7 +30,6 @@
 #include "io/main_io.h"
 #include "logger/debug.h"
 #include "logger/logger.h"
-#include "logics/components/visual/static_mesh.h"
 #include "logics/scene.h"
 #include "managers/asset_manager.h"
 #include "managers/world_timer.h"
@@ -63,15 +63,17 @@ int main(const int argc, char** argv) {
 
     Scene world = Scene(100.0, 50.0, 1.0);
 
+    BoxCollider ground =
+        BoxCollider(Box(glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 0.1, 1.0)),
+                    glm::mat4(1.0f));
+
+    world.get_collision().add_collider(ground);
+
     poll_gl_errors();
 
     world.get_renderer().set_viewpoint(&camera);
 
-    Model& model =
-        *AssetManager::request<Model>("assets/models/monkey.model.xml");
-
-    StaticMesh monkey_head =
-        StaticMesh(world, model.get_mesh(), model.get_material());
+    BouncyHead head(world, glm::vec3(0.0, 2.0, 0.0));
 
     AmbientLight ambient_light = AmbientLight(glm::vec3(0.3, 0.3, 0.33));
     PointLight point_light = PointLight(glm::vec3(0.7, 0.7, 0.7));
@@ -119,15 +121,14 @@ int main(const int argc, char** argv) {
 
     unsigned tick = 0;
 
-    glm::mat4 obj_transform = glm::mat4(1.0);
-
     log_printf(STATUS_REPORTS, "status", "Entering the loop.\n");
     while (!glfwWindowShouldClose(window)) {
         tick++;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        monkey_head.set_transform(obj_transform);
+        head.phys_tick(0.1);
+        head.draw_tick(0.1, 0.0);
 
         world.get_renderer().render(gbuffers);
 

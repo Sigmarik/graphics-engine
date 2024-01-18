@@ -36,7 +36,7 @@ struct Box {
     void set_size(const glm::vec3& size) { size_ = size; }
 
     glm::vec3 local(const glm::vec3 pos) const {
-        return center_ + size_ * pos / 0.5f;
+        return center_ + size_ * pos / 2.0f;
     }
 
     bool contains(const Box& box) const;

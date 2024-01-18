@@ -4,6 +4,7 @@
 
 #include <unordered_set>
 
+#include "logger/logger.h"
 #include "physics/collider.h"
 
 LevelGeometry::LevelGeometry(Box bounding_box, size_t horiz_res,
@@ -11,7 +12,9 @@ LevelGeometry::LevelGeometry(Box bounding_box, size_t horiz_res,
     : boundary_(bounding_box),
       cells_(new LevelGeometry::LevelCell[horiz_res * horiz_res * vert_res]) {}
 
-LevelGeometry::~LevelGeometry() { delete cells_; }
+LevelGeometry::~LevelGeometry() {
+    // delete cells_;
+}
 
 glm::vec3 LevelGeometry::get_intersection(
     const DynamicCollider& collider) const {
@@ -42,7 +45,12 @@ glm::vec3 LevelGeometry::get_intersection(
     glm::vec3 offset = glm::vec3(0.0, 0.0, 0.0);
 
     for (const BoxCollider* box : potential_colliders) {
+        // TODO: Bounding box optimization does not work.
+        // printf("Accounting for collider %p\n", box);
+
         Intersection intersection = collider.intersect_box(*box);
+
+        if (!intersection.overlap) continue;
 
         offset += intersection.delta;
     }
@@ -50,10 +58,21 @@ glm::vec3 LevelGeometry::get_intersection(
     return offset;
 }
 
-void LevelGeometry::add_collider(const BoxCollider& collider) {
+void LevelGeometry::add_collider(const BoxCollider& collider_prototype) {
+    colliders_.push_back(collider_prototype);
+
+    const BoxCollider& collider = colliders_[colliders_.size() - 1];
+
     Box object_box = collider.get_bounding_box();
 
+    printf("Bounding box size: %g, %g, %g\n", object_box.get_size().x,
+           object_box.get_size().y, object_box.get_size().z);
+
     IndexBox indices = find_indices(object_box);
+
+    printf("Indices: %lu,%lu, %lu to %lu, %lu, %lu\n", indices.low_x,
+           indices.low_y, indices.low_z, indices.high_x, indices.high_y,
+           indices.high_z);
 
     // clang-format off
     for (size_t id_x = indices.low_x; id_x <= indices.high_x; ++id_x) {
@@ -89,20 +108,20 @@ LevelGeometry::IndexBox LevelGeometry::find_indices(const Box& box) const {
     rel_high /= boundary_.get_size();
 
     long int x_low = (long int)floor(rel_low.x * (float)horiz_res_);
-    long int y_low = (long int)floor(rel_low.y * (float)horiz_res_);
-    long int z_low = (long int)floor(rel_low.z * (float)vert_res_);
+    long int y_low = (long int)floor(rel_low.y * (float)vert_res_);
+    long int z_low = (long int)floor(rel_low.z * (float)horiz_res_);
 
     long int x_high = (long int)ceil(rel_high.x * (float)horiz_res_);
-    long int y_high = (long int)ceil(rel_high.y * (float)horiz_res_);
-    long int z_high = (long int)ceil(rel_high.z * (float)vert_res_);
+    long int y_high = (long int)ceil(rel_high.y * (float)vert_res_);
+    long int z_high = (long int)ceil(rel_high.z * (float)horiz_res_);
 
     indices.low_x = clamp(x_low, horiz_res_);
-    indices.low_y = clamp(y_low, horiz_res_);
-    indices.low_z = clamp(z_low, vert_res_);
+    indices.low_y = clamp(y_low, vert_res_);
+    indices.low_z = clamp(z_low, horiz_res_);
 
     indices.high_x = clamp(x_high, horiz_res_);
-    indices.high_y = clamp(y_high, horiz_res_);
-    indices.high_z = clamp(z_high, vert_res_);
+    indices.high_y = clamp(y_high, vert_res_);
+    indices.high_z = clamp(z_high, horiz_res_);
 
     return indices;
 }
