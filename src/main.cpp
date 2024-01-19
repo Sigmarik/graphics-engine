@@ -73,7 +73,7 @@ int main(const int argc, char** argv) {
 
     world.get_renderer().set_viewpoint(&camera);
 
-    BouncyHead head(world, glm::vec3(0.0, 2.0, 0.0));
+    BouncyHead head(world, glm::vec3(0.0, 20.0, 0.0));
 
     AmbientLight ambient_light = AmbientLight(glm::vec3(0.3, 0.3, 0.33));
     PointLight point_light = PointLight(glm::vec3(0.7, 0.7, 0.7));

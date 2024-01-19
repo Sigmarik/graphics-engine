@@ -45,9 +45,6 @@ glm::vec3 LevelGeometry::get_intersection(
     glm::vec3 offset = glm::vec3(0.0, 0.0, 0.0);
 
     for (const BoxCollider* box : potential_colliders) {
-        // TODO: Bounding box optimization does not work.
-        // printf("Accounting for collider %p\n", box);
-
         Intersection intersection = collider.intersect_box(*box);
 
         if (!intersection.overlap) continue;
@@ -65,14 +62,7 @@ void LevelGeometry::add_collider(const BoxCollider& collider_prototype) {
 
     Box object_box = collider.get_bounding_box();
 
-    printf("Bounding box size: %g, %g, %g\n", object_box.get_size().x,
-           object_box.get_size().y, object_box.get_size().z);
-
     IndexBox indices = find_indices(object_box);
-
-    printf("Indices: %lu,%lu, %lu to %lu, %lu, %lu\n", indices.low_x,
-           indices.low_y, indices.low_z, indices.high_x, indices.high_y,
-           indices.high_z);
 
     // clang-format off
     for (size_t id_x = indices.low_x; id_x <= indices.high_x; ++id_x) {
