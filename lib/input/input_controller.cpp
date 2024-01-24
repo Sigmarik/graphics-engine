@@ -21,8 +21,6 @@ double InputController::mouse_delta_y = 0;
 static const size_t INPUT_CODE_NAME_LENGTH = 128;
 
 void InputController::init(GLFWwindow* window) {
-    // TODO: Fill keyboard and mouse actions
-
     log_printf(STATUS_REPORTS, "status", "Initializing input controller\n");
 
     log_printf(STATUS_REPORTS, "status", "Keyboard bindings:\n");
