@@ -28,6 +28,7 @@
 #include "graphics/primitives/render_frame.h"
 #include "graphics/primitives/texture.h"
 #include "io/main_io.h"
+#include "lib/input/input_controller.h"
 #include "logger/debug.h"
 #include "logger/logger.h"
 #include "logics/scene.h"
@@ -58,6 +59,8 @@ int main(const int argc, char** argv) {
     GLFWwindow* window = create_window();
 
     poll_gl_errors();
+
+    InputController::init(window);
 
     Camera camera;
 
@@ -136,8 +139,6 @@ int main(const int argc, char** argv) {
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-
-        // sleep(1);
     }
 
     poll_gl_errors();

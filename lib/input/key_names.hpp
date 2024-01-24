@@ -1,0 +1,145 @@
+#ifndef __LIB_INPUT_KEY_NAMES_HPP
+#define __LIB_INPUT_KEY_NAMES_HPP
+
+#include <stddef.h>
+
+static const size_t KEYBOARD_CODE_COUNT = 349;
+static const size_t MOUSE_CODE_COUNT = 8;
+
+static const char* KEY_NAMES[KEYBOARD_CODE_COUNT] = {};
+
+//! g++ does not support designated initializers for arrays, so...
+
+static int __fill_key_names() {
+    KEY_NAMES[32] = "KEY_SPACE";
+    KEY_NAMES[39] = "KEY_APOSTROPHE";
+    KEY_NAMES[44] = "KEY_COMMA";
+    KEY_NAMES[45] = "KEY_MINUS";
+    KEY_NAMES[46] = "KEY_PERIOD";
+    KEY_NAMES[47] = "KEY_SLASH";
+    KEY_NAMES[48] = "KEY_0";
+    KEY_NAMES[49] = "KEY_1";
+    KEY_NAMES[50] = "KEY_2";
+    KEY_NAMES[51] = "KEY_3";
+    KEY_NAMES[52] = "KEY_4";
+    KEY_NAMES[53] = "KEY_5";
+    KEY_NAMES[54] = "KEY_6";
+    KEY_NAMES[55] = "KEY_7";
+    KEY_NAMES[56] = "KEY_8";
+    KEY_NAMES[57] = "KEY_9";
+    KEY_NAMES[59] = "KEY_SEMICOLON";
+    KEY_NAMES[61] = "KEY_EQUAL";
+    KEY_NAMES[65] = "KEY_A";
+    KEY_NAMES[66] = "KEY_B";
+    KEY_NAMES[67] = "KEY_C";
+    KEY_NAMES[68] = "KEY_D";
+    KEY_NAMES[69] = "KEY_E";
+    KEY_NAMES[70] = "KEY_F";
+    KEY_NAMES[71] = "KEY_G";
+    KEY_NAMES[72] = "KEY_H";
+    KEY_NAMES[73] = "KEY_I";
+    KEY_NAMES[74] = "KEY_J";
+    KEY_NAMES[75] = "KEY_K";
+    KEY_NAMES[76] = "KEY_L";
+    KEY_NAMES[77] = "KEY_M";
+    KEY_NAMES[78] = "KEY_N";
+    KEY_NAMES[79] = "KEY_O";
+    KEY_NAMES[80] = "KEY_P";
+    KEY_NAMES[81] = "KEY_Q";
+    KEY_NAMES[82] = "KEY_R";
+    KEY_NAMES[83] = "KEY_S";
+    KEY_NAMES[84] = "KEY_T";
+    KEY_NAMES[85] = "KEY_U";
+    KEY_NAMES[86] = "KEY_V";
+    KEY_NAMES[87] = "KEY_W";
+    KEY_NAMES[88] = "KEY_X";
+    KEY_NAMES[89] = "KEY_Y";
+    KEY_NAMES[90] = "KEY_Z";
+    KEY_NAMES[91] = "KEY_LEFT_BRACKET";
+    KEY_NAMES[92] = "KEY_BACKSLASH";
+    KEY_NAMES[93] = "KEY_RIGHT_BRACKET";
+    KEY_NAMES[96] = "KEY_GRAVE_ACCENT";
+    KEY_NAMES[161] = "KEY_WORLD_1";
+    KEY_NAMES[162] = "KEY_WORLD_2";
+    KEY_NAMES[256] = "KEY_ESCAPE";
+    KEY_NAMES[257] = "KEY_ENTER";
+    KEY_NAMES[258] = "KEY_TAB";
+    KEY_NAMES[259] = "KEY_BACKSPACE";
+    KEY_NAMES[260] = "KEY_INSERT";
+    KEY_NAMES[261] = "KEY_DELETE";
+    KEY_NAMES[262] = "KEY_RIGHT";
+    KEY_NAMES[263] = "KEY_LEFT";
+    KEY_NAMES[264] = "KEY_DOWN";
+    KEY_NAMES[265] = "KEY_UP";
+    KEY_NAMES[266] = "KEY_PAGE_UP";
+    KEY_NAMES[267] = "KEY_PAGE_DOWN";
+    KEY_NAMES[268] = "KEY_HOME";
+    KEY_NAMES[269] = "KEY_END";
+    KEY_NAMES[280] = "KEY_CAPS_LOCK";
+    KEY_NAMES[281] = "KEY_SCROLL_LOCK";
+    KEY_NAMES[282] = "KEY_NUM_LOCK";
+    KEY_NAMES[283] = "KEY_PRINT_SCREEN";
+    KEY_NAMES[284] = "KEY_PAUSE";
+    KEY_NAMES[290] = "KEY_F1";
+    KEY_NAMES[291] = "KEY_F2";
+    KEY_NAMES[292] = "KEY_F3";
+    KEY_NAMES[293] = "KEY_F4";
+    KEY_NAMES[294] = "KEY_F5";
+    KEY_NAMES[295] = "KEY_F6";
+    KEY_NAMES[296] = "KEY_F7";
+    KEY_NAMES[297] = "KEY_F8";
+    KEY_NAMES[298] = "KEY_F9";
+    KEY_NAMES[299] = "KEY_F10";
+    KEY_NAMES[300] = "KEY_F11";
+    KEY_NAMES[301] = "KEY_F12";
+    KEY_NAMES[302] = "KEY_F13";
+    KEY_NAMES[303] = "KEY_F14";
+    KEY_NAMES[304] = "KEY_F15";
+    KEY_NAMES[305] = "KEY_F16";
+    KEY_NAMES[306] = "KEY_F17";
+    KEY_NAMES[307] = "KEY_F18";
+    KEY_NAMES[308] = "KEY_F19";
+    KEY_NAMES[309] = "KEY_F20";
+    KEY_NAMES[310] = "KEY_F21";
+    KEY_NAMES[311] = "KEY_F22";
+    KEY_NAMES[312] = "KEY_F23";
+    KEY_NAMES[313] = "KEY_F24";
+    KEY_NAMES[314] = "KEY_F25";
+    KEY_NAMES[320] = "KEY_KP_0";
+    KEY_NAMES[321] = "KEY_KP_1";
+    KEY_NAMES[322] = "KEY_KP_2";
+    KEY_NAMES[323] = "KEY_KP_3";
+    KEY_NAMES[324] = "KEY_KP_4";
+    KEY_NAMES[325] = "KEY_KP_5";
+    KEY_NAMES[326] = "KEY_KP_6";
+    KEY_NAMES[327] = "KEY_KP_7";
+    KEY_NAMES[328] = "KEY_KP_8";
+    KEY_NAMES[329] = "KEY_KP_9";
+    KEY_NAMES[330] = "KEY_KP_DECIMAL";
+    KEY_NAMES[331] = "KEY_KP_DIVIDE";
+    KEY_NAMES[332] = "KEY_KP_MULTIPLY";
+    KEY_NAMES[333] = "KEY_KP_SUBTRACT";
+    KEY_NAMES[334] = "KEY_KP_ADD";
+    KEY_NAMES[335] = "KEY_KP_ENTER";
+    KEY_NAMES[336] = "KEY_KP_EQUAL";
+    KEY_NAMES[340] = "KEY_LEFT_SHIFT";
+    KEY_NAMES[341] = "KEY_LEFT_CONTROL";
+    KEY_NAMES[342] = "KEY_LEFT_ALT";
+    KEY_NAMES[343] = "KEY_LEFT_SUPER";
+    KEY_NAMES[344] = "KEY_RIGHT_SHIFT";
+    KEY_NAMES[345] = "KEY_RIGHT_CONTROL";
+    KEY_NAMES[346] = "KEY_RIGHT_ALT";
+    KEY_NAMES[347] = "KEY_RIGHT_SUPER";
+    KEY_NAMES[348] = "KEY_MENU";
+
+    return 0;
+};
+
+static int __key_name_initializer = __fill_key_names();
+
+static const char* const BUTTON_NAMES[MOUSE_CODE_COUNT] = {
+    "BTN_LEFT", "BTN_RIGHT", "BTN_MIDDLE", "BTN_4",
+    "BTN_5",    "BTN_6",     "BTN_7",      "BTN_8",
+};
+
+#endif /* __LIB_INPUT_KEY_NAMES_HPP */

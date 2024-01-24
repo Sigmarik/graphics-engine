@@ -7,6 +7,10 @@ include/tinyxml2.o
 lib/geometry/primitives.o
 lib/geometry/transforms.o
 
+lib/input/input_controller.o
+lib/input/text_listener.o
+lib/input/action.o
+
 lib/logics/scene.o
 lib/logics/components/visual/static_mesh.o
 
