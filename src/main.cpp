@@ -138,7 +138,8 @@ int main(const int argc, char** argv) {
         poll_gl_errors();
 
         glfwSwapBuffers(window);
-        glfwPollEvents();
+
+        InputController::poll_events();
     }
 
     poll_gl_errors();

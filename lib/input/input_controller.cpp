@@ -116,6 +116,18 @@ const InputAction* InputController::get_action(const char* name) {
     return &search_result->second;
 }
 
+void InputController::poll_events() {
+    for (size_t id = 0; id < KEYBOARD_CODE_COUNT; ++id) {
+        keyboard_actions_[id].reset_states();
+    }
+
+    for (size_t id = 0; id < MOUSE_CODE_COUNT; ++id) {
+        mouse_actions_[id].reset_states();
+    }
+
+    glfwPollEvents();
+}
+
 void InputController::register_text_listener(TextListener& listener) {
     text_listeners_.push_back(listener);
 }

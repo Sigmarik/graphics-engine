@@ -1,0 +1,10 @@
+<keybind>
+    <input code="KEY_Q">
+    </input>
+    <input code="KEY_LEFT_CONTROL">
+    </input>
+    <input code="KEY_RIGHT_CONTROL">
+    </input>
+    <input code="BTN_RIGHT">
+    </input>
+</keybind>

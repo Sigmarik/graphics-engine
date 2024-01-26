@@ -52,6 +52,8 @@ struct InputController {
     static double get_mouse_delta_x() { return mouse_delta_x; }
     static double get_mouse_delta_y() { return mouse_delta_y; }
 
+    static void poll_events();
+
     static void register_text_listener(TextListener& listener);
 
    private:
