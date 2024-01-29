@@ -15,7 +15,8 @@ lib/logics/scene.o
 lib/logics/components/visual/static_mesh.o
 
 lib/physics/level_geometry.o
-lib/physics/bouncy_object.o
+lib/physics/objects/bouncy_object.o
+lib/physics/objects/character_body.o
 lib/physics/collider.o
 
 lib/graphics/primitives/matrix_stack.o

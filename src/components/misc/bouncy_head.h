@@ -14,7 +14,7 @@
 #include "graphics/objects/model.h"
 #include "logics/scene_component.h"
 #include "managers/asset_manager.h"
-#include "physics/bouncy_object.h"
+#include "physics/objects/bouncy_object.h"
 
 struct BouncyHead : public SceneComponent {
     explicit BouncyHead(Scene& scene, const glm::vec3& position);

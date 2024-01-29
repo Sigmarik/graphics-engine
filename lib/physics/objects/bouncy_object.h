@@ -12,8 +12,8 @@
 #ifndef PHYSICS_BOUNCY_OBJECT_H
 #define PHYSICS_BOUNCY_OBJECT_H
 
-#include "collider.h"
-#include "phys_object.h"
+#include "physics/collider.h"
+#include "physics/phys_object.h"
 
 struct BouncyObject : public PhysObject {
     BouncyObject(const glm::vec3& position, double radius);

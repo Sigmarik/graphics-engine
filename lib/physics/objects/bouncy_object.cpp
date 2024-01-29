@@ -2,8 +2,8 @@
 
 #include <cstdio>
 
-#include "constants.h"
 #include "geometry/transforms.h"
+#include "physics/constants.h"
 
 BouncyObject::BouncyObject(const glm::vec3& position, double radius)
     : collider_(radius, position) {}
