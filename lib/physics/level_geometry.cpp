@@ -117,5 +117,5 @@ LevelGeometry::IndexBox LevelGeometry::find_indices(const Box& box) const {
 }
 
 size_t LevelGeometry::get_cell_id(size_t id_x, size_t id_y, size_t id_z) const {
-    return id_z * horiz_res_ * horiz_res_ + id_y * horiz_res_ + id_x;
+    return id_y * horiz_res_ * horiz_res_ + id_z * horiz_res_ + id_x;
 }
