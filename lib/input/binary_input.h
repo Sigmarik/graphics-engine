@@ -25,7 +25,7 @@ struct BinaryInput {
     bool get_pushed() const;
 
    private:
-    std::vector<const InputAction&> activators_;
+    std::vector<const InputAction*> activators_ = {};
 };
 
 #endif /* __LIB_INPUT_BINARY_INPUT_H */

@@ -22,13 +22,13 @@ AbstractAsset* BinaryInputImporter::import(const char* path) {
          child != nullptr; child = child->NextSiblingElement("input")) {
         const char* code = child->Attribute("code");
 
-        if (code = nullptr) {
+        if (code == nullptr) {
             log_printf(WARNINGS, "warning",
                        "Input action code was not specified. This input will "
                        "be ignored.\n");
         }
 
-        InputAction* action = InputController::get_action(code);
+        const InputAction* action = InputController::get_action(code);
 
         if (action == nullptr) {
             log_printf(WARNINGS, "warning",

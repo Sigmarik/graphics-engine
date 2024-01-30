@@ -49,7 +49,7 @@ void CharacterBody::tick(const LevelGeometry& level, double delta_time) {
     glm::vec2 projection =
         glm::vec2(sqrt(delta.x * delta.x + delta.z * delta.z), delta.y);
 
-    if (projection.y < projection.x * stepup_slope_) {
+    if (projection.y > projection.x * stepup_slope_) {
         airborne_ = false;
     } else {
         airborne_ = true;
@@ -60,6 +60,7 @@ void CharacterBody::tick(const LevelGeometry& level, double delta_time) {
         velocity_ = reflect_plane(velocity_, delta) * 0.2f;
     } else {
         set_position(get_position() + delta * glm::vec3(0.0, 1.0, 0.0));
+        velocity_.y = 0.0f;
     }
 }
 

@@ -8,11 +8,14 @@ lib/geometry/primitives.o
 lib/geometry/transforms.o
 
 lib/input/input_controller.o
+lib/input/binary_input.o
+lib/input/keybind_importer.o
 lib/input/text_listener.o
 lib/input/action.o
 
 lib/logics/scene.o
 lib/logics/components/visual/static_mesh.o
+lib/logics/components/physical/pawn.o
 
 lib/physics/level_geometry.o
 lib/physics/objects/bouncy_object.o

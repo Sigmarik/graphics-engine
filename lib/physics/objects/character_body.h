@@ -68,11 +68,11 @@ struct CharacterBody : public PhysObject {
     glm::vec3 velocity_ = glm::vec3(0.0, 0.0, 0.0);
 
     glm::vec3 input_ = glm::vec3(0.0);
-    double acceleration_ = 100.0;
+    double acceleration_ = 2.0;
 
     bool airborne_ = true;
     double air_control_multiplier_ = 0.2;
-    double movement_speed_ = 10.0;
+    double movement_speed_ = 4.5;
 };
 
 #endif /* __LIB_PHYSICS_OBJECTS_CHARACTER_BODY_H */

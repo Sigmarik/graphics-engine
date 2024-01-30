@@ -44,7 +44,7 @@ struct InputController {
 
     static void set_cursor_mode(GLFWwindow* window, CursorMode mode);
 
-    const InputAction* get_action(const char* name);
+    static const InputAction* get_action(const char* name);
 
     static double get_mouse_x() { return mouse_x; }
     static double get_mouse_y() { return mouse_y; }

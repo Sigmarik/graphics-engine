@@ -13,7 +13,7 @@
 
 #include <glm/ext/matrix_transform.hpp>
 
-#include "components/misc/bouncy_head.h"
+#include "components/misc/rc_head.h"
 #include "generation/noise.h"
 #include "graphics/gl_debug.h"
 #include "graphics/importers/importers.h"
@@ -67,7 +67,7 @@ int main(const int argc, char** argv) {
     Scene world = Scene(100.0, 50.0, 1.0);
 
     BoxCollider ground =
-        BoxCollider(Box(glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 0.1, 1.0)),
+        BoxCollider(Box(glm::vec3(0.0, 0.0, 0.0), glm::vec3(50.0, 0.1, 50.0)),
                     glm::mat4(1.0f));
 
     world.get_collision().add_collider(ground);
@@ -76,7 +76,7 @@ int main(const int argc, char** argv) {
 
     world.get_renderer().set_viewpoint(&camera);
 
-    BouncyHead head(world, glm::vec3(0.0, 20.0, 0.0));
+    RCHead head(world, glm::vec3(0.0, 20.0, 0.0));
 
     AmbientLight ambient_light = AmbientLight(glm::vec3(0.3, 0.3, 0.33));
     PointLight point_light = PointLight(glm::vec3(0.7, 0.7, 0.7));
