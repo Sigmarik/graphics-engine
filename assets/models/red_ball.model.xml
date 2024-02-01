@@ -1,0 +1,4 @@
+<model>
+    <mesh>assets/models/pool_ball.obj</mesh>
+    <material>assets/materials/red_ball.material.xml</material>
+</model>

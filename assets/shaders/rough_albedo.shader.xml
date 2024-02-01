@@ -1,0 +1,4 @@
+<shader>
+    <fsh>assets/shaders/rough_albedo.fsh</fsh>
+    <vsh>assets/shaders/basic.vsh</vsh>
+</shader>
