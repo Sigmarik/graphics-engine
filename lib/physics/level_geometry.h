@@ -43,8 +43,8 @@ struct LevelGeometry {
 
     IndexBox find_indices(const Box& box) const;
 
-    size_t horiz_res_ = 100;
-    size_t vert_res_ = 30;
+    size_t horiz_res_;
+    size_t vert_res_;
 
     Box boundary_;
 

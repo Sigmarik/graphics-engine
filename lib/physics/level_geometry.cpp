@@ -9,7 +9,9 @@
 
 LevelGeometry::LevelGeometry(Box bounding_box, size_t horiz_res,
                              size_t vert_res)
-    : boundary_(bounding_box),
+    : horiz_res_(horiz_res),
+      vert_res_(vert_res),
+      boundary_(bounding_box),
       cells_(new LevelGeometry::LevelCell[horiz_res * horiz_res * vert_res]) {}
 
 LevelGeometry::~LevelGeometry() {
