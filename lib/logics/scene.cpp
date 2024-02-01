@@ -23,7 +23,7 @@ void Scene::delete_component(SceneComponent& component) {
     components_.erase(address);
 }
 
-void Scene::phys_tick(double delta_time) const {
+void Scene::phys_tick(double delta_time) {
     for (SceneComponent* component : components_) {
         assert(component);
 
@@ -31,7 +31,7 @@ void Scene::phys_tick(double delta_time) const {
     }
 }
 
-void Scene::draw_tick(double delta_time, double subtick_time) const {
+void Scene::draw_tick(double delta_time, double subtick_time) {
     for (SceneComponent* component : components_) {
         assert(component);
 

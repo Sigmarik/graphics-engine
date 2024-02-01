@@ -17,7 +17,7 @@
 #include "material.h"
 #include "scene.h"
 
-struct Decal : Renderable {
+struct Decal : public Renderable {
     Decal(const Material& material, double time_to_live);
     Decal(const Decal& decal) = default;
     ~Decal() = default;

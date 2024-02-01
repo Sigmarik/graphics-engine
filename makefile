@@ -5,7 +5,7 @@ PROFILER = valgrind
 CPP_INCLUDE_FLAGS = -I./ -I./lib/ -isystem ./include -isystem ./include/glad/include
 
 CPP_BASE_FLAGS = $(CPP_INCLUDE_FLAGS)												\
--ggdb3 -std=c++17 -Ofast -pie -pthread												\
+-ggdb3 -std=c++17 -O0 -pie -pthread													\
 -Wall -Wextra -Weffc++				 	 											\
 -Waggressive-loop-optimizations -Wc++14-compat -Wmissing-declarations				\
 -Wcast-align -Wchar-subscripts -Wconditionally-supported							\

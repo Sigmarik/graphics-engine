@@ -83,15 +83,14 @@ Intersection SphereCollider::intersect_box(const BoxCollider& box) const {
         glm::vec3(local_center.x, local_center.y, local_center.z) /
         local_center.w;
 
-    local -= box.get_box().get_center();
-
     unsigned intersects = 0;
 
     glm::vec3 size = box.get_box().get_size();
+    glm::vec3 center = box.get_box().get_center();
 
-    if (abs(local.x) * 2.0 < size.x) intersects++;
-    if (abs(local.y) * 2.0 < size.y) intersects++;
-    if (abs(local.z) * 2.0 < size.z) intersects++;
+    if (abs(local.x - center.x) * 2.0 < size.x) intersects++;
+    if (abs(local.y - center.y) * 2.0 < size.y) intersects++;
+    if (abs(local.z - center.z) * 2.0 < size.z) intersects++;
 
     Intersection closest = (Intersection){
         .overlap = false,
@@ -116,9 +115,10 @@ Intersection SphereCollider::intersect_box(const BoxCollider& box) const {
 
         if (!intersection.overlap) continue;
 
-        if (glm::length(intersection.delta) <= glm::length(closest.delta) &&
-            closest.overlap)
-            continue;
+        bool close =
+            glm::length(intersection.delta) <= glm::length(closest.delta);
+
+        if ((close == (intersects < 3)) && closest.overlap) continue;
 
         closest = intersection;
     }

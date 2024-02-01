@@ -51,8 +51,10 @@ Line Box::get_edge(unsigned id) const {
     assert(id < 12);
 
     Line edge = BOX_EDGES[id];
-    edge.origin += center_ - glm::vec3(0.5, 0.5, 0.5);
+    edge.origin -= glm::vec3(0.5, 0.5, 0.5);
     edge.origin *= size_;
+
+    edge.origin += center_;
 
     return edge;
 }

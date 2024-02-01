@@ -20,12 +20,13 @@
 
 struct Scene {
     Scene(double width, double height, double cell_size);
+    virtual ~Scene() = default;
 
     void add_component(SceneComponent& component);
     void delete_component(SceneComponent& component);
 
-    void phys_tick(double delta_time) const;
-    void draw_tick(double delta_time, double subtick_time) const;
+    virtual void phys_tick(double delta_time);
+    virtual void draw_tick(double delta_time, double subtick_time);
 
     LevelGeometry& get_collision() { return collision_; }
     const LevelGeometry& get_collision() const { return collision_; }

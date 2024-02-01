@@ -1,6 +1,7 @@
 #include "level_geometry.h"
 
 #include <math.h>
+#include <string.h>
 
 #include <unordered_set>
 
@@ -14,9 +15,18 @@ LevelGeometry::LevelGeometry(Box bounding_box, size_t horiz_res,
       boundary_(bounding_box),
       cells_(new LevelGeometry::LevelCell[horiz_res * horiz_res * vert_res]) {}
 
-LevelGeometry::~LevelGeometry() {
-    // delete cells_;
+LevelGeometry::LevelGeometry(const LevelGeometry& geometry)
+    : horiz_res_(geometry.horiz_res_),
+      vert_res_(geometry.vert_res_),
+      boundary_(geometry.boundary_),
+      cells_(
+          new LevelGeometry::LevelCell[horiz_res_ * horiz_res_ * vert_res_]) {
+    for (const BoxCollider& collider : geometry.colliders_) {
+        add_collider(collider);
+    }
 }
+
+LevelGeometry::~LevelGeometry() { delete[] cells_; }
 
 glm::vec3 LevelGeometry::get_intersection(
     const DynamicCollider& collider) const {

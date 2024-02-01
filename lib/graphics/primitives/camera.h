@@ -44,6 +44,9 @@ struct Camera {
     void set_type(CameraType type) { type_ = type; }
     CameraType get_type() const { return type_; }
 
+    float get_aspect_ratio() const { return ratio_; }
+    void set_aspect_ratio(float ratio) { ratio_ = ratio; }
+
    private:
     glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0);
     glm::vec3 forward_ = glm::vec3(0.0, 0.0, -1.0);

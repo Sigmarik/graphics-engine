@@ -31,16 +31,16 @@
 #include "lib/input/input_controller.h"
 #include "logger/debug.h"
 #include "logger/logger.h"
+#include "logics/components/visual/static_mesh.h"
 #include "logics/scene.h"
 #include "managers/asset_manager.h"
 #include "managers/world_timer.h"
+#include "scenes/pool_game.h"
 #include "utils/main_utils.h"
 
 #define MAIN
 
 #include "config.h"
-
-static const unsigned VOLUME_RESOLUTION = 64;
 
 int main(const int argc, char** argv) {
     atexit(log_end_program);
@@ -62,63 +62,33 @@ int main(const int argc, char** argv) {
 
     InputController::init(window);
 
-    Camera camera;
+    PoolGame world = PoolGame();
 
-    Scene world = Scene(100.0, 50.0, 1.0);
+    Camera* camera = world.get_renderer().get_viewpoint();
 
-    BoxCollider ground =
-        BoxCollider(Box(glm::vec3(0.0, 0.0, 0.0), glm::vec3(100.0, 0.1, 100.0)),
-                    glm::mat4(1.0f));
+    if (camera != nullptr) {
+        camera->set_aspect_ratio((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT);
+    }
+
+    BoxCollider ground = BoxCollider(
+        Box(glm::vec3(0.0, -0.05, 0.0), glm::vec3(100.0, 0.1, 100.0)),
+        glm::mat4(1.0f));
 
     world.get_collision().add_collider(ground);
 
     poll_gl_errors();
 
-    world.get_renderer().set_viewpoint(&camera);
-
-    RCHead head(world, glm::vec3(0.0, 20.0, 0.0));
-
-    AmbientLight ambient_light = AmbientLight(glm::vec3(0.3, 0.3, 0.33));
-    PointLight point_light = PointLight(glm::vec3(0.7, 0.7, 0.7));
     Postprocessor contrast_vignette =
         Postprocessor(*AssetManager::request<Material>(
             "assets/materials/postprocessing/contrast_vignette.material.xml"));
-    Decal splatter =
-        Decal(*AssetManager::request<Material>(
-                  "assets/materials/decals/red_paint.material.xml"),
-              5.0);
 
-    // clang-format off
-    point_light.set_object_matrix(glm::mat4(
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, 2.0, 1.0, 1.0
-    ));
-    // clang-format on
-
-    // clang-format off
-    splatter.set_object_matrix(glm::mat4(
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        -0.5, 0.5, 0.5, 1.0
-    ));
-    // clang-format on
-
-    world.get_renderer().track_object(ambient_light);
-    world.get_renderer().track_object(point_light);
     world.get_renderer().track_object(contrast_vignette);
-    world.get_renderer().track_object(splatter);
 
     poll_gl_errors();
 
-    camera.set_position(glm::vec3(0.0, 0.0, 3.0));
-    camera.direct(glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 1.0, 0.0));
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    glViewport(0, 0, 800, 600);
-
-    RenderBundle gbuffers(800, 600);
+    RenderBundle gbuffers(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     poll_gl_errors();
 
@@ -130,9 +100,8 @@ int main(const int argc, char** argv) {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        head.phys_tick(0.1);
-        head.draw_tick(0.1, 0.0);
-
+        world.phys_tick(0.01);
+        world.draw_tick(0.01, 0.0);
         world.get_renderer().render(gbuffers);
 
         poll_gl_errors();

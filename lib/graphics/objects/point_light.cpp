@@ -29,6 +29,8 @@ int PointLight::render(const RenderInput& input,
     shader.set_uniform_mat4("camera_inv", inverse_camera);
     shader.set_uniform_mat4("object_inv", inverse_object);
     shader.set_uniform_vec3("light_color", color_);
+    shader.set_uniform_float("spread", spread_);
+    shader.set_uniform_float("radius", radius_);
     shader.set_uniform_vec3(
         "object_pos", glm::vec3(object_pos.x, object_pos.y, object_pos.z));
     shader.set_uniform_vec3("camera_pos", input.camera->get_position());

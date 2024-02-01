@@ -21,7 +21,8 @@ GLFWwindow* create_window() {
 
     glfwWindowHint(GLFW_SAMPLES, 4);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Window Title", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT,
+                                          "Window Title", NULL, NULL);
     if (window == NULL) {
         log_printf(ERROR_REPORTS, "error",
                    "Failed to initialize window. Terminating.\n");

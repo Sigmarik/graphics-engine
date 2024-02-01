@@ -15,7 +15,7 @@ layout(location = 2) out vec4 SurfaceOutput;
 layout(location = 3) out vec4 FinalColor;
 
 void main() {
-    AlbedoOutput = vec4(texture(albedo, uv).xyz, 1.0);
+    AlbedoOutput = vec4(texture(albedo, uv).rgb, 1.0);
     NormalDepthOutput = vec4(0.5 + normal_depth.xyz * 0.5,
                              gl_FragCoord.z);  // gl_FragCoord.z
     SurfaceOutput = vec4(texture(roughness, uv).r, 0.5, 1.0,

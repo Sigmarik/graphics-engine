@@ -24,6 +24,9 @@ struct BouncyObject : public PhysObject {
     glm::vec3 get_rotation() const override { return rotation_; }
     glm::vec3 get_velocity() const { return velocity_; }
 
+    void set_position(const glm::vec3& pos) { collider_.set_position(pos); }
+    void set_velocity(const glm::vec3& velocity) { velocity_ = velocity; }
+
     glm::vec3 get_interp_pos(double time) const override {
         return collider_.get_position() + velocity_ * (float)time;
     }

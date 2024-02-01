@@ -16,7 +16,7 @@
 #include "material.h"
 #include "scene.h"
 
-struct Model : Renderable {
+struct Model : public Renderable {
     Model(const Mesh& mesh, const Material& material)
         : mesh_(&mesh), material_(&material) {}
     ~Model() = default;

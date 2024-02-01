@@ -19,7 +19,7 @@
 struct Scene;
 
 struct SceneComponent {
-    SceneComponent(Scene& scene) : guid_(GUID::gen()), scene_(scene) {}
+    SceneComponent(Scene& scene);
     virtual ~SceneComponent() = default;
 
     virtual void phys_tick(double delta_time) {}

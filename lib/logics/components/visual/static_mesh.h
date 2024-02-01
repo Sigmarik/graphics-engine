@@ -18,6 +18,7 @@
 struct StaticMesh : public SceneComponent {
     explicit StaticMesh(Scene& scene, const Mesh& mesh,
                         const Material& material);
+    explicit StaticMesh(Scene& scene, const Model& model);
 
     void set_transform(const glm::mat4& transform);
     const glm::mat4& get_transform() const {

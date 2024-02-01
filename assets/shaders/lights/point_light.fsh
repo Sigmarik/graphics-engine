@@ -7,6 +7,9 @@ uniform sampler2D GB_FINAL;
 
 uniform vec3 light_color;
 
+uniform float spread;
+uniform float radius = 1.0;
+
 uniform mat4 camera_inv;
 uniform mat4 object_inv;
 
@@ -20,8 +23,6 @@ layout(location = 1) out vec4 NormalDepthOutput;
 layout(location = 2) out vec4 SurfaceOutput;
 layout(location = 3) out vec4 FinalOutput;
 
-const float SPREAD = 3.0;
-
 float brdf(vec3 light_dir, vec3 camera_dir, vec3 normal, float roughness,
            float specular) {
     float brightness = 0.0;
@@ -30,15 +31,15 @@ float brdf(vec3 light_dir, vec3 camera_dir, vec3 normal, float roughness,
     float specular_amount = -dot(normalize(bisector), normalize(normal));
     float amount = -dot(normalize(light_dir), normalize(normal));
 
-    float dist = length(light_dir);
+    float dist = length(light_dir) - radius;
 
     if (amount < 0.0) return 0.0;
 
-    brightness += amount / (1.0 + dist * dist / SPREAD);
+    brightness += amount / (1.0 + dist * dist / spread);
 
     if (specular_amount > 0.0) {
         brightness += pow(specular_amount, 1.0 / roughness) * specular /
-                      (1.0 + dist * dist / SPREAD);
+                      (1.0 + dist * dist / spread);
     }
 
     return brightness;
@@ -80,4 +81,7 @@ void main() {
 
     FinalOutput =
         vec4(prev_final.xyz + light_color * brightness * albedo.xyz * ao, 1.0);
+
+    float dist = length(light_vector);
+    // FinalOutput = vec4(light_vector, 1.0);
 }

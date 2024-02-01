@@ -15,6 +15,9 @@
 #include "common_utils.h"
 #include "graphics/libs.h"
 
+static const unsigned WINDOW_WIDTH = 800;
+static const unsigned WINDOW_HEIGHT = 600;
+
 /**
  * @brief Print the label of the program
  *

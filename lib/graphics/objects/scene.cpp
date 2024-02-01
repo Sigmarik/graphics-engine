@@ -60,6 +60,8 @@ void RenderManager::render_everything(RenderBundle& bundle,
                                       const RenderInput& input,
                                       bool swap_buffers) const {
     for (const Renderable* object : objects_) {
+        assert(object);
+
         if (object->is_hidden()) continue;
 
         int rendered = object->render(input, bundle);

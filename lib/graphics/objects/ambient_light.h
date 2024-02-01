@@ -15,11 +15,14 @@
 #include "glm/vec3.hpp"
 #include "scene.h"
 
-struct AmbientLight : Renderable {
+struct AmbientLight : public Renderable {
     explicit AmbientLight(const glm::vec3& color) : color_(color) {}
 
     int render(const RenderInput& input,
                const RenderBundle& bundle) const override;
+
+    glm::vec3 get_color() const { return color_; }
+    void set_color(const glm::vec3& color) { color_ = color; }
 
    private:
     glm::vec3 color_;

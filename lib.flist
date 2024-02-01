@@ -14,7 +14,10 @@ lib/input/text_listener.o
 lib/input/action.o
 
 lib/logics/scene.o
+lib/logics/scene_component.o
 lib/logics/components/visual/static_mesh.o
+lib/logics/components/visual/point_light_cmp.o
+lib/logics/components/visual/ambient_light_cmp.o
 lib/logics/components/physical/pawn.o
 
 lib/physics/level_geometry.o

@@ -16,7 +16,7 @@
 #include "material.h"
 #include "scene.h"
 
-struct Postprocessor : Renderable {
+struct Postprocessor : public Renderable {
     explicit Postprocessor(const Material& material) : material_(&material) {}
     Postprocessor(const Postprocessor& postprocessor) = default;
     Postprocessor& operator=(const Postprocessor& postprocessor) = default;
