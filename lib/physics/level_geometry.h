@@ -18,6 +18,8 @@
 #include "collider.h"
 #include "geometry/primitives.h"
 
+typedef size_t collider_id_t;
+
 struct LevelGeometry {
     LevelGeometry(Box bounding_box, size_t horiz_res, size_t vert_res);
     LevelGeometry(const LevelGeometry& geometry);
@@ -31,7 +33,7 @@ struct LevelGeometry {
 
    private:
     struct LevelCell {
-        std::vector<const BoxCollider*> colliders = {};
+        std::vector<collider_id_t> colliders = {};
         Box box = Box();
     };
 
@@ -52,7 +54,7 @@ struct LevelGeometry {
 
     LevelCell* cells_ = nullptr;
 
-    std::vector<const BoxCollider*> global_colliders_ = {};
+    std::vector<collider_id_t> global_colliders_ = {};
     std::vector<BoxCollider> colliders_ = {};
 };
 

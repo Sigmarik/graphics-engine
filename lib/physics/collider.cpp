@@ -12,7 +12,8 @@ Box SphereCollider::get_bounding_box() const {
 }
 
 static Intersection intersect_point(const Box& box, const glm::vec3& center,
-                                    double radius, unsigned id) {
+                                    double radius, unsigned id,
+                                    unsigned char mask) {
     glm::vec3 point = box.get_corner(id);
 
     double distance = glm::distance(center, point);
@@ -25,8 +26,9 @@ static Intersection intersect_point(const Box& box, const glm::vec3& center,
 }
 
 static Intersection intersect_edge(const Box& box, const glm::vec3& center,
-                                   double radius, unsigned id) {
-    Line edge = box.get_edge(id);
+                                   double radius, unsigned id,
+                                   unsigned char mask) {
+    Line edge = box.get_edge(id, mask);
 
     glm::vec3 relative = center - edge.origin;
     glm::vec3 projected = edge.direction * glm::dot(relative, edge.direction);
@@ -41,8 +43,9 @@ static Intersection intersect_edge(const Box& box, const glm::vec3& center,
 }
 
 static Intersection intersect_face(const Box& box, const glm::vec3& center,
-                                   double radius, unsigned id) {
-    Plane face = box.get_face(id);
+                                   double radius, unsigned id,
+                                   unsigned char mask) {
+    Plane face = box.get_face(id, mask);
 
     glm::vec3 relative = center - face.origin;
 
@@ -57,8 +60,9 @@ static Intersection intersect_face(const Box& box, const glm::vec3& center,
 }
 
 static Intersection intersect_volume(const Box& box, const glm::vec3& center,
-                                     double radius, unsigned id) {
-    Plane face = box.get_face(id);
+                                     double radius, unsigned id,
+                                     unsigned char mask) {
+    Plane face = box.get_slice(id);
 
     glm::vec3 relative = center - face.origin;
 
@@ -73,7 +77,8 @@ static Intersection intersect_volume(const Box& box, const glm::vec3& center,
 }
 
 typedef Intersection intersector_t(const Box& box, const glm::vec3& center,
-                                   double radius, unsigned id);
+                                   double radius, unsigned id,
+                                   unsigned char mask);
 
 Intersection SphereCollider::intersect_box(const BoxCollider& box) const {
     glm::mat4 world_to_collider = glm::inverse(box.get_transform());
@@ -88,9 +93,20 @@ Intersection SphereCollider::intersect_box(const BoxCollider& box) const {
     glm::vec3 size = box.get_box().get_size();
     glm::vec3 center = box.get_box().get_center();
 
-    if (abs(local.x - center.x) * 2.0 < size.x) intersects++;
-    if (abs(local.y - center.y) * 2.0 < size.y) intersects++;
-    if (abs(local.z - center.z) * 2.0 < size.z) intersects++;
+    unsigned char mask = 0;
+
+    if (abs(local.x - center.x) * 2.0 < size.x) {
+        intersects++;
+        mask |= X_MASK;
+    }
+    if (abs(local.y - center.y) * 2.0 < size.y) {
+        intersects++;
+        mask |= Y_MASK;
+    }
+    if (abs(local.z - center.z) * 2.0 < size.z) {
+        intersects++;
+        mask |= Z_MASK;
+    }
 
     Intersection closest = (Intersection){
         .overlap = false,
@@ -98,7 +114,7 @@ Intersection SphereCollider::intersect_box(const BoxCollider& box) const {
         .delta = glm::vec3(0.0, 0.0, 0.0),
     };
 
-    static const unsigned PRIMITIVE_COUNTS[4] = {8, 12, 6, 6};
+    static const unsigned PRIMITIVE_COUNTS[4] = {8, 4, 2, 6};
     static const intersector_t* INTERSECTORS[4] = {
         intersect_point,
         intersect_edge,
@@ -111,14 +127,14 @@ Intersection SphereCollider::intersect_box(const BoxCollider& box) const {
     unsigned count = PRIMITIVE_COUNTS[intersects];
     for (unsigned id = 0; id < count; ++id) {
         Intersection intersection =
-            intersect(box.get_box(), local, radius_, id);
+            intersect(box.get_box(), local, radius_, id, mask);
 
         if (!intersection.overlap) continue;
 
         bool close =
             glm::length(intersection.delta) <= glm::length(closest.delta);
 
-        if ((close == (intersects < 3)) && closest.overlap) continue;
+        if ((close == (intersects < 2)) && closest.overlap) continue;
 
         closest = intersection;
     }

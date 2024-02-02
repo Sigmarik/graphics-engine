@@ -29,6 +29,10 @@ CPP_SANITIZER_FLAGS = -fcheck-new 													\
 }returns-nonnull-attribute,shift,signed-integer-overflow,undefined,${strip 			\
 }unreachable,vla-bound,vptr
 
+CPP_DEBUG_FLAGS = -D _DEBUG
+
+CPPFLAGS = $(CPP_BASE_FLAGS) $(CPP_DEBUG_FLAGS) 
+
 BOLD = \\033[1m
 STYLE_RESET = \\033[0m
 
@@ -39,10 +43,6 @@ BLUE 	= \\033[34m
 PINK 	= \\033[35m
 CYAN 	= \\033[36m
 GREY 	= \\033[37m
-
-CPP_DEBUG_FLAGS = -D _DEBUG
-
-CPPFLAGS = $(CPP_BASE_FLAGS) $(CPP_DEBUG_FLAGS)
 
 BLD_FOLDER = build
 ASSET_FOLDER = assets

@@ -24,6 +24,10 @@ struct Plane {
     glm::vec3 normal = glm::vec3(0.0, 1.0, 0.0);
 };
 
+static const unsigned char X_MASK = 0x01;
+static const unsigned char Y_MASK = 0x02;
+static const unsigned char Z_MASK = 0x04;
+
 struct Box {
     Box() = default;
     Box(const glm::vec3& center, const glm::vec3& size)
@@ -42,8 +46,9 @@ struct Box {
     bool contains(const Box& box) const;
 
     glm::vec3 get_corner(unsigned id) const;
-    Line get_edge(unsigned id) const;
-    Plane get_face(unsigned id) const;
+    Line get_edge(unsigned id, unsigned char slice_mask) const;
+    Plane get_face(unsigned id, unsigned char slice_mask) const;
+    Plane get_slice(unsigned id) const;
 
    private:
     glm::vec3 center_ = glm::vec3(0.0, 0.0, 0.0);

@@ -47,10 +47,16 @@ static Line BOX_EDGES[12] = {
     {.origin = glm::vec3(0.0, 1.0, 0.0), .direction = glm::vec3(0.0, 0.0, 1.0)},
 };
 
-Line Box::get_edge(unsigned id) const {
-    assert(id < 12);
+Line Box::get_edge(unsigned id, unsigned char slice_mask) const {
+    assert(id < 4);
 
-    Line edge = BOX_EDGES[id];
+    unsigned shift = 0;
+
+    if (slice_mask & X_MASK) shift = 0;
+    if (slice_mask & Y_MASK) shift = 1;
+    if (slice_mask & Z_MASK) shift = 2;
+
+    Line edge = BOX_EDGES[shift * 4 + id];
     edge.origin -= glm::vec3(0.5, 0.5, 0.5);
     edge.origin *= size_;
 
@@ -65,7 +71,24 @@ static glm::vec3 AXISES[3] = {
     glm::vec3(0.0, 0.0, 1.0),
 };
 
-Plane Box::get_face(unsigned id) const {
+Plane Box::get_face(unsigned id, unsigned char slice_mask) const {
+    assert(id < 2);
+
+    unsigned shift = 0;
+    if (~slice_mask & X_MASK) shift = 0;
+    if (~slice_mask & Y_MASK) shift = 1;
+    if (~slice_mask & Z_MASK) shift = 2;
+
+    glm::vec3 normal = AXISES[shift];
+    if (id & 1) normal *= -1.0;
+
+    return (Plane){
+        .origin = center_ + normal * size_ / 2.0f,
+        .normal = normal,
+    };
+}
+
+Plane Box::get_slice(unsigned id) const {
     assert(id < 6);
 
     glm::vec3 normal = AXISES[id / 2];

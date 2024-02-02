@@ -32,7 +32,7 @@ glm::vec3 LevelGeometry::get_intersection(
     const DynamicCollider& collider) const {
     Box object_box = collider.get_bounding_box();
 
-    static std::unordered_set<const BoxCollider*> potential_colliders;
+    static std::unordered_set<collider_id_t> potential_colliders;
 
     potential_colliders.clear();
 
@@ -56,8 +56,8 @@ glm::vec3 LevelGeometry::get_intersection(
 
     glm::vec3 offset = glm::vec3(0.0, 0.0, 0.0);
 
-    for (const BoxCollider* box : potential_colliders) {
-        Intersection intersection = collider.intersect_box(*box);
+    for (collider_id_t box_id : potential_colliders) {
+        Intersection intersection = collider.intersect_box(colliders_[box_id]);
 
         if (!intersection.overlap) continue;
 
@@ -70,9 +70,9 @@ glm::vec3 LevelGeometry::get_intersection(
 void LevelGeometry::add_collider(const BoxCollider& collider_prototype) {
     colliders_.push_back(collider_prototype);
 
-    const BoxCollider& collider = colliders_[colliders_.size() - 1];
+    collider_id_t collider_id = colliders_.size() - 1;
 
-    Box object_box = collider.get_bounding_box();
+    Box object_box = collider_prototype.get_bounding_box();
 
     IndexBox indices = find_indices(object_box);
 
@@ -80,12 +80,12 @@ void LevelGeometry::add_collider(const BoxCollider& collider_prototype) {
     for (size_t id_x = indices.low_x; id_x <= indices.high_x; ++id_x) {
     for (size_t id_y = indices.low_y; id_y <= indices.high_y; ++id_y) {
     for (size_t id_z = indices.low_z; id_z <= indices.high_z; ++id_z) {
-        cells_[get_cell_id(id_x, id_y, id_z)].colliders.push_back(&collider);
+        cells_[get_cell_id(id_x, id_y, id_z)].colliders.push_back(collider_id);
     }}}
     // clang-format on
 
     if (!boundary_.contains(object_box)) {
-        global_colliders_.push_back(&collider);
+        global_colliders_.push_back(collider_id);
     }
 }
 

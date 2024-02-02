@@ -27,6 +27,9 @@ struct PlayerBall : public PoolBall {
     Camera camera_ = Camera(1.0);
 
     glm::vec3 charge_ = glm::vec3(0.0);
+
+    double start_mpos_x = 0;
+    double start_mpos_y = 0;
 };
 
 #endif /* __SRC_COMPONENTS_POOL_PLAYER_BALL_H */

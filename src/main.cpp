@@ -62,19 +62,13 @@ int main(const int argc, char** argv) {
 
     InputController::init(window);
 
-    PoolGame world = PoolGame();
+    static PoolGame world;
 
     Camera* camera = world.get_renderer().get_viewpoint();
 
     if (camera != nullptr) {
         camera->set_aspect_ratio((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT);
     }
-
-    BoxCollider ground = BoxCollider(
-        Box(glm::vec3(0.0, -0.05, 0.0), glm::vec3(100.0, 0.1, 100.0)),
-        glm::mat4(1.0f));
-
-    world.get_collision().add_collider(ground);
 
     poll_gl_errors();
 
@@ -94,14 +88,20 @@ int main(const int argc, char** argv) {
 
     unsigned tick = 0;
 
+    double time = glfwGetTime();
+
     log_printf(STATUS_REPORTS, "status", "Entering the loop.\n");
     while (!glfwWindowShouldClose(window)) {
         tick++;
 
+        double new_time = glfwGetTime();
+        double delta_time = new_time - time;
+        time = new_time;
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        world.phys_tick(0.01);
-        world.draw_tick(0.01, 0.0);
+        world.phys_tick(delta_time);
+        world.draw_tick(delta_time, 0.0);
         world.get_renderer().render(gbuffers);
 
         poll_gl_errors();

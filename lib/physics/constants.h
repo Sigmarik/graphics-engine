@@ -12,7 +12,11 @@
 #ifndef __PHYSICS_CONSTANTS_H
 #define __PHYSICS_CONSTANTS_H
 
-static const float GRAVITY = 0.1f;
+#include "glm/vec3.hpp"
+
+static const float GRAVITY = 9.8f;
 static const float BOUNCINESS = 0.5f;
+
+static const glm::vec3 DIRECTIONAL_BOUNCINESS = glm::vec3(1.0, 0.5, 1.0);
 
 #endif

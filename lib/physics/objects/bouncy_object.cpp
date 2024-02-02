@@ -17,6 +17,7 @@ void BouncyObject::tick(const LevelGeometry& level, double delta_time) {
     glm::vec3 intersection = level.get_intersection(collider_);
     if (glm::length(intersection) > 1e-4f) {
         collider_.set_position(collider_.get_position() + intersection);
-        velocity_ = reflect_plane(velocity_, intersection) * BOUNCINESS;
+        velocity_ =
+            reflect_plane(velocity_, intersection) * DIRECTIONAL_BOUNCINESS;
     }
 }

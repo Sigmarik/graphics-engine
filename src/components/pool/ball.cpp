@@ -4,9 +4,9 @@
 #include "managers/asset_manager.h"
 #include "src/scenes/pool_game.h"
 
-PoolBall::PoolBall(Scene& scene, const glm::vec3& position)
+PoolBall::PoolBall(Scene& scene, const glm::vec3& position, const Model& model)
     : SceneComponent(scene),
-      model_(*AssetManager::request<Model>("assets/models/red_ball.model.xml")),
+      model_(model),
       bouncer_(position, POOL_BALL_RADIUS),
       shadow_(scene, position, glm::vec3(-1.0) * 0.4f) {
     scene.get_renderer().track_object(model_);

@@ -18,6 +18,7 @@
 #include "logics/components/visual/point_light_cmp.h"
 #include "logics/components/visual/static_mesh.h"
 #include "logics/scene.h"
+#include "physics/collider.h"
 #include "src/components/pool/ball.h"
 #include "src/components/pool/player_ball.h"
 
@@ -33,6 +34,16 @@ struct PoolGame : public Scene {
     PointLightComponent main_lamp_;
     PointLightComponent sun_;
     AmbientLightComponent ambient_;
+
+    BoxCollider floor_;
+    BoxCollider top_left_;
+    BoxCollider top_right_;
+    BoxCollider bottom_left_;
+    BoxCollider bottom_right_;
+    BoxCollider left_top_;
+    BoxCollider left_bottom_;
+    BoxCollider right_top_;
+    BoxCollider right_bottom_;
 
     // std::vector<PoolBall> balls_ = {};
     PlayerBall player_;
