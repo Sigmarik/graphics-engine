@@ -56,21 +56,14 @@ PoolGame::PoolGame()
     sun_.spawn_self(*this);
     ambient_.spawn_self(*this);
 
-    size_t ball_id = 0;
-    for (unsigned x_id = 1; x_id <= 3; ++x_id) {
-        for (unsigned y_id = 1; y_id <= x_id; ++y_id) {
-            glm::vec3 position = glm::vec3(
-                POOL_BALL_RADIUS * y_id * 2.0 - POOL_BALL_RADIUS * x_id,
-                POOL_BALL_RADIUS, -POOL_BALL_RADIUS * x_id * 2.0 - 0.5);
-
-            balls_[ball_id] = GenericBall(position);
-            balls_[ball_id].spawn_self(*this);
-
-            ++ball_id;
-        }
+    for (size_t id = 0; id < sizeof(balls_) / sizeof(*balls_); ++id) {
+        balls_[id] = GenericBall(glm::vec3(0.0));
+        balls_[id].spawn_self(*this);
     }
 
     get_renderer().set_viewpoint(&player_.get_camera());
+
+    reset();
 }
 
 void PoolGame::phys_tick(double delta_time) {
@@ -85,4 +78,27 @@ void PoolGame::phys_tick(double delta_time) {
     for (size_t id_a = 0; id_a < sizeof(balls_) / sizeof(*balls_); ++id_a) {
         player_.collide(balls_[id_a]);
     }
+
+    if (player_.get_position().y < -0.5) {
+        reset();
+    }
+}
+
+void PoolGame::reset() {
+    size_t ball_id = 0;
+    for (unsigned x_id = 1; x_id <= 3; ++x_id) {
+        for (unsigned y_id = 1; y_id <= x_id; ++y_id) {
+            glm::vec3 position = glm::vec3(
+                POOL_BALL_RADIUS * y_id * 2.0 - POOL_BALL_RADIUS * x_id,
+                POOL_BALL_RADIUS, -POOL_BALL_RADIUS * x_id * 1.73 - 0.5);
+
+            balls_[ball_id].set_position(position);
+            balls_[ball_id].set_velocity(glm::vec3(0.0));
+
+            ++ball_id;
+        }
+    }
+
+    player_.set_position(glm::vec3(0.0, POOL_BALL_RADIUS, 0.5));
+    player_.set_velocity(glm::vec3(0.0));
 }

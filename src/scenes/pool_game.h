@@ -27,6 +27,8 @@ struct PoolGame : public Scene {
 
     void phys_tick(double delta_time) override;
 
+    void reset();
+
    private:
     StaticMesh field_;
     StaticMesh frame_;
