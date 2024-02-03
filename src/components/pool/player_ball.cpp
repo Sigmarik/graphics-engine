@@ -17,17 +17,6 @@ PlayerBall::PlayerBall(const glm::vec3& position)
 void PlayerBall::phys_tick(double delta_time) {
     PoolBall::phys_tick(delta_time);
 
-    static const double FRICTION = 1.0;
-
-    glm::vec3 velocity = get_velocity();
-
-    if (glm::length(velocity) < FRICTION * delta_time) {
-        set_velocity(glm::vec3(0.0));
-    } else {
-        set_velocity(velocity -
-                     glm::normalize(velocity) * (float)(FRICTION * delta_time));
-    }
-
     static BinaryInput* hit_input = AssetManager::request<BinaryInput>(
         "assets/controls/charge.keybind.xml");
 

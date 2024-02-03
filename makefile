@@ -5,7 +5,7 @@ PROFILER = valgrind
 CPP_INCLUDE_FLAGS = -I./ -I./lib/ -isystem ./include -isystem ./include/glad/include
 
 CPP_BASE_FLAGS = $(CPP_INCLUDE_FLAGS)												\
--ggdb3 -std=c++17 -O0 -pie -pthread													\
+-std=c++17 -Ofast -pie -pthread														\
 -Wall -Wextra -Weffc++				 	 											\
 -Waggressive-loop-optimizations -Wc++14-compat -Wmissing-declarations				\
 -Wcast-align -Wchar-subscripts -Wconditionally-supported							\
@@ -29,7 +29,7 @@ CPP_SANITIZER_FLAGS = -fcheck-new 													\
 }returns-nonnull-attribute,shift,signed-integer-overflow,undefined,${strip 			\
 }unreachable,vla-bound,vptr
 
-CPP_DEBUG_FLAGS = -D _DEBUG
+CPP_DEBUG_FLAGS = -D _DEBUG -ggdb3
 
 CPPFLAGS = $(CPP_BASE_FLAGS) $(CPP_DEBUG_FLAGS)
 

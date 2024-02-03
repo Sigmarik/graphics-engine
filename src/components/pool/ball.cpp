@@ -24,6 +24,17 @@ void PoolBall::phys_tick(double delta_time) {
     assert(get_scene() != nullptr);
 
     bouncer_.tick(get_scene()->get_collision(), delta_time);
+
+    static const double FRICTION = 1.0;
+
+    glm::vec3 velocity = get_velocity();
+
+    if (glm::length(velocity) < FRICTION * delta_time) {
+        set_velocity(glm::vec3(0.0));
+    } else {
+        set_velocity(velocity -
+                     glm::normalize(velocity) * (float)(FRICTION * delta_time));
+    }
 }
 
 void PoolBall::draw_tick(double delta_time, double subtick_time) {
@@ -46,11 +57,15 @@ void PoolBall::collide(PoolBall& ball) {
     glm::vec3 velocity_diff = get_velocity() - ball.get_velocity();
     glm::vec3 position_diff = get_position() - ball.get_position();
     glm::vec3 avg_velocity = (get_velocity() + ball.get_velocity()) / 2.0f;
+    glm::vec3 avg_pos = (get_position() + ball.get_position()) / 2.0f;
 
-    if (glm::length(position_diff) < POOL_BALL_RADIUS * 2.0) return;
+    if (glm::length(position_diff) > POOL_BALL_RADIUS * 2.0) return;
 
-    set_position(get_position() + position_diff / 2.0f);
-    ball.set_position(get_position() - position_diff / 2.0f);
+    glm::vec3 position_delta =
+        glm::normalize(position_diff) * (float)POOL_BALL_RADIUS;
+
+    set_position(avg_pos + position_delta);
+    ball.set_position(avg_pos - position_delta);
 
     if (glm::dot(velocity_diff, position_diff) > 0.0) return;
 

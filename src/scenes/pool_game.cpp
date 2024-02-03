@@ -76,5 +76,13 @@ PoolGame::PoolGame()
 void PoolGame::phys_tick(double delta_time) {
     Scene::phys_tick(delta_time);
 
-    // TODO: Resolve ball-to-ball collisions
+    for (size_t id_a = 1; id_a < sizeof(balls_) / sizeof(*balls_); ++id_a) {
+        for (size_t id_b = 0; id_b < id_a; ++id_b) {
+            balls_[id_a].collide(balls_[id_b]);
+        }
+    }
+
+    for (size_t id_a = 0; id_a < sizeof(balls_) / sizeof(*balls_); ++id_a) {
+        player_.collide(balls_[id_a]);
+    }
 }
