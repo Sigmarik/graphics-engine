@@ -18,7 +18,7 @@
 #include "managers/asset_manager.h"
 
 struct Pawn : public SceneComponent {
-    Pawn(Scene& scene, const glm::vec3& position, double width, double height);
+    Pawn(const glm::vec3& position, double width, double height);
 
     void phys_tick(double delta_time) override;
 

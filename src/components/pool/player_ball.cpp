@@ -6,15 +6,12 @@
 #include "input/input_controller.h"
 #include "managers/asset_manager.h"
 
-PlayerBall::PlayerBall(Scene& scene, const glm::vec3& position)
-    : PoolBall(
-          scene, position,
-          *AssetManager::request<Model>("assets/models/main_ball.model.xml")) {
+PlayerBall::PlayerBall(const glm::vec3& position)
+    : PoolBall(position, *AssetManager::request<Model>(
+                             "assets/models/main_ball.model.xml")) {
     camera_.set_position(glm::vec3(-1.0, 4.0, 0.0));
     camera_.set_fov((float)(30.0));
     camera_.direct(glm::vec3(0.25, -1.0, 0.0), glm::vec3(1.0, 0.0, 0.0));
-
-    scene.get_renderer().set_viewpoint(&camera_);
 }
 
 void PlayerBall::phys_tick(double delta_time) {

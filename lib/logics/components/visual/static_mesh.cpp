@@ -2,14 +2,15 @@
 
 #include "logics/scene.h"
 
-StaticMesh::StaticMesh(Scene& scene, const Mesh& mesh, const Material& material)
-    : SceneComponent(scene), model_(mesh, material) {
-    scene.get_renderer().track_object(model_);
-}
+StaticMesh::StaticMesh(const Mesh& mesh, const Material& material)
+    : model_(mesh, material) {}
 
-StaticMesh::StaticMesh(Scene& scene, const Model& model)
-    : SceneComponent(scene), model_(model) {
+StaticMesh::StaticMesh(const Model& model) : model_(model) {}
+
+void StaticMesh::spawn_self(Scene& scene) {
     scene.get_renderer().track_object(model_);
+
+    SceneComponent::spawn_self(scene);
 }
 
 void StaticMesh::set_transform(const glm::mat4& transform) {

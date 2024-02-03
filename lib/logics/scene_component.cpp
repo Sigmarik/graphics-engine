@@ -2,7 +2,9 @@
 
 #include "logics/scene.h"
 
-SceneComponent::SceneComponent(Scene& scene)
-    : guid_(GUID::gen()), scene_(scene) {
-    scene.add_component(*this);
+SceneComponent::SceneComponent() : guid_(GUID::gen()) {}
+
+void SceneComponent::spawn_self(Scene& scene) {
+    scene_ = &scene;
+    scene_->add_component(*this);
 }

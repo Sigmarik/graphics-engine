@@ -16,12 +16,12 @@
 #include "graphics/primitives/camera.h"
 
 struct PlayerBall : public PoolBall {
-    PlayerBall(Scene& scene, const glm::vec3& position);
+    PlayerBall(const glm::vec3& position);
 
     void phys_tick(double delta_time) override;
     void draw_tick(double delta_time, double subtick_time = 0.0) override;
 
-    Camera* get_camera() { return &camera_; }
+    Camera& get_camera() { return camera_; }
 
    private:
     Camera camera_ = Camera(1.0);

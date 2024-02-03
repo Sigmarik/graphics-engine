@@ -21,8 +21,9 @@
 static const double POOL_BALL_RADIUS = 0.025;
 
 struct PoolBall : public SceneComponent {
-    explicit PoolBall(Scene& scene, const glm::vec3& position,
-                      const Model& model);
+    explicit PoolBall(const glm::vec3& position, const Model& model);
+
+    void spawn_self(Scene& scene) override;
 
     void phys_tick(double delta_time) override;
     void draw_tick(double delta_time, double subtick_time = 0.0) override;

@@ -2,15 +2,20 @@
 
 #include "logics/scene.h"
 
-BouncyHead::BouncyHead(Scene& scene, const glm::vec3& position)
-    : SceneComponent(scene),
-      model_(*AssetManager::request<Model>("assets/models/monkey.model.xml")),
-      bouncer_(position, 0.5) {
+BouncyHead::BouncyHead(const glm::vec3& position)
+    : model_(*AssetManager::request<Model>("assets/models/monkey.model.xml")),
+      bouncer_(position, 0.5) {}
+
+void BouncyHead::spawn_self(Scene& scene) {
     scene.get_renderer().track_object(model_);
+
+    SceneComponent::spawn_self(scene);
 }
 
 void BouncyHead::phys_tick(double delta_time) {
-    bouncer_.tick(get_scene().get_collision(), delta_time);
+    assert(get_scene() != nullptr);
+
+    bouncer_.tick(get_scene()->get_collision(), delta_time);
 }
 
 void BouncyHead::draw_tick(double delta_time, double subtick_time) {

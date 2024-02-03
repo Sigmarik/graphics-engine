@@ -4,10 +4,14 @@
 #include "logics/scene.h"
 #include "managers/asset_manager.h"
 
-RCHead::RCHead(Scene& scene, const glm::vec3& position)
-    : Pawn(scene, position, 0.3, 1.85),
-      model_(*AssetManager::request<Model>("assets/models/monkey.model.xml")) {
+RCHead::RCHead(const glm::vec3& position)
+    : Pawn(position, 0.3, 1.85),
+      model_(*AssetManager::request<Model>("assets/models/monkey.model.xml")) {}
+
+void RCHead::spawn_self(Scene& scene) {
     scene.get_renderer().track_object(model_);
+
+    Pawn::spawn_self(scene);
 }
 
 void RCHead::phys_tick(double delta_time) {

@@ -16,7 +16,9 @@
 #include "logics/components/physical/pawn.h"
 
 struct RCHead : public Pawn {
-    RCHead(Scene& scene, const glm::vec3& position);
+    RCHead(const glm::vec3& position);
+
+    void spawn_self(Scene& scene) override;
 
     void phys_tick(double delta_time) override;
     void draw_tick(double delta_time, double subtick_time = 0.0) override;

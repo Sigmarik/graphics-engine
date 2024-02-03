@@ -16,7 +16,9 @@
 #include "logics/scene_component.h"
 
 struct AmbientLightComponent : public SceneComponent {
-    AmbientLightComponent(Scene& scene, const glm::vec3& color);
+    AmbientLightComponent(const glm::vec3& color);
+
+    void spawn_self(Scene& scene) override;
 
     glm::vec3 get_color() const { return light_.get_color(); }
     void set_color(const glm::vec3& color) { light_.set_color(color); }

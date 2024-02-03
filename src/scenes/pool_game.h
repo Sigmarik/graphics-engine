@@ -12,14 +12,14 @@
 #ifndef __SRC_SCENES_POOL_GAME_H
 #define __SRC_SCENES_POOL_GAME_H
 
-#include <vector>
+#include <array>
 
 #include "logics/components/visual/ambient_light_cmp.h"
 #include "logics/components/visual/point_light_cmp.h"
 #include "logics/components/visual/static_mesh.h"
 #include "logics/scene.h"
 #include "physics/collider.h"
-#include "src/components/pool/ball.h"
+#include "src/components/pool/generic_ball.h"
 #include "src/components/pool/player_ball.h"
 
 struct PoolGame : public Scene {
@@ -45,7 +45,7 @@ struct PoolGame : public Scene {
     BoxCollider right_top_;
     BoxCollider right_bottom_;
 
-    // std::vector<PoolBall> balls_ = {};
+    GenericBall balls_[6];
     PlayerBall player_;
 };
 

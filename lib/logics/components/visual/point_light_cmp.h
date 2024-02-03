@@ -15,8 +15,9 @@
 #include "logics/scene_component.h"
 
 struct PointLightComponent : public SceneComponent {
-    PointLightComponent(Scene& scene, const glm::vec3& position,
-                        const glm::vec3& color);
+    PointLightComponent(const glm::vec3& position, const glm::vec3& color);
+
+    void spawn_self(Scene& scene) override;
 
     glm::vec3 get_position() const { return position_; }
     void set_position(const glm::vec3& position);

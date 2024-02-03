@@ -16,9 +16,10 @@
 #include "logics/scene_component.h"
 
 struct StaticMesh : public SceneComponent {
-    explicit StaticMesh(Scene& scene, const Mesh& mesh,
-                        const Material& material);
-    explicit StaticMesh(Scene& scene, const Model& model);
+    explicit StaticMesh(const Mesh& mesh, const Material& material);
+    explicit StaticMesh(const Model& model);
+
+    void spawn_self(Scene& scene) override;
 
     void set_transform(const glm::mat4& transform);
     const glm::mat4& get_transform() const {

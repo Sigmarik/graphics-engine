@@ -6,5 +6,6 @@ src/components/misc/bouncy_head.o
 src/components/misc/rc_head.o
 src/components/pool/ball.o
 src/components/pool/player_ball.o
+src/components/pool/generic_ball.o
 
 src/scenes/pool_game.o

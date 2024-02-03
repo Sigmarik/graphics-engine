@@ -4,23 +4,31 @@
 #include "managers/asset_manager.h"
 #include "src/scenes/pool_game.h"
 
-PoolBall::PoolBall(Scene& scene, const glm::vec3& position, const Model& model)
-    : SceneComponent(scene),
-      model_(model),
+PoolBall::PoolBall(const glm::vec3& position, const Model& model)
+    : model_(model),
       bouncer_(position, POOL_BALL_RADIUS),
-      shadow_(scene, position, glm::vec3(-1.0) * 0.4f) {
-    scene.get_renderer().track_object(model_);
-
+      shadow_(position, glm::vec3(-1.0) * 0.4f) {
     shadow_.set_spread(0.0005f);
     shadow_.set_radius(0.028f);
 }
 
+void PoolBall::spawn_self(Scene& scene) {
+    scene.get_renderer().track_object(model_);
+
+    shadow_.spawn_self(scene);
+
+    SceneComponent::spawn_self(scene);
+}
+
 void PoolBall::phys_tick(double delta_time) {
-    bouncer_.tick(get_scene().get_collision(), delta_time);
+    assert(get_scene() != nullptr);
+
+    bouncer_.tick(get_scene()->get_collision(), delta_time);
 }
 
 void PoolBall::draw_tick(double delta_time, double subtick_time) {
     glm::vec3 position = bouncer_.get_interp_pos(subtick_time);
+    position.y = bouncer_.get_position().y;
 
     shadow_.set_position(position);
 

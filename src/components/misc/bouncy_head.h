@@ -17,7 +17,9 @@
 #include "physics/objects/bouncy_object.h"
 
 struct BouncyHead : public SceneComponent {
-    explicit BouncyHead(Scene& scene, const glm::vec3& position);
+    explicit BouncyHead(const glm::vec3& position);
+
+    void spawn_self(Scene& scene) override;
 
     void phys_tick(double delta_time) override;
     void draw_tick(double delta_time, double subtick_time = 0.0) override;
