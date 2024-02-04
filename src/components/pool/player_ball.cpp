@@ -59,7 +59,6 @@ void PlayerBall::process_input() {
         double delta_y = InputController::get_mouse_y() - start_mpos_y;
 
         charge_ = glm::vec3(-(float)delta_y, 0.0, -(float)delta_x) / 100.0f;
-        charge_.y = glm::length(charge_) * 0.1f;
 
         if (glm::length(charge_) > POWER_LIMIT) {
             charge_ = glm::normalize(charge_) * POWER_LIMIT;

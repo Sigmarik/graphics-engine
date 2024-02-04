@@ -40,6 +40,8 @@ struct PoolBall : public SceneComponent {
     bool is_on_board() const;
 
    private:
+    void resolve_positions(PoolBall& ball);
+
     Model model_;
     BouncyObject bouncer_;
 

@@ -1,5 +1,7 @@
 #include "ball.h"
 
+#include <math.h>
+
 #include "geometry/transforms.h"
 #include "managers/asset_manager.h"
 #include "src/scenes/pool_game.h"
@@ -56,20 +58,18 @@ void PoolBall::draw_tick(double delta_time, double subtick_time) {
 }
 
 void PoolBall::collide(PoolBall& ball) {
+    if (glm::distance(get_position(), ball.get_position()) >
+        POOL_BALL_RADIUS * 2.0)
+        return;
+
+    resolve_positions(ball);
+
     glm::vec3 velocity_diff = get_velocity() - ball.get_velocity();
     glm::vec3 position_diff = get_position() - ball.get_position();
     glm::vec3 avg_velocity = (get_velocity() + ball.get_velocity()) / 2.0f;
-    glm::vec3 avg_pos = (get_position() + ball.get_position()) / 2.0f;
 
-    if (glm::length(position_diff) > POOL_BALL_RADIUS * 2.0) return;
-
-    glm::vec3 position_delta =
-        glm::normalize(position_diff) * (float)POOL_BALL_RADIUS;
-
-    set_position(avg_pos + position_delta);
-    ball.set_position(avg_pos - position_delta);
-
-    if (glm::dot(velocity_diff, position_diff) > 0.0) return;
+    // set_velocity(glm::vec3(0.0));
+    // ball.set_velocity(glm::vec3(0.0));
 
     set_velocity(avg_velocity +
                  reflect_plane(velocity_diff, position_diff) / 2.0f);
@@ -87,3 +87,34 @@ bool PoolBall::is_moving() const {
 }
 
 bool PoolBall::is_on_board() const { return get_position().y > 0.0; }
+
+static float length2(const glm::vec3 vec) {
+    return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
+}
+
+void PoolBall::resolve_positions(PoolBall& ball) {
+    glm::vec3 velocity_diff = get_velocity() - ball.get_velocity();
+    glm::vec3 position_diff = get_position() - ball.get_position();
+
+    if (glm::length(velocity_diff) < 1e-3) {
+        glm::vec3 avg_pos = (get_position() + ball.get_position()) / 2.0f;
+        glm::vec3 delta =
+            glm::normalize(position_diff) * (float)POOL_BALL_RADIUS;
+
+        set_position(avg_pos + delta);
+        ball.set_position(avg_pos - delta);
+        return;
+    }
+
+    float collision_arm = length2(glm::cross(position_diff, velocity_diff)) /
+                          length2(velocity_diff);
+    float delta_arm = 4.0f * (float)POOL_BALL_RADIUS * (float)POOL_BALL_RADIUS -
+                      collision_arm;
+    float shift =
+        glm::dot(velocity_diff, position_diff) / glm::length(velocity_diff);
+
+    float delta_time = (sqrt(delta_arm) + shift) / glm::length(velocity_diff);
+
+    set_position(get_position() - get_velocity() * delta_time);
+    ball.set_position(ball.get_position() - ball.get_velocity() * delta_time);
+}
