@@ -29,7 +29,12 @@ struct PoolGame : public Scene {
 
     void reset();
 
+   protected:
+    bool has_moving_parts() const;
+
    private:
+    void process_int_collisions();
+
     StaticMesh field_;
     StaticMesh frame_;
 

@@ -1,0 +1,4 @@
+<model>
+    <mesh>assets/models/arrow.obj</mesh>
+    <material>assets/materials/white_ball.material.xml</material>
+</model>

@@ -51,6 +51,8 @@ void PoolBall::draw_tick(double delta_time, double subtick_time) {
     // clang-format on
 
     model_.set_object_matrix(transform);
+
+    model_.set_hidden(!is_on_board());
 }
 
 void PoolBall::collide(PoolBall& ball) {
@@ -74,3 +76,14 @@ void PoolBall::collide(PoolBall& ball) {
     ball.set_velocity(avg_velocity -
                       reflect_plane(velocity_diff, position_diff) / 2.0f);
 }
+
+bool PoolBall::is_moving() const {
+    bool has_horiz_vel =
+        glm::length(get_velocity() * glm::vec3(1.0, 0.0, 1.0)) > 1e-2;
+
+    bool on_table = is_on_board();
+
+    return on_table && has_horiz_vel;
+}
+
+bool PoolBall::is_on_board() const { return get_position().y > 0.0; }

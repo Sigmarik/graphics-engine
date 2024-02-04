@@ -36,16 +36,14 @@ struct PoolBall : public SceneComponent {
     void set_position(const glm::vec3& pos) { bouncer_.set_position(pos); }
     void set_velocity(const glm::vec3& vel) { bouncer_.set_velocity(vel); }
 
-   protected:
-    void set_model_shift(const glm::vec3& shift) { model_shift_ = shift; }
+    bool is_moving() const;
+    bool is_on_board() const;
 
    private:
     Model model_;
     BouncyObject bouncer_;
 
     PointLightComponent shadow_;
-
-    glm::vec3 model_shift_ = glm::vec3(0.0);
 };
 
 #endif /* __SRC_COMPONENTS_POOL_BALL_H */

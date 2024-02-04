@@ -69,19 +69,13 @@ PoolGame::PoolGame()
 void PoolGame::phys_tick(double delta_time) {
     Scene::phys_tick(delta_time);
 
-    for (size_t id_a = 1; id_a < sizeof(balls_) / sizeof(*balls_); ++id_a) {
-        for (size_t id_b = 0; id_b < id_a; ++id_b) {
-            balls_[id_a].collide(balls_[id_b]);
-        }
-    }
-
-    for (size_t id_a = 0; id_a < sizeof(balls_) / sizeof(*balls_); ++id_a) {
-        player_.collide(balls_[id_a]);
-    }
+    process_int_collisions();
 
     if (player_.get_position().y < -0.5) {
         reset();
     }
+
+    player_.set_input_lock(has_moving_parts());
 }
 
 void PoolGame::reset() {
@@ -101,4 +95,24 @@ void PoolGame::reset() {
 
     player_.set_position(glm::vec3(0.0, POOL_BALL_RADIUS, 0.5));
     player_.set_velocity(glm::vec3(0.0));
+}
+
+bool PoolGame::has_moving_parts() const {
+    for (size_t id = 0; id < sizeof(balls_) / sizeof(*balls_); ++id) {
+        if (balls_[id].is_moving()) return true;
+    }
+
+    return player_.is_moving();
+}
+
+void PoolGame::process_int_collisions() {
+    for (size_t id_a = 1; id_a < sizeof(balls_) / sizeof(*balls_); ++id_a) {
+        for (size_t id_b = 0; id_b < id_a; ++id_b) {
+            balls_[id_a].collide(balls_[id_b]);
+        }
+    }
+
+    for (size_t id = 0; id < sizeof(balls_) / sizeof(*balls_); ++id) {
+        player_.collide(balls_[id]);
+    }
 }
