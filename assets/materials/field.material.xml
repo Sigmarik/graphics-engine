@@ -1,7 +1,11 @@
 <material>
-    <shader>assets/shaders/albedo_only.shader.xml</shader>
+    <shader>assets/shaders/basic.shader.xml</shader>
 
     <texture uniform="albedo">
         assets/textures/green_field.texture.xml
+    </texture>
+
+    <texture uniform="ao_map">
+        assets/textures/field_ao.texture.xml
     </texture>
 </material>

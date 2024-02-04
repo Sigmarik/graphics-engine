@@ -1,11 +1,11 @@
 <material>
-    <shader>assets/shaders/rough_albedo.shader.xml</shader>
+    <shader>assets/shaders/basic.shader.xml</shader>
 
     <texture uniform="albedo">
         assets/textures/wood.texture.xml
     </texture>
 
-    <texture uniform="roughness">
-        assets/textures/wood_rghs.texture.xml
+    <texture uniform="ao_map">
+        assets/textures/frame_ao.texture.xml
     </texture>
 </material>
