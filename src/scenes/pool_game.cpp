@@ -1,5 +1,6 @@
 #include "pool_game.h"
 
+#include "input/binary_input.h"
 #include "managers/asset_manager.h"
 
 PoolGame::PoolGame()
@@ -73,6 +74,13 @@ void PoolGame::phys_tick(double delta_time) {
     }
 
     player_.set_input_lock(has_moving_parts());
+
+    static BinaryInput reset_input = *AssetManager::request<BinaryInput>(
+        "assets/controls/reset.keybind.xml");
+
+    if (reset_input.poll_pushed()) {
+        reset();
+    }
 }
 
 void PoolGame::reset() {
