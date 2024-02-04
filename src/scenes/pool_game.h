@@ -14,6 +14,7 @@
 
 #include <array>
 
+#include "graphics/objects/postprocessor.h"
 #include "logics/components/visual/ambient_light_cmp.h"
 #include "logics/components/visual/point_light_cmp.h"
 #include "logics/components/visual/static_mesh.h"
@@ -37,6 +38,8 @@ struct PoolGame : public Scene {
 
     StaticMesh field_;
     StaticMesh frame_;
+
+    Postprocessor contrast_vignette_;
 
     PointLightComponent main_lamp_;
     PointLightComponent sun_;

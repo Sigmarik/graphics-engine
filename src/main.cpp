@@ -72,14 +72,6 @@ int main(const int argc, char** argv) {
 
     poll_gl_errors();
 
-    Postprocessor contrast_vignette =
-        Postprocessor(*AssetManager::request<Material>(
-            "assets/materials/postprocessing/contrast_vignette.material.xml"));
-
-    world.get_renderer().track_object(contrast_vignette);
-
-    poll_gl_errors();
-
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     RenderBundle gbuffers(WINDOW_WIDTH, WINDOW_HEIGHT);

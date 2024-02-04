@@ -1,7 +1,7 @@
 /**
  * @file ball.h
  * @author Kudryashov Ilya (kudriashov.it@phystech.edu)
- * @brief Pool ball class. Can be tossed around.
+ * @brief Billiard ball class.
  * @version 0.1
  * @date 2024-01-31
  *

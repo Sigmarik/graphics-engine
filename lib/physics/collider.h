@@ -36,7 +36,7 @@ struct Collider {
 };
 
 struct BoxCollider : public Collider {
-    BoxCollider(const Box& box, const glm::mat4& transform);
+    BoxCollider(const Box& box, const glm::mat4& transform = glm::mat4(1.0));
 
     Box get_bounding_box() const override;
 
