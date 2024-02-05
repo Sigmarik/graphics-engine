@@ -19,7 +19,7 @@ Default key bindings:
 
 All controls can be redefined in the corresponding `.keybind.xml` files in the [assets/controls](assets/controls/) directory.
 
-## Customizing the game
+## Customization
 
 All [models](assets/models/), [materials](assets/materials/), [shaders](assets/shaders/), [textures](assets/textures/) and [controls](assets/controls/) can be changed by modifying the project's [assets](assets/). 
 
