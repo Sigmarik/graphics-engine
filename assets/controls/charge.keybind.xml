@@ -1,4 +1,6 @@
 <keybind>
     <input code="BTN_LEFT">
     </input>
+    <input code="BTN_RIGHT">
+    </input>
 </keybind>
