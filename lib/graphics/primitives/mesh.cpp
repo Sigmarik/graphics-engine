@@ -114,7 +114,7 @@ void Mesh::synch_buffers() {
 }
 
 void Mesh::render(const glm::mat4& proj_matrix, const glm::mat4& obj_matrix,
-                  Shader& shader) const {
+                  const Shader& shader) const {
     vao_.bind();
     vbo_.bind();
     ebo_.bind();

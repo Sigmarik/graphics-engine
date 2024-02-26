@@ -15,15 +15,15 @@ void RCHead::spawn_self(Scene& scene) {
 }
 
 void RCHead::phys_tick(double delta_time) {
-    static BinaryInput* forward_in = AssetManager::request<BinaryInput>(
+    static const BinaryInput* forward_in = AssetManager::request<BinaryInput>(
         "assets/controls/forward.keybind.xml");
-    static BinaryInput* back_in =
+    static const BinaryInput* back_in =
         AssetManager::request<BinaryInput>("assets/controls/back.keybind.xml");
-    static BinaryInput* left_in =
+    static const BinaryInput* left_in =
         AssetManager::request<BinaryInput>("assets/controls/left.keybind.xml");
-    static BinaryInput* right_in =
+    static const BinaryInput* right_in =
         AssetManager::request<BinaryInput>("assets/controls/right.keybind.xml");
-    static BinaryInput* jump_in =
+    static const BinaryInput* jump_in =
         AssetManager::request<BinaryInput>("assets/controls/jump.keybind.xml");
 
     glm::vec3 input = glm::vec3(0.0);

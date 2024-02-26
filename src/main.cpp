@@ -16,7 +16,6 @@
 #include "components/misc/rc_head.h"
 #include "generation/noise.h"
 #include "graphics/gl_debug.h"
-#include "graphics/importers/importers.h"
 #include "graphics/objects/ambient_light.h"
 #include "graphics/objects/decal.h"
 #include "graphics/objects/model.h"

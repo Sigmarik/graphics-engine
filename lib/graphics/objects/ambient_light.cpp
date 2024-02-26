@@ -6,7 +6,7 @@
 
 int AmbientLight::render(const RenderInput& input,
                          const RenderBundle& bundle) const {
-    static Material& ambient_material = *AssetManager::request<Material>(
+    static const Material& ambient_material = *AssetManager::request<Material>(
         "assets/materials/lights/ambient_light.material.xml");
 
     if (input.pass != RP_LIGHT) return 0;

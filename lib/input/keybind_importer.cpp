@@ -1,13 +1,11 @@
-#include "keybind_importer.h"
-
 #include <tinyxml2.h>
 
+#include "binary_input.h"
 #include "input_controller.h"
 #include "logger/logger.h"
+#include "managers/asset_manager.h"
 
-REGISTER(BinaryInputImporter, keybind)
-
-AbstractAsset* BinaryInputImporter::import(const char* path) {
+IMPORTER(BinaryInput, keybind) {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
 

@@ -4,6 +4,9 @@ lib/logger/logger.o
 include/glad/src/glad.o
 include/tinyxml2.o
 
+lib/managers/asset_manager.o
+lib/managers/world_timer.o
+
 lib/geometry/primitives.o
 lib/geometry/transforms.o
 
@@ -41,9 +44,6 @@ lib/graphics/objects/ambient_light.o
 lib/graphics/objects/point_light.o
 lib/graphics/objects/postprocessor.o
 lib/graphics/objects/decal.o
-
-lib/managers/asset_manager.o
-lib/managers/world_timer.o
 
 lib/generation/noise.o
 lib/io/mmap.o

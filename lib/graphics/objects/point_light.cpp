@@ -8,7 +8,7 @@
 
 int PointLight::render(const RenderInput& input,
                        const RenderBundle& bundle) const {
-    static Material& light_material = *AssetManager::request<Material>(
+    static const Material& light_material = *AssetManager::request<Material>(
         "assets/materials/lights/point_light.material.xml");
 
     if (input.pass != RP_LIGHT) return 0;
@@ -22,7 +22,7 @@ int PointLight::render(const RenderInput& input,
 
     light_material.use();
 
-    Shader& shader = light_material.get_shader();
+    const Shader& shader = light_material.get_shader();
 
     bundle.bind_textures(shader);
 

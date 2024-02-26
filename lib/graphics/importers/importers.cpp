@@ -1,19 +1,14 @@
-#include "importers.h"
-
 #include <tinyxml2.h>
 
 #include "graphics/objects/material.h"
 #include "graphics/objects/model.h"
 #include "graphics/primitives/mesh.h"
+#include "graphics/primitives/shader.h"
+#include "graphics/primitives/texture.h"
 #include "logger/logger.h"
+#include "managers/asset_manager.h"
 
-REGISTER(TextureImporter, texture)
-REGISTER(ShaderImporter, shader)
-REGISTER(MaterialImporter, material)
-REGISTER(MeshImporter, obj)
-REGISTER(ModelImporter, model)
-
-AbstractAsset* TextureImporter::import(const char* path) {
+IMPORTER(Texture, texture) {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
 
@@ -33,7 +28,7 @@ AbstractAsset* TextureImporter::import(const char* path) {
     return new Asset<Texture>(content_path, slot);
 }
 
-AbstractAsset* ShaderImporter::import(const char* path) {
+IMPORTER(Shader, shader) {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
 
@@ -53,7 +48,7 @@ AbstractAsset* ShaderImporter::import(const char* path) {
     return new Asset<Shader>(vsh_name, fsh_name);
 }
 
-AbstractAsset* MaterialImporter::import(const char* path) {
+IMPORTER(Material, material) {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
 
@@ -65,7 +60,7 @@ AbstractAsset* MaterialImporter::import(const char* path) {
 
     if (shader_xml == nullptr) return nullptr;
 
-    Shader* shader =
+    const Shader* shader =
         AssetManager::request<Shader>(trim_path(shader_xml->GetText()));
 
     if (shader == nullptr) return nullptr;
@@ -75,7 +70,7 @@ AbstractAsset* MaterialImporter::import(const char* path) {
     for (const tinyxml2::XMLElement* child = head->FirstChildElement();
          child != nullptr; child = child->NextSiblingElement()) {
         if (strcmp(child->Name(), "texture") == 0) {
-            Texture* texture =
+            const Texture* texture =
                 AssetManager::request<Texture>(trim_path(child->GetText()));
 
             if (texture == nullptr) return nullptr;
@@ -91,11 +86,9 @@ AbstractAsset* MaterialImporter::import(const char* path) {
     return material;
 }
 
-AbstractAsset* MeshImporter::import(const char* path) {
-    return new Asset<Mesh>(path);
-}
+IMPORTER(Mesh, obj) { return new Asset<Mesh>(path); }
 
-AbstractAsset* ModelImporter::import(const char* path) {
+IMPORTER(Model, model) {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
 
@@ -110,8 +103,9 @@ AbstractAsset* ModelImporter::import(const char* path) {
     if (mesh_xml == nullptr) return nullptr;
     if (material_xml == nullptr) return nullptr;
 
-    Mesh* mesh = AssetManager::request<Mesh>(trim_path(mesh_xml->GetText()));
-    Material* material =
+    const Mesh* mesh =
+        AssetManager::request<Mesh>(trim_path(mesh_xml->GetText()));
+    const Material* material =
         AssetManager::request<Material>(trim_path(material_xml->GetText()));
 
     return new Asset<Model>(*mesh, *material);

@@ -20,6 +20,8 @@
 
 typedef size_t collider_id_t;
 
+using CollisionGroup = std::vector<BoxCollider>;
+
 struct LevelGeometry {
     LevelGeometry(Box bounding_box, size_t horiz_res, size_t vert_res);
     LevelGeometry(const LevelGeometry& geometry);

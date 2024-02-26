@@ -7,21 +7,21 @@
 #include "managers/world_timer.h"
 
 void Material::use() const {
-    shader_.use();
+    shader_->use();
 
     poll_gl_errors();
 
     for (auto pair : textures_) {
         pair.second->bind();
-        shader_.set_uniform_tex(pair.first.data(), *pair.second);
+        shader_->set_uniform_tex(pair.first.data(), *pair.second);
     }
 
-    shader_.set_uniform_float("WorldTime", (float)WorldTimer::get_time_sec());
+    shader_->set_uniform_float("WorldTime", (float)WorldTimer::get_time_sec());
 
     poll_gl_errors();
 }
 
-void Material::add_texture(const char* uniform, Texture* texture) {
+void Material::add_texture(const char* uniform, const Texture* texture) {
     auto cell = textures_.find(uniform);
 
     if (cell != textures_.end()) {
@@ -33,7 +33,7 @@ void Material::add_texture(const char* uniform, Texture* texture) {
     textures_.insert({uniform, texture});
 }
 
-Texture* Material::get_texture(const char* uniform) const {
+const Texture* Material::get_texture(const char* uniform) const {
     auto cell = textures_.find(uniform);
 
     if (cell == textures_.end()) return nullptr;

@@ -42,7 +42,7 @@ void PlayerBall::draw_tick(double delta_time, double subtick_time) {
 }
 
 void PlayerBall::process_input() {
-    static BinaryInput* hit_input = AssetManager::request<BinaryInput>(
+    static const BinaryInput* hit_input = AssetManager::request<BinaryInput>(
         "assets/controls/charge.keybind.xml");
 
     if (input_locked_) return;

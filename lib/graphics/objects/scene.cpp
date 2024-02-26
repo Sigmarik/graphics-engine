@@ -45,7 +45,7 @@ void RenderManager::render(RenderBundle& bundle) const {
 
     //* Copy rendered image to the screen
 
-    static Shader& identity_shader =
+    static const Shader& identity_shader =
         *AssetManager::request<Shader>("assets/shaders/RB2SCR.shader.xml");
 
     RenderBundle::reset_to_screen();

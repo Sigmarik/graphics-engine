@@ -22,19 +22,24 @@
 static const unsigned TEXTURE_SLOT_COUNT = 4;
 
 struct Material {
-    explicit Material(Shader& shader) : shader_(shader) {}
+    explicit Material(const Shader& shader) : shader_(&shader) {}
+
+    Material(const Material& instance) = default;
+    ~Material() = default;
+
+    Material& operator=(const Material& instance) = default;
 
     void use() const;
 
-    void add_texture(const char* uniform, Texture* texture);
-    Texture* get_texture(const char* uniform) const;
+    void add_texture(const char* uniform, const Texture* texture);
+    const Texture* get_texture(const char* uniform) const;
 
-    void set_shader(Shader& shader) { shader_ = shader; }
-    Shader& get_shader() const { return shader_; }
+    void set_shader(const Shader& shader) { shader_ = &shader; }
+    const Shader& get_shader() const { return *shader_; }
 
    private:
-    Shader& shader_;
-    std::unordered_map<std::string, Texture*> textures_ = {};
+    const Shader* shader_;
+    std::unordered_map<std::string, const Texture*> textures_ = {};
 };
 
 #endif

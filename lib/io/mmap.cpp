@@ -10,8 +10,6 @@
 
 MmapResult map_file(const char* name, int oflag, int prot, int privacy) {
     int fd = open(name, oflag);
-    log_printf(STATUS_REPORTS, "status", "Mapping file %s with descriptor %d\n",
-               name, fd);
     if (fd < 0) {
         log_dup(ERROR_REPORTS, "error", "Failed to open file: %s\n", name);
         close(fd);

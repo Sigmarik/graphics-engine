@@ -18,7 +18,7 @@ int Decal::render(const RenderInput& input, const RenderBundle& bundle) const {
 
     material_->use();
 
-    Shader& shader = material_->get_shader();
+    const Shader& shader = material_->get_shader();
 
     bundle.bind_textures(shader);
 

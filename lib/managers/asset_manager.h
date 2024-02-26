@@ -15,6 +15,7 @@
 #include <stdlib.h>
 
 #include <string>
+#include <typeinfo>
 #include <unordered_map>
 #include <vector>
 
@@ -40,64 +41,97 @@ struct Asset : public AbstractAsset {
     T content;
 };
 
-struct AssetImporter {
-    virtual ~AssetImporter() = default;
-    virtual AbstractAsset* import(const char* path) = 0;
+struct ImporterId {
+    ImporterId(size_t type, const char* sign)
+        : type_id(type), signature(sign) {}
+
+    size_t type_id;
+    const char* signature;
+
+    bool operator==(const ImporterId& id) const;
+};
+
+struct AbstractImporter {
+    AbstractImporter(size_t type_id, const char* signature);
+
+    virtual ~AbstractImporter() = default;
+    virtual AbstractAsset* import(const char* path) const = 0;
+
+    const ImporterId& get_id() const { return id_; }
+
+   private:
+    const ImporterId id_;
+};
+
+template <class ASSET_T, const char* SIGNATURE>
+struct AssetImporter : AbstractImporter {
+    AssetImporter()
+        : AbstractImporter(typeid(ASSET_T).hash_code(), SIGNATURE) {}
 };
 
 struct AssetManager {
-    static void register_importer(AssetImporter& importer,
-                                  const char* signature);
+    static void register_importer(AbstractImporter& importer);
 
     template <typename T>
-    static inline T* request(const char* identifier);
+    static const T* request(const char* path);
 
-    static void unload(const char* identifier);
+    void unload_all();
 
    private:
-    static AssetManager& get_instance();
+    AssetManager() = delete;
+    AssetManager(const AssetManager& manager) = delete;
+    AssetManager& operator=(const AssetManager& manager) = delete;
 
-    ~AssetManager();
+    struct AssetRequest {
+        AssetRequest(const char* asset_path, size_t type)
+            : path(asset_path), type_id(type) {}
 
-    AssetManager() = default;
-    AssetManager(const AssetManager& manager) = default;
-    AssetManager& operator=(const AssetManager& manager) = default;
+        const char* path = nullptr;
+        size_t type_id = 0;
 
-    std::unordered_map<std::string, AssetImporter*> importers_ = {};
-    std::unordered_map<std::string, AbstractAsset*> assets_ = {};
+        bool operator==(const AssetRequest& request) const;
+    };
+
+    friend struct std::hash<AssetManager::AssetRequest>;
+
+    static std::unordered_map<ImporterId, AbstractImporter*> importers_;
+    static std::unordered_map<AssetRequest, AbstractAsset*> assets_;
+};
+
+template <>
+struct std::hash<ImporterId> {
+    size_t operator()(const ImporterId& id) const noexcept;
+};
+
+template <>
+struct std::hash<AssetManager::AssetRequest> {
+    size_t operator()(const AssetManager::AssetRequest& request) const noexcept;
 };
 
 #include "_am_request.hpp"
 
 /**
- * @brief Create and register asset importer
+ * @brief Create and register asset importer (for .cpp importer lists)
  *
  */
-#define IMPORTER(name)                                    \
-    struct name : AssetImporter {                         \
-        AbstractAsset* import(const char* path) override; \
-    };                                                    \
-    __attribute__((constructor)) void __register##name();
-
-/**
- * @brief Register asset importer
- *
- */
-#define REGISTER(importer, signature)                                         \
-    __attribute__((constructor)) void __register##importer##__##signature() { \
-        static importer imp;                                                  \
-                                                                              \
-        static bool initialized = false;                                      \
-                                                                              \
-        if (initialized) return;                                              \
-                                                                              \
-        initialized = true;                                                   \
-                                                                              \
-        log_printf(STATUS_REPORTS, "status",                                  \
-                   "Registering asset importer " #importer                    \
-                   " to signature " #signature ".\n");                        \
-                                                                              \
-        AssetManager::register_importer(imp, #signature);                     \
-    }
+#define IMPORTER(type, signature)                                         \
+    const char __string_##signature[] = #signature;                       \
+                                                                          \
+    template <>                                                           \
+    struct AssetImporter<type, __string_##signature> : AbstractImporter { \
+        AssetImporter()                                                   \
+            : AbstractImporter(typeid(type).hash_code(),                  \
+                               __string_##signature) {}                   \
+                                                                          \
+        AbstractAsset* import(const char* path) const override;           \
+                                                                          \
+        static AssetImporter<type, __string_##signature> instance_;       \
+    };                                                                    \
+                                                                          \
+    AssetImporter<type, __string_##signature>                             \
+        AssetImporter<type, __string_##signature>::instance_;             \
+                                                                          \
+    AbstractAsset* AssetImporter<type, __string_##signature>::import(     \
+        const char* path) const
 
 #endif
