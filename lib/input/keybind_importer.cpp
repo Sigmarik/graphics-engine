@@ -5,7 +5,7 @@
 #include "logger/logger.h"
 #include "managers/asset_manager.h"
 
-IMPORTER(BinaryInput, keybind) {
+IMPORTER(BinaryInput, "keybind") {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
 

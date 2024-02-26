@@ -5,7 +5,7 @@ PROFILER = valgrind
 CPP_INCLUDE_FLAGS = -I./ -I./lib/ -isystem ./include -isystem ./include/glad/include
 
 CPP_BASE_FLAGS = $(CPP_INCLUDE_FLAGS)												\
--std=c++17 -Ofast -pie -pthread														\
+-std=c++20 -Ofast -pie -pthread														\
 -Wall -Wextra -Weffc++				 	 											\
 -Waggressive-loop-optimizations -Wc++14-compat -Wmissing-declarations				\
 -Wcast-align -Wchar-subscripts -Wconditionally-supported							\

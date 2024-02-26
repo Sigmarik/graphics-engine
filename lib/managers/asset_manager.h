@@ -14,6 +14,7 @@
 
 #include <stdlib.h>
 
+#include <algorithm>
 #include <string>
 #include <typeinfo>
 #include <unordered_map>
@@ -33,10 +34,10 @@ struct AbstractAsset {
     hash_t hash = 0;
 };
 
-template <typename T>
+template <class T>
 struct Asset : public AbstractAsset {
-    template <typename... Ts>
-    Asset<T>(Ts&&... args) : content(args...) {}
+    template <class... Ts>
+    Asset(Ts&&... args) : content(args...) {}
 
     T content;
 };
@@ -63,10 +64,19 @@ struct AbstractImporter {
     const ImporterId id_;
 };
 
-template <class ASSET_T, const char* SIGNATURE>
+template <size_t N>
+struct StringLiteral {
+    constexpr StringLiteral(const char (&str)[N]) {
+        std::copy_n(str, N, value);
+    }
+
+    char value[N];
+};
+
+template <class ASSET_T, StringLiteral SIGNATURE>
 struct AssetImporter : AbstractImporter {
     AssetImporter()
-        : AbstractImporter(typeid(ASSET_T).hash_code(), SIGNATURE) {}
+        : AbstractImporter(typeid(ASSET_T).hash_code(), SIGNATURE.value) {}
 };
 
 struct AssetManager {
@@ -114,24 +124,20 @@ struct std::hash<AssetManager::AssetRequest> {
  * @brief Create and register asset importer (for .cpp importer lists)
  *
  */
-#define IMPORTER(type, signature)                                         \
-    const char __string_##signature[] = #signature;                       \
-                                                                          \
-    template <>                                                           \
-    struct AssetImporter<type, __string_##signature> : AbstractImporter { \
-        AssetImporter()                                                   \
-            : AbstractImporter(typeid(type).hash_code(),                  \
-                               __string_##signature) {}                   \
-                                                                          \
-        AbstractAsset* import(const char* path) const override;           \
-                                                                          \
-        static AssetImporter<type, __string_##signature> instance_;       \
-    };                                                                    \
-                                                                          \
-    AssetImporter<type, __string_##signature>                             \
-        AssetImporter<type, __string_##signature>::instance_;             \
-                                                                          \
-    AbstractAsset* AssetImporter<type, __string_##signature>::import(     \
-        const char* path) const
+#define IMPORTER(type, signature)                                             \
+    template <>                                                               \
+    struct AssetImporter<type, signature> : AbstractImporter {                \
+        AssetImporter()                                                       \
+            : AbstractImporter(typeid(type).hash_code(), signature) {}        \
+                                                                              \
+        AbstractAsset* import(const char* path) const override;               \
+                                                                              \
+        static AssetImporter<type, signature> instance_;                      \
+    };                                                                        \
+                                                                              \
+    AssetImporter<type, signature> AssetImporter<type, signature>::instance_; \
+                                                                              \
+    AbstractAsset* AssetImporter<type, signature>::import(const char* path)   \
+        const
 
 #endif

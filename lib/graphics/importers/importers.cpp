@@ -8,7 +8,7 @@
 #include "logger/logger.h"
 #include "managers/asset_manager.h"
 
-IMPORTER(Texture, texture) {
+IMPORTER(Texture, "texture") {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
 
@@ -28,7 +28,7 @@ IMPORTER(Texture, texture) {
     return new Asset<Texture>(content_path, slot);
 }
 
-IMPORTER(Shader, shader) {
+IMPORTER(Shader, "shader") {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
 
@@ -48,7 +48,7 @@ IMPORTER(Shader, shader) {
     return new Asset<Shader>(vsh_name, fsh_name);
 }
 
-IMPORTER(Material, material) {
+IMPORTER(Material, "material") {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
 
@@ -86,9 +86,9 @@ IMPORTER(Material, material) {
     return material;
 }
 
-IMPORTER(Mesh, obj) { return new Asset<Mesh>(path); }
+IMPORTER(Mesh, "obj") { return new Asset<Mesh>(path); }
 
-IMPORTER(Model, model) {
+IMPORTER(Model, "model") {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
 
