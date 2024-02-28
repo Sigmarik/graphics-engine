@@ -139,6 +139,15 @@ Intersection SphereCollider::intersect_box(const BoxCollider& box) const {
         closest = intersection;
     }
 
+    glm::mat4 local_to_world = box.get_transform();
+    glm::vec4 new_center = local_to_world * glm::vec4(closest.center, 1.0);
+    glm::vec4 new_delta = local_to_world * glm::vec4(closest.delta, 0.0);
+
+    new_center /= new_center.w;
+
+    closest.center = glm::vec3(new_center.x, new_center.y, new_center.z);
+    closest.delta = glm::vec3(new_delta.x, new_delta.y, new_delta.z);
+
     return closest;
 }
 

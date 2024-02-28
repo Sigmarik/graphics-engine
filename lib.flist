@@ -27,6 +27,7 @@ lib/physics/level_geometry.o
 lib/physics/objects/bouncy_object.o
 lib/physics/objects/character_body.o
 lib/physics/collider.o
+lib/physics/importers/importers.o
 
 lib/graphics/primitives/matrix_stack.o
 lib/graphics/primitives/shader.o
