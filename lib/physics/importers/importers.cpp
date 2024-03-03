@@ -10,13 +10,32 @@
 #include "managers/asset_manager.h"
 #include "physics/level_geometry.h"
 
-static std::optional<BoxCollider> parse_box(
-    const std::vector<glm::vec3>& vertices) {
-    if (vertices.size() < 8) {
-        log_printf(WARNINGS, "warning", "Not enough vertices\n");
-        return {};
+static const double MERGE_DISTANCE = 1e-4;
+
+static void remove_identical(std::vector<glm::vec3>& vertices) {
+    size_t unique_count = 0;
+
+    for (size_t id = 0; id < vertices.size(); ++id) {
+        glm::vec3 current = vertices[id];
+
+        bool unique = true;
+
+        for (size_t pattern = 0; pattern < unique_count; ++pattern) {
+            unique &=
+                glm::distance(vertices[pattern], current) > MERGE_DISTANCE;
+        }
+
+        if (unique) {
+            std::swap(vertices[id], vertices[unique_count]);
+            ++unique_count;
+        }
     }
 
+    vertices.resize(unique_count);
+}
+
+static std::optional<glm::mat3> compute_bounds(
+    const std::vector<glm::vec3>& vertices) {
     glm::vec3 origin = vertices[0];
 
     glm::vec3 arm_x = glm::vec3(0.0, 0.0, 0.0);
@@ -25,14 +44,12 @@ static std::optional<BoxCollider> parse_box(
     for (glm::vec3 vertex : vertices) {
         glm::vec3 arm = vertex - origin;
 
-        if (glm::length(arm) < 1e-4) continue;
-
         if (glm::length(arm) < glm::length(arm_x) ||
-            glm::length(arm_x) < 1e-4) {
+            glm::length(arm_x) < MERGE_DISTANCE) {
             arm_y = arm_x;
             arm_x = arm;
         } else if (glm::length(arm) < glm::length(arm_y) ||
-                   glm::length(arm_y) < 1e-4) {
+                   glm::length(arm_y) < MERGE_DISTANCE) {
             arm_y = arm;
         }
     }
@@ -40,9 +57,7 @@ static std::optional<BoxCollider> parse_box(
     glm::vec3 arm_z = glm::vec3(0.0, 0.0, 0.0);
 
     glm::vec3 normal = glm::cross(arm_x, arm_y);
-    if (glm::length(normal) < 1e-4) {
-        log_printf(WARNINGS, "warning",
-                   "Base vectors produce zero determinant\n");
+    if (glm::length(normal) < MERGE_DISTANCE) {
         return {};
     }
 
@@ -56,9 +71,34 @@ static std::optional<BoxCollider> parse_box(
         }
     }
 
-    if (glm::dot(glm::cross(arm_x, arm_y), arm_z) > 0.0) {
+    if (glm::dot(glm::cross(arm_x, arm_y), arm_z) < 0.0) {
         std::swap(arm_x, arm_y);
     }
+
+    return glm::mat3(arm_x, arm_y, arm_z);
+}
+
+static std::optional<BoxCollider> parse_box(
+    const std::vector<glm::vec3>& vertices) {
+    if (vertices.size() != 8) {
+        log_printf(WARNINGS, "warning",
+                   "Incorrect number of unique vertices (%lu instead of 8)\n",
+                   vertices.size());
+        return {};
+    }
+
+    glm::vec3 origin = vertices[0];
+
+    std::optional<glm::mat3> boundary = compute_bounds(vertices);
+
+    if (!boundary) {
+        log_printf(WARNINGS, "warning", "Failed to determine box axises\n");
+        return {};
+    }
+
+    glm::vec3 arm_x = boundary->operator[](0);
+    glm::vec3 arm_y = boundary->operator[](1);
+    glm::vec3 arm_z = boundary->operator[](2);
 
     glm::vec3 size(glm::length(arm_x), glm::length(arm_y), glm::length(arm_z));
 
@@ -103,17 +143,10 @@ IMPORTER(CollisionGroup, "obj") {
         for (size_t vrt_id = 0; vrt_id < vertex_count; ++vrt_id) {
             aiVector3D pos = mesh->mVertices[vrt_id];
 
-            glm::vec3 new_vertex = glm::vec3(pos.x, pos.y, pos.z);
-
-            bool duplicate = false;
-            for (const glm::vec3& vertex : vertices) {
-                if (glm::distance(vertex, new_vertex) < 1e-4) duplicate = true;
-            }
-
-            if (duplicate) continue;
-
-            vertices.push_back(new_vertex);
+            vertices.push_back(glm::vec3(pos.x, pos.y, pos.z));
         }
+
+        remove_identical(vertices);
 
         std::optional<BoxCollider> collider = parse_box(vertices);
 
