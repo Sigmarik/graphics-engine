@@ -10,9 +10,10 @@
 #include "managers/asset_manager.h"
 #include "physics/level_geometry.h"
 
-static const double MERGE_DISTANCE = 1e-4;
+static const double CMP_EPS = 1e-4;
 
-static void remove_identical(std::vector<glm::vec3>& vertices) {
+static void merge_by_distance(std::vector<glm::vec3>& vertices,
+                              double distance) {
     size_t unique_count = 0;
 
     for (size_t id = 0; id < vertices.size(); ++id) {
@@ -21,8 +22,7 @@ static void remove_identical(std::vector<glm::vec3>& vertices) {
         bool unique = true;
 
         for (size_t pattern = 0; pattern < unique_count; ++pattern) {
-            unique &=
-                glm::distance(vertices[pattern], current) > MERGE_DISTANCE;
+            unique &= glm::distance(vertices[pattern], current) > distance;
         }
 
         if (unique) {
@@ -45,11 +45,11 @@ static std::optional<glm::mat3> compute_bounds(
         glm::vec3 arm = vertex - origin;
 
         if (glm::length(arm) < glm::length(arm_x) ||
-            glm::length(arm_x) < MERGE_DISTANCE) {
+            glm::length(arm_x) < CMP_EPS) {
             arm_y = arm_x;
             arm_x = arm;
         } else if (glm::length(arm) < glm::length(arm_y) ||
-                   glm::length(arm_y) < MERGE_DISTANCE) {
+                   glm::length(arm_y) < CMP_EPS) {
             arm_y = arm;
         }
     }
@@ -57,7 +57,7 @@ static std::optional<glm::mat3> compute_bounds(
     glm::vec3 arm_z = glm::vec3(0.0, 0.0, 0.0);
 
     glm::vec3 normal = glm::cross(arm_x, arm_y);
-    if (glm::length(normal) < MERGE_DISTANCE) {
+    if (glm::length(normal) < CMP_EPS) {
         return {};
     }
 
@@ -146,7 +146,7 @@ IMPORTER(CollisionGroup, "obj") {
             vertices.push_back(glm::vec3(pos.x, pos.y, pos.z));
         }
 
-        remove_identical(vertices);
+        merge_by_distance(vertices, CMP_EPS);
 
         std::optional<BoxCollider> collider = parse_box(vertices);
 
