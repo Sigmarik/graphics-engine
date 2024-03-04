@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include <assimp/Importer.hpp>
+#include <string>
 
 #include "graphics/gl_debug.h"
 #include "logger/logger.h"
@@ -18,9 +19,9 @@ void Mesh::load(const char* path) {
 
     log_printf(STATUS_REPORTS, "status", "Loading model %s\n", path);
 
-    const aiScene* scene =
-        import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs |
-                                  aiProcess_CalcTangentSpace);
+    const aiScene* scene = import.ReadFile(
+        path, aiProcess_Triangulate | aiProcess_FlipUVs |
+                  aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
         !scene->mRootNode) {
@@ -34,6 +35,10 @@ void Mesh::load(const char* path) {
 
     for (size_t mesh_id = 0; mesh_id < scene->mNumMeshes; ++mesh_id) {
         aiMesh* mesh = meshes[mesh_id];
+
+        //* `_box_` objects define collision boxes and should not be imported
+        if (strncmp(mesh->mName.C_Str(), "_box_", 5) == 0) continue;
+
         size_t vertex_count = mesh->mNumVertices;
 
         unsigned uv_depth = mesh->GetNumUVChannels();
