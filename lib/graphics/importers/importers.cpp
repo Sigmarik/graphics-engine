@@ -20,8 +20,16 @@ IMPORTER(Texture, "texture") {
         return nullptr;
     }
 
-    if (element->FirstChildElement("path") == nullptr) return nullptr;
-    if (element->FirstChildElement("slot") == nullptr) return nullptr;
+    if (element->FirstChildElement("path") == nullptr) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Unspecified texture path (`path` tag)\n");
+        return nullptr;
+    }
+    if (element->FirstChildElement("slot") == nullptr) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Unspecified texture slot (`slot` tag)\n");
+        return nullptr;
+    }
 
     unsigned slot = 0;
 
@@ -44,8 +52,16 @@ IMPORTER(Shader, "shader") {
         return nullptr;
     }
 
-    if (element->FirstChildElement("vsh") == nullptr) return nullptr;
-    if (element->FirstChildElement("fsh") == nullptr) return nullptr;
+    if (element->FirstChildElement("vsh") == nullptr) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Unspecified vertex shader path (`vsh` tag)\n");
+        return nullptr;
+    }
+    if (element->FirstChildElement("fsh") == nullptr) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Unspecified fragment shader path (`fsh` tag)\n");
+        return nullptr;
+    }
 
     static char vsh_name[PATH_LENGTH] = "";
     static char fsh_name[PATH_LENGTH] = "";
