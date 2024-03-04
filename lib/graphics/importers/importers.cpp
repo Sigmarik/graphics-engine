@@ -14,7 +14,11 @@ IMPORTER(Texture, "texture") {
 
     const tinyxml2::XMLElement* element = doc.FirstChildElement("texture");
 
-    if (element == nullptr) return nullptr;
+    if (element == nullptr) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Invalid texture descriptor header\n");
+        return nullptr;
+    }
 
     if (element->FirstChildElement("path") == nullptr) return nullptr;
     if (element->FirstChildElement("slot") == nullptr) return nullptr;
@@ -34,7 +38,11 @@ IMPORTER(Shader, "shader") {
 
     const tinyxml2::XMLElement* element = doc.FirstChildElement("shader");
 
-    if (element == nullptr) return nullptr;
+    if (element == nullptr) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Invalid shader descriptor header\n");
+        return nullptr;
+    }
 
     if (element->FirstChildElement("vsh") == nullptr) return nullptr;
     if (element->FirstChildElement("fsh") == nullptr) return nullptr;
@@ -54,16 +62,28 @@ IMPORTER(Material, "material") {
 
     const tinyxml2::XMLElement* head = doc.FirstChildElement("material");
 
-    if (head == nullptr) return nullptr;
+    if (head == nullptr) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Invalid material descriptor header\n");
+        return nullptr;
+    }
 
     const tinyxml2::XMLElement* shader_xml = head->FirstChildElement("shader");
 
-    if (shader_xml == nullptr) return nullptr;
+    if (shader_xml == nullptr) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Unspecified shader descriptor path (`shader` tag)\n");
+        return nullptr;
+    }
 
     const Shader* shader =
         AssetManager::request<Shader>(trim_path(shader_xml->GetText()));
 
-    if (shader == nullptr) return nullptr;
+    if (shader == nullptr) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Failed to load the material shader\n");
+        return nullptr;
+    }
 
     Asset<Material>* material = new Asset<Material>(*shader);
 
@@ -73,11 +93,21 @@ IMPORTER(Material, "material") {
             const Texture* texture =
                 AssetManager::request<Texture>(trim_path(child->GetText()));
 
-            if (texture == nullptr) return nullptr;
+            if (texture == nullptr) {
+                log_printf(WARNINGS, "warning",
+                           "Failed to load texture file while setting up the "
+                           "material\n");
+                continue;
+            }
 
             const char* uniform_name = child->Attribute("uniform");
 
-            if (uniform_name == nullptr) return nullptr;
+            if (uniform_name == nullptr) {
+                log_printf(WARNINGS, "warning",
+                           "Unspecified texture uniform name (could not find a "
+                           "`uniform` attribute)\n");
+                continue;
+            }
 
             material->content.add_texture(uniform_name, texture);
         }
@@ -94,19 +124,38 @@ IMPORTER(Model, "model") {
 
     const tinyxml2::XMLElement* head = doc.FirstChildElement("model");
 
-    if (head == nullptr) return nullptr;
+    if (head == nullptr) {
+        log_printf(ERROR_REPORTS, "error", "Invalid model descriptor header\n");
+        return nullptr;
+    }
 
     const tinyxml2::XMLElement* mesh_xml = head->FirstChildElement("mesh");
     const tinyxml2::XMLElement* material_xml =
         head->FirstChildElement("material");
 
-    if (mesh_xml == nullptr) return nullptr;
-    if (material_xml == nullptr) return nullptr;
+    if (mesh_xml == nullptr) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Unspecified model mesh path (`mesh` tag)\n");
+        return nullptr;
+    }
+    if (material_xml == nullptr) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Unspecified model material path (`material` tag)\n");
+        return nullptr;
+    }
 
     const Mesh* mesh =
         AssetManager::request<Mesh>(trim_path(mesh_xml->GetText()));
     const Material* material =
         AssetManager::request<Material>(trim_path(material_xml->GetText()));
+
+    if (mesh == nullptr || material == nullptr) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Failed to load model dependencies (mesh.has_value() = %d, "
+                   "material.has_value() = %d)\n",
+                   mesh != nullptr, material != nullptr);
+        return nullptr;
+    }
 
     return new Asset<Model>(*mesh, *material);
 }
