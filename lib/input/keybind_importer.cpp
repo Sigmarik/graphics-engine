@@ -11,7 +11,11 @@ IMPORTER(BinaryInput, "keybind") {
 
     const tinyxml2::XMLElement* element = doc.FirstChildElement("keybind");
 
-    if (element == nullptr) return nullptr;
+    if (element == nullptr) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Invalid keybind descriptor header\n");
+        return nullptr;
+    }
 
     Asset<BinaryInput>* asset = new Asset<BinaryInput>();
 
@@ -22,17 +26,14 @@ IMPORTER(BinaryInput, "keybind") {
 
         if (code == nullptr) {
             log_printf(WARNINGS, "warning",
-                       "Input action code was not specified. This input will "
-                       "be ignored.\n");
+                       "Input action code was not specified\n");
         }
 
         const InputAction* action = InputController::get_action(code);
 
         if (action == nullptr) {
             log_printf(WARNINGS, "warning",
-                       "Input action \"%s\" does not exist, this input will be "
-                       "ignored.\n",
-                       code);
+                       "Input action \"%s\" does not exist\n", code);
         }
 
         asset->content.add_activator(*action);

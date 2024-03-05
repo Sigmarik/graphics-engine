@@ -9,12 +9,8 @@ const T* AssetManager::request(const char* path) {
         return &((Asset<T>*)asset->second)->content;
     }
 
-    log_printf(STATUS_REPORTS, "status",
-               "Loading asset \"%s\" (type %0lX) (identifier hash %0lX, "
-               "storage size %lu)\n",
-               identifier.path, identifier.type_id,
-               std::hash<AssetManager::AssetRequest>{}(identifier),
-               assets_.size());
+    log_printf(STATUS_REPORTS, "status", "Loading asset \"%s\" (type %0lX)\n",
+               identifier.path, identifier.type_id);
 
     static char signature[128] = "";
 
@@ -38,10 +34,10 @@ const T* AssetManager::request(const char* path) {
     ImporterId importer_id(typeid(T).hash_code(), signature);
     auto importer_cell = importers_.find(importer_id);
     if (importer_cell == importers_.end()) {
-        log_printf(
-            ERROR_REPORTS, "error",
-            "Failed to find importer matching signature %s (type %0lX)\n",
-            signature, importer_id.type_id);
+        log_printf(ERROR_REPORTS, "error",
+                   "Failed to find importer matching the signature \"%s\" "
+                   "(type %0lX)\n",
+                   signature, importer_id.type_id);
         return nullptr;
     }
 
@@ -49,7 +45,7 @@ const T* AssetManager::request(const char* path) {
 
     if (imported == nullptr) {
         log_printf(ERROR_REPORTS, "error",
-                   "Failed to import asset %s (type %0lX)\n", path,
+                   "Failed to import the asset \"%s\" (type %0lX)\n", path,
                    identifier.type_id);
         return nullptr;
     }
