@@ -38,6 +38,7 @@ lib/graphics/primitives/framebuffer.o
 lib/graphics/primitives/flat_renderer.o
 lib/graphics/primitives/render_frame.o
 lib/graphics/importers/importers.o
+lib/graphics/objects/uniform_set.o
 lib/graphics/objects/material.o
 lib/graphics/objects/model.o
 lib/graphics/objects/scene.o
