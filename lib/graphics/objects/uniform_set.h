@@ -71,10 +71,19 @@ struct UniformSet {
         explicit UniformValue(const Texture& value);
         explicit UniformValue(const Texture3D& value);
 
+        explicit UniformValue(const Texture* value) : UniformValue(*value) {}
+        explicit UniformValue(const Texture3D* value) : UniformValue(*value) {}
+
+        UniformValue(const UniformValue&) = default;
+        UniformValue& operator=(const UniformValue&) = default;
+
+        UniformValue(UniformValue&&) = default;
+        UniformValue& operator=(UniformValue&&) = default;
+
         void upload(const Shader& shader, const char* name) const;
 
        private:
-        const UniformSet::UniformType type_;
+        UniformSet::UniformType type_;
 
         union {
             int Int;
@@ -90,10 +99,18 @@ struct UniformSet {
         } value_;
     };
 
-    std::unordered_map<std::string, UniformSet::UniformValue> data_;
+   private:
+    std::unordered_map<std::string, UniformSet::UniformValue> data_{};
 };
 
 template <class T>
 inline void UniformSet::set(const char* name, const T& value) {
-    data_[name] = UniformSet::UniformValue(value);
+    assert(name);
+
+    auto found = data_.find(name);
+    if (found != data_.end()) {
+        found->second = UniformSet::UniformValue(value);
+    } else {
+        data_.insert({name, UniformSet::UniformValue(value)});
+    }
 }

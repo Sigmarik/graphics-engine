@@ -35,10 +35,12 @@ void UniformSet::UniformValue::upload(const Shader& shader,
         } break;
         case UniformSet::UniformType::Texture: {
             assert(value_.texture);
+            value_.texture->bind();
             shader.set_uniform_tex(name, *value_.texture);
         } break;
         case UniformSet::UniformType::Texture3D: {
             assert(value_.texture_3d);
+            value_.texture_3d->bind();
             shader.set_uniform_tex3d(name, *value_.texture_3d);
         } break;
         default:

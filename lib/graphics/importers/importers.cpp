@@ -125,7 +125,7 @@ IMPORTER(Material, "material") {
                 continue;
             }
 
-            material->content.add_texture(uniform_name, texture);
+            material->content.set_uniform(uniform_name, *texture);
         }
     }
 

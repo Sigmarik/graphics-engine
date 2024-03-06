@@ -9,8 +9,7 @@
  *
  */
 
-#ifndef __LIB_LOGICS_COMPONENTS_VISUAL_STATIC_MESH_H
-#define __LIB_LOGICS_COMPONENTS_VISUAL_STATIC_MESH_H
+#pragma once
 
 #include "graphics/objects/model.h"
 #include "logics/scene_component.h"
@@ -26,8 +25,10 @@ struct StaticMesh : public SceneComponent {
         return model_.get_object_matrix();
     }
 
+    Model& get_model() { return model_; }
+    const Model& get_model() const { return model_; }
+    void set_model(const Model& model) { model_ = model; }
+
    private:
     Model model_;
 };
-
-#endif /* __LIB_LOGICS_COMPONENTS_VISUAL_STATIC_MESH_H */

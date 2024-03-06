@@ -7,14 +7,14 @@ int Model::render(const RenderInput& input, const RenderBundle& bundle) const {
 
     poll_gl_errors();
 
-    material_->use();
+    material_.use();
 
     poll_gl_errors();
 
-    bundle.bind_textures(material_->get_shader());
+    bundle.bind_textures(material_.get_shader());
 
     mesh_->render(input.camera->get_matrix(), object_matrix_,
-                  material_->get_shader());
+                  material_.get_shader());
 
     poll_gl_errors();
 
