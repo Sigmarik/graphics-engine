@@ -1,7 +1,5 @@
 <material>
-    <shader>assets/shaders/albedo_only.shader.xml</shader>
+    <shader path="assets/shaders/albedo_only.shader.xml"></shader>
 
-    <texture uniform="albedo">
-        assets/textures/noisy_red.texture.xml
-    </texture>
+    <texture var="albedo" path="assets/textures/noisy_red.texture.xml"></texture>
 </material>

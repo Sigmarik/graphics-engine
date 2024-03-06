@@ -1,3 +1,3 @@
 <material>
-    <shader>assets/shaders/lights/point_light.shader.xml</shader>
+    <shader path="assets/shaders/lights/point_light.shader.xml"></shader>
 </material>

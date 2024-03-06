@@ -38,6 +38,10 @@ const T* AssetManager::request(const char* path) {
                    "Failed to find importer matching the signature \"%s\" "
                    "(type %0lX)\n",
                    signature, importer_id.type_id);
+        printf(
+            "ERROR: Failed to find importer for asset \"%s\", see logs for "
+            "more information.\n",
+            path);
         return nullptr;
     }
 
@@ -45,8 +49,11 @@ const T* AssetManager::request(const char* path) {
 
     if (imported == nullptr) {
         log_printf(ERROR_REPORTS, "error",
-                   "Failed to import the asset \"%s\" (type %0lX)\n", path,
+                   "Failed to import asset \"%s\" (type %0lX)\n", path,
                    identifier.type_id);
+        printf(
+            "ERROR: Failed to import \"%s\", see logs for more information.\n",
+            path);
         return nullptr;
     }
 
