@@ -60,11 +60,16 @@ struct UniformSet {
     };
 
     struct UniformValue {
-        template <class T>
-        UniformValue(const T& value);
-
-        template <class T>
-        UniformValue(T value);
+        explicit UniformValue(int value);
+        explicit UniformValue(float value);
+        explicit UniformValue(const glm::vec2& value);
+        explicit UniformValue(const glm::vec3& value);
+        explicit UniformValue(const glm::vec4& value);
+        explicit UniformValue(const glm::mat2& value);
+        explicit UniformValue(const glm::mat3& value);
+        explicit UniformValue(const glm::mat4& value);
+        explicit UniformValue(const Texture& value);
+        explicit UniformValue(const Texture3D& value);
 
         void upload(const Shader& shader, const char* name) const;
 
@@ -89,6 +94,6 @@ struct UniformSet {
 };
 
 template <class T>
-void UniformSet::set(const char* name, const T& value) {
+inline void UniformSet::set(const char* name, const T& value) {
     data_[name] = UniformSet::UniformValue(value);
 }
