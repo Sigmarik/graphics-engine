@@ -27,7 +27,7 @@
  * @brief A set of material uniforms, distinguished by their uniform names
  *
  */
-struct UniformSet {
+struct UniformSet final {
     /**
      * @brief Upload the uniform values to the GPU
      *
@@ -59,7 +59,7 @@ struct UniformSet {
         Texture3D,
     };
 
-    struct UniformValue {
+    struct UniformValue final {
         explicit UniformValue(int value);
         explicit UniformValue(float value);
         explicit UniformValue(const glm::vec2& value);

@@ -18,7 +18,7 @@
 
 static const unsigned TEXTURE_SLOT_COUNT = 4;
 
-struct Material {
+struct Material final {
     explicit Material(const Shader& shader) : shader_(&shader) {}
 
     Material(const Material&) = default;
