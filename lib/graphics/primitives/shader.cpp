@@ -84,6 +84,13 @@ void Shader::read(const char* vsh_name, const char* fsh_name) {
     poll_gl_errors();
 }
 
+void Shader::set_uniform_int(const char* uniform, int value) const {
+    poll_gl_errors();
+    GLint uni = glGetUniformLocation(id_, uniform);
+    glUniform1i(uni, value);
+    poll_gl_errors();
+}
+
 void Shader::set_uniform_float(const char* uniform, float value) const {
     poll_gl_errors();
     GLint uni = glGetUniformLocation(id_, uniform);
@@ -104,6 +111,30 @@ void Shader::set_uniform_vec3(const char* uniform,
     poll_gl_errors();
     GLint uni = glGetUniformLocation(id_, uniform);
     glUniform3f(uni, vector.x, vector.y, vector.z);
+    poll_gl_errors();
+}
+
+void Shader::set_uniform_vec4(const char* uniform,
+                              const glm::vec4& vector) const {
+    poll_gl_errors();
+    GLint uni = glGetUniformLocation(id_, uniform);
+    glUniform4f(uni, vector.x, vector.y, vector.z, vector.w);
+    poll_gl_errors();
+}
+
+void Shader::set_uniform_mat2(const char* uniform,
+                              const glm::mat2& matrix) const {
+    poll_gl_errors();
+    GLint uni = glGetUniformLocation(id_, uniform);
+    glUniformMatrix2fv(uni, 1, false, &matrix[0][0]);
+    poll_gl_errors();
+}
+
+void Shader::set_uniform_mat3(const char* uniform,
+                              const glm::mat3& matrix) const {
+    poll_gl_errors();
+    GLint uni = glGetUniformLocation(id_, uniform);
+    glUniformMatrix3fv(uni, 1, false, &matrix[0][0]);
     poll_gl_errors();
 }
 

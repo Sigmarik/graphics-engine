@@ -11,32 +11,9 @@ void Material::use() const {
 
     poll_gl_errors();
 
-    for (auto pair : textures_) {
-        pair.second->bind();
-        shader_->set_uniform_tex(pair.first.data(), *pair.second);
-    }
+    uniforms_.upload(*shader_);
 
     shader_->set_uniform_float("WorldTime", (float)WorldTimer::get_time_sec());
 
     poll_gl_errors();
-}
-
-void Material::add_texture(const char* uniform, const Texture* texture) {
-    auto cell = textures_.find(uniform);
-
-    if (cell != textures_.end()) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Material uniform \"%s\" was set twice\n", uniform);
-        return;
-    }
-
-    textures_.insert({uniform, texture});
-}
-
-const Texture* Material::get_texture(const char* uniform) const {
-    auto cell = textures_.find(uniform);
-
-    if (cell == textures_.end()) return nullptr;
-
-    return cell->second;
 }

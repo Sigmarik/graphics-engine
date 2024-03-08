@@ -9,37 +9,34 @@
  *
  */
 
-#ifndef MATERIAL_H
-#define MATERIAL_H
-
-#include <string>
-#include <unordered_map>
+#pragma once
 
 #include "graphics/primitives/shader.h"
 #include "graphics/primitives/texture.h"
 #include "scene.h"
+#include "uniform_set.h"
 
 static const unsigned TEXTURE_SLOT_COUNT = 4;
 
-struct Material {
+struct Material final {
     explicit Material(const Shader& shader) : shader_(&shader) {}
 
-    Material(const Material& instance) = default;
-    ~Material() = default;
+    Material(const Material&) = default;
+    Material& operator=(const Material&) = default;
 
-    Material& operator=(const Material& instance) = default;
+    ~Material() = default;
 
     void use() const;
 
-    void add_texture(const char* uniform, const Texture* texture);
-    const Texture* get_texture(const char* uniform) const;
+    template <class T>
+    void set_uniform(const char* name, const T& value) {
+        uniforms_.set(name, value);
+    }
 
     void set_shader(const Shader& shader) { shader_ = &shader; }
     const Shader& get_shader() const { return *shader_; }
 
    private:
     const Shader* shader_;
-    std::unordered_map<std::string, const Texture*> textures_ = {};
+    UniformSet uniforms_{};
 };
-
-#endif

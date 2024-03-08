@@ -9,8 +9,7 @@
  *
  */
 
-#ifndef MODEL_H
-#define MODEL_H
+#pragma once
 
 #include "graphics/primitives/mesh.h"
 #include "material.h"
@@ -18,7 +17,7 @@
 
 struct Model : public Renderable {
     Model(const Mesh& mesh, const Material& material)
-        : mesh_(&mesh), material_(&material) {}
+        : mesh_(&mesh), material_(material) {}
     ~Model() = default;
     Model(const Model& model) = default;
     Model& operator=(const Model& model) = default;
@@ -29,12 +28,11 @@ struct Model : public Renderable {
     const Mesh& get_mesh() const { return *mesh_; }
     void set_mesh(const Mesh& mesh) { mesh_ = &mesh; }
 
-    const Material& get_material() const { return *material_; }
-    void set_material(const Material& material) { material_ = &material; }
+    const Material& get_material() const { return material_; }
+    Material& get_material() { return material_; }
+    void set_material(const Material& material) { material_ = material; }
 
    private:
     const Mesh* mesh_;
-    const Material* material_;
+    Material material_;
 };
-
-#endif
