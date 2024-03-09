@@ -8,10 +8,9 @@
 #include "graphics/gl_debug.h"
 #include "logger/logger.h"
 
-Texture::Texture(const char* path, unsigned slot) {
+Texture::Texture(const char* path) {
     int chanel_count = 0;
     int width = 0, height = 0;
-    slot_ = slot;
     unsigned char* data = stbi_load(path, &width, &height, &chanel_count, 0);
 
     if (!data) {
@@ -37,12 +36,10 @@ Texture::Texture(const char* path, unsigned slot) {
     stbi_image_free(data);
 }
 
-Texture::Texture(unsigned width, unsigned height, unsigned slot,
-                 const unsigned char* data, GLint int_format, GLenum format) {
+Texture::Texture(unsigned width, unsigned height, const unsigned char* data,
+                 GLint int_format, GLenum format) {
     width_ = width;
     height_ = height;
-
-    slot_ = slot;
 
     int_format_ = int_format;
     format_ = format;
@@ -54,8 +51,8 @@ Texture::Texture(unsigned width, unsigned height, unsigned slot,
     poll_gl_errors();
 }
 
-void Texture::bind() const {
-    glActiveTexture(GL_TEXTURE0 + slot_);
+void Texture::bind(unsigned slot) const {
+    glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_2D, id_);
 
     poll_gl_errors();
@@ -63,20 +60,29 @@ void Texture::bind() const {
 
 void Texture::attach_to_fb(GLenum attachment) const {
     poll_gl_errors();
-    bind();
+    bind(0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, id_, 0);
 
     poll_gl_errors();
 }
 
+void Texture::use_settings(const TextureSettings& settings) const {
+    poll_gl_errors();
+    bind(0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, settings.wrap);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, settings.wrap);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, settings.interp);
+    poll_gl_errors();
+}
+
 void Texture::load_params(const unsigned char* data) const {
     poll_gl_errors();
-    bind();
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // Silent `bind(0)`
+    use_settings({.wrap = GL_REPEAT, .interp = GL_NEAREST});
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, int_format_, (GLsizei)width_,
                  (GLsizei)height_, 0, format_, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -87,11 +93,10 @@ void Texture::load_params(const unsigned char* data) const {
 //* 3-DIMENSIONAL TEXTURE
 
 Texture3D::Texture3D(unsigned size_x, unsigned size_y, unsigned size_z,
-                     unsigned slot, GLint int_format, GLenum format) {
+                     GLint int_format, GLenum format) {
     size_x_ = size_x;
     size_y_ = size_y;
     size_z_ = size_z;
-    slot_ = slot;
     int_format_ = int_format;
     format_ = format;
 
@@ -102,8 +107,8 @@ Texture3D::Texture3D(unsigned size_x, unsigned size_y, unsigned size_z,
     poll_gl_errors();
 }
 
-void Texture3D::bind() const {
-    glActiveTexture(GL_TEXTURE0 + slot_);
+void Texture3D::bind(unsigned slot) const {
+    glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_3D, id_);
 
     poll_gl_errors();
@@ -117,15 +122,24 @@ void Texture3D::synch(const unsigned char* data) const {
     poll_gl_errors();
 }
 
+void Texture3D::use_settings(const TextureSettings& settings) const {
+    poll_gl_errors();
+    bind(0);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, settings.wrap);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, settings.wrap);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, settings.wrap);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, settings.interp);
+    poll_gl_errors();
+}
+
 void Texture3D::load_params(const unsigned char* data) const {
     poll_gl_errors();
 
-    bind();
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // Silent `bind(0)`
+    use_settings({.wrap = GL_REPEAT, .interp = GL_LINEAR});
+
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     synch(data);
     glGenerateMipmap(GL_TEXTURE_3D);
 

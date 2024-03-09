@@ -37,7 +37,7 @@ IMPORTER(Texture, "texture") {
         trim_path(element->FirstChildElement("path")->GetText());
     element->FirstChildElement("slot")->QueryUnsignedText(&slot);
 
-    return new Asset<Texture>(content_path, slot);
+    return new Asset<Texture>(content_path);
 }
 
 IMPORTER(Shader, "shader") {
