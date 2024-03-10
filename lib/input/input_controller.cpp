@@ -96,20 +96,20 @@ void InputController::mouse_button_callback(GLFWwindow* window, int button,
     }
 }
 
-static void InputController::set_active_window(GLFWwindow* window) {
+void InputController::set_active_window(GLFWwindow* window) {
     active_window_ = window;
 }
 
-static GLFWwindow* InputController::get_active_window() {
+GLFWwindow* InputController::get_active_window() {
     return active_window_;
 }
 
-static void InputController::set_active_cursor_mode(CursorMode mode) {
+void InputController::set_active_cursor_mode(CursorMode mode) {
     set_cursor_mode(active_window_, mode);
     mode_ = mode;
 }
 
-static CursorMode get_active_cursor_mode() {
+CursorMode get_active_cursor_mode() {
     return mode_;
 }
 
