@@ -1,4 +1,4 @@
 <shader>
-    <fsh>assets/shaders/identity.fsh</fsh>
-    <vsh>assets/shaders/identity.vsh</vsh>
+    <fsh path="assets/shaders/identity.fsh"></fsh>
+    <vsh path="assets/shaders/identity.vsh"></vsh>
 </shader>

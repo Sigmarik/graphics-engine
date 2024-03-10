@@ -17,6 +17,12 @@
 struct TextureSettings {
     int wrap = GL_REPEAT;
     int interp = GL_NEAREST;
+
+    struct {
+        float r = 0.0;
+        float g = 0.0;
+        float b = 0.0;
+    } color;
 };
 
 struct Texture {

@@ -1,7 +1,7 @@
 <material>
     <shader path="assets/shaders/basic.shader.xml"></shader>
 
-    <texture uniform="albedo" path="assets/textures/wood.texture.xml"></texture>
+    <texture uniform="albedo" path="assets/textures/wood.png"></texture>
 
     <texture uniform="ao_map" path="assets/textures/frame_ao.texture.xml"></texture>
 </material>

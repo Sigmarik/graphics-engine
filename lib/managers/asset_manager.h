@@ -25,9 +25,6 @@
 
 static const size_t PATH_LENGTH = 1024;
 
-const char* trim_path(const char* path);
-void copy_trimmed(char destination[PATH_LENGTH], const char* source);
-
 struct AbstractAsset {
     virtual ~AbstractAsset() = default;
 

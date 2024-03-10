@@ -1,4 +1,4 @@
 <shader>
-    <fsh>assets/shaders/albedo_only.fsh</fsh>
-    <vsh>assets/shaders/basic.vsh</vsh>
+    <fsh path="assets/shaders/albedo_only.fsh"></fsh>
+    <vsh path="assets/shaders/basic.vsh"></vsh>
 </shader>

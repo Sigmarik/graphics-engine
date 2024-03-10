@@ -8,6 +8,92 @@
 #include "logger/logger.h"
 #include "managers/asset_manager.h"
 
+IMPORTER(Texture, "png") { return new Asset<Texture>(path); }
+IMPORTER(Texture, "jpg") { return new Asset<Texture>(path); }
+IMPORTER(Texture, "bmp") { return new Asset<Texture>(path); }
+
+void read_wrap(const tinyxml2::XMLElement* element, TextureSettings& settings) {
+    if (element == nullptr) return;
+
+    const char* name = nullptr;
+
+    element->QueryStringAttribute("mode", &name);
+
+    if (name == nullptr) {
+        log_printf(WARNINGS, "warning",
+                   "Wrap mode not specified (missing `mode` attribute)\n");
+        return;
+    }
+
+    if (strcmp(name, "repeat") == 0) {
+        settings.wrap = GL_REPEAT;
+    } else if (strcmp(name, "mirrored_repeat") == 0) {
+        settings.wrap = GL_MIRRORED_REPEAT;
+    } else if (strcmp(name, "clamp_to_border") == 0) {
+        settings.wrap = GL_CLAMP_TO_BORDER;
+    } else if (strcmp(name, "clamp_to_edge") == 0) {
+        settings.wrap = GL_CLAMP_TO_EDGE;
+
+        // CLAMP_TO_EDGE fills unmapped pixels of the image with BORDER_COLOR
+        // This is where the user can define the color they want to use
+
+        // <wrap mode="clamp_to_edge" r="1.0" g="0.0" b="1.0"></wrap>
+        //                            ^^^^^^^^^^^^^^^^^^^^^^^
+
+        element->QueryFloatAttribute("r", &settings.color.r);
+        element->QueryFloatAttribute("g", &settings.color.g);
+        element->QueryFloatAttribute("b", &settings.color.b);
+
+        element->QueryFloatAttribute("red", &settings.color.r);
+        element->QueryFloatAttribute("green", &settings.color.g);
+        element->QueryFloatAttribute("blue", &settings.color.b);
+
+        float red = settings.color.r;
+        float green = settings.color.g;
+        float blue = settings.color.b;
+
+        if (red < 0.0 || red > 1.0 || green < 0.0 || green > 1.0 ||
+            blue < 0.0 || blue > 1.0) {
+            settings.color.r = glm::clamp(settings.color.r, 0.0f, 1.0f);
+            settings.color.g = glm::clamp(settings.color.g, 0.0f, 1.0f);
+            settings.color.b = glm::clamp(settings.color.b, 0.0f, 1.0f);
+
+            log_printf(WARNINGS, "warning",
+                       "Clamping invalid border color RGB(%g, %g, %g) to "
+                       "RGB(%g, %g, %g)\n",
+                       red, green, blue, settings.color.r, settings.color.g,
+                       settings.color.b);
+        }
+    } else {
+        log_printf(WARNINGS, "warning", "Invalid wrap mode \"%s\"\n", name);
+    }
+}
+
+void read_interp(const tinyxml2::XMLElement* element,
+                 TextureSettings& settings) {
+    if (element == nullptr) return;
+
+    const char* name = nullptr;
+
+    element->QueryStringAttribute("mode", &name);
+
+    if (name == nullptr) {
+        log_printf(
+            WARNINGS, "warning",
+            "Interpolation mode not specified (missing `mode` attribute)\n");
+        return;
+    }
+
+    if (strcmp(name, "linear") == 0) {
+        settings.interp = GL_LINEAR;
+    } else if (strcmp(name, "nearest") == 0) {
+        settings.interp = GL_NEAREST;
+    } else {
+        log_printf(WARNINGS, "warning", "Invalid interpolation mode \"%s\"\n",
+                   name);
+    }
+}
+
 IMPORTER(Texture, "texture") {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
@@ -20,24 +106,35 @@ IMPORTER(Texture, "texture") {
         return nullptr;
     }
 
-    if (element->FirstChildElement("path") == nullptr) {
+    const tinyxml2::XMLElement* path_element =
+        element->FirstChildElement("file");
+
+    if (path_element == nullptr) {
         log_printf(ERROR_REPORTS, "error",
-                   "Unspecified texture path (`path` tag)\n");
+                   "Unspecified texture file (missing `file` tag)\n");
         return nullptr;
     }
-    if (element->FirstChildElement("slot") == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Unspecified texture slot (`slot` tag)\n");
+
+    const char* content_path = nullptr;
+    path_element->QueryStringAttribute("path", &content_path);
+
+    if (content_path == nullptr) {
+        log_printf(
+            ERROR_REPORTS, "error",
+            "Unspecified texture file path (missing `path` attribute)\n");
         return nullptr;
     }
 
-    unsigned slot = 0;
+    Asset<Texture>* asset = new Asset<Texture>(content_path);
 
-    const char* content_path =
-        trim_path(element->FirstChildElement("path")->GetText());
-    element->FirstChildElement("slot")->QueryUnsignedText(&slot);
+    TextureSettings settings = {.wrap = GL_REPEAT, .interp = GL_NEAREST};
 
-    return new Asset<Texture>(content_path);
+    read_wrap(element->FirstChildElement("wrap"), settings);
+    read_interp(element->FirstChildElement("interp"), settings);
+
+    asset->content.use_settings(settings);
+
+    return asset;
 }
 
 IMPORTER(Shader, "shader") {
@@ -52,22 +149,38 @@ IMPORTER(Shader, "shader") {
         return nullptr;
     }
 
-    if (element->FirstChildElement("vsh") == nullptr) {
+    const tinyxml2::XMLElement* vsh_element = element->FirstChildElement("vsh");
+    const tinyxml2::XMLElement* fsh_element = element->FirstChildElement("fsh");
+
+    if (vsh_element == nullptr) {
         log_printf(ERROR_REPORTS, "error",
-                   "Unspecified vertex shader path (`vsh` tag)\n");
+                   "Unspecified vertex shader path (missing `vsh` tag)\n");
         return nullptr;
     }
-    if (element->FirstChildElement("fsh") == nullptr) {
+    if (fsh_element == nullptr) {
         log_printf(ERROR_REPORTS, "error",
-                   "Unspecified fragment shader path (`fsh` tag)\n");
+                   "Unspecified fragment shader path (missing `fsh` tag)\n");
         return nullptr;
     }
 
-    static char vsh_name[PATH_LENGTH] = "";
-    static char fsh_name[PATH_LENGTH] = "";
+    const char* vsh_name = nullptr;
+    const char* fsh_name = nullptr;
 
-    copy_trimmed(vsh_name, element->FirstChildElement("vsh")->GetText());
-    copy_trimmed(fsh_name, element->FirstChildElement("fsh")->GetText());
+    vsh_element->QueryStringAttribute("path", &vsh_name);
+    fsh_element->QueryStringAttribute("path", &fsh_name);
+
+    if (vsh_name == nullptr) {
+        log_printf(
+            ERROR_REPORTS, "error",
+            "Unspecified vertex shader path (missing `path` attribute)\n");
+        return nullptr;
+    }
+    if (fsh_name == nullptr) {
+        log_printf(
+            ERROR_REPORTS, "error",
+            "Unspecified fragment shader path (missing `path` attribute)\n");
+        return nullptr;
+    }
 
     return new Asset<Shader>(vsh_name, fsh_name);
 }
@@ -284,8 +397,9 @@ IMPORTER(Material, "material") {
     const tinyxml2::XMLElement* shader_xml = head->FirstChildElement("shader");
 
     if (shader_xml == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Unspecified shader descriptor path (`shader` tag)\n");
+        log_printf(
+            ERROR_REPORTS, "error",
+            "Unspecified shader descriptor path (missing `shader` tag)\n");
         return nullptr;
     }
 
@@ -293,15 +407,16 @@ IMPORTER(Material, "material") {
     shader_xml->QueryStringAttribute("path", &shader_path);
 
     if (shader_path == nullptr) {
-        log_printf(ERROR_REPORTS, "error", "Shader path not specified\n");
+        log_printf(ERROR_REPORTS, "error",
+                   "Shader path not specified (missing `path` attribute)\n");
         return nullptr;
     }
 
     const Shader* shader = AssetManager::request<Shader>(shader_path);
 
     if (shader == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Failed to load the material shader\n");
+        log_printf(ERROR_REPORTS, "error", "Failed to load shader \"%s\"\n",
+                   shader_path);
         return nullptr;
     }
 
@@ -309,7 +424,8 @@ IMPORTER(Material, "material") {
 
     if (material == nullptr) {
         log_printf(ERROR_REPORTS, "error",
-                   "Failed to construct the material\n");
+                   "Failed to construct the material from shader \"%s\"\n",
+                   shader_path);
     }
 
     for (const tinyxml2::XMLElement* child = head->FirstChildElement();
@@ -339,19 +455,36 @@ IMPORTER(Model, "model") {
 
     if (mesh_xml == nullptr) {
         log_printf(ERROR_REPORTS, "error",
-                   "Unspecified model mesh path (`mesh` tag)\n");
+                   "Unspecified model mesh path (missing `mesh` tag)\n");
         return nullptr;
     }
     if (material_xml == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Unspecified model material path (`material` tag)\n");
+        log_printf(
+            ERROR_REPORTS, "error",
+            "Unspecified model material path (missing `material` tag)\n");
         return nullptr;
     }
 
-    const Mesh* mesh =
-        AssetManager::request<Mesh>(trim_path(mesh_xml->GetText()));
-    const Material* material =
-        AssetManager::request<Material>(trim_path(material_xml->GetText()));
+    const char* mesh_path = nullptr;
+    const char* material_path = nullptr;
+
+    mesh_xml->QueryStringAttribute("path", &mesh_path);
+    material_xml->QueryStringAttribute("path", &material_path);
+
+    if (mesh_path == nullptr) {
+        log_printf(ERROR_REPORTS, "error",
+                   "Unspecified model mesh path (missing `path` attribute)\n");
+        return nullptr;
+    }
+    if (material_path == nullptr) {
+        log_printf(
+            ERROR_REPORTS, "error",
+            "Unspecified model material path (missing `path` attribute)\n");
+        return nullptr;
+    }
+
+    const Mesh* mesh = AssetManager::request<Mesh>(mesh_path);
+    const Material* material = AssetManager::request<Material>(material_path);
 
     if (mesh == nullptr || material == nullptr) {
         log_printf(ERROR_REPORTS, "error",

@@ -1,4 +1,4 @@
 <shader>
-    <fsh>assets/shaders/decals/red_paint.fsh</fsh>
-    <vsh>assets/shaders/identity.vsh</vsh>
+    <fsh path="assets/shaders/decals/red_paint.fsh"></fsh>
+    <vsh path="assets/shaders/identity.vsh</">vsh>
 </shader>

@@ -1,4 +1,4 @@
 <model>
-    <mesh>assets/models/pool_ball.obj</mesh>
-    <material>assets/materials/white_ball.material.xml</material>
+    <mesh path="assets/models/pool_ball.obj"></mesh>
+    <material path="assets/materials/white_ball.material.xml"></material>
 </model>
