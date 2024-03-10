@@ -49,7 +49,9 @@ struct InputController {
     @brief Set the cursor mode to 'mode' in active window
     @param mode new cursor mode
     ********************************************************/
-    static void set_cursor_mode(CursorMode mode);
+    static void set_active_cursor_mode(CursorMode mode);
+
+    static CursorMode get_active_cursor_mode();
 
     static void set_cursor_mode(GLFWwindow* window, CursorMode mode);
 
@@ -78,7 +80,9 @@ struct InputController {
     static double mouse_x, mouse_y;
     static double mouse_delta_x, mouse_delta_y;
 
-    static GLFWwindow *active_window_;
+    static GLFWwindow *active_window_ = nullptr;
+
+    static CursorMode mode_ = CursorMode::Desktop;
 };
 
 #endif /* __LIB_INPUT_INPUT_CONTROLLER_H */

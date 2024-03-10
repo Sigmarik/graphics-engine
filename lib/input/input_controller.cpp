@@ -104,8 +104,13 @@ static GLFWwindow* InputController::get_active_window() {
     return active_window_;
 }
 
-static void InputController::set_cursor_mode(CursorMode mode) {
+static void InputController::set_active_cursor_mode(CursorMode mode) {
     set_cursor_mode(active_window_, mode);
+    mode_ = mode;
+}
+
+static CursorMode get_active_cursor_mode() {
+    return mode_;
 }
 
 void InputController::set_cursor_mode(GLFWwindow* window, CursorMode mode) {
