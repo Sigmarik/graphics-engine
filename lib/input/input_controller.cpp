@@ -56,8 +56,6 @@ void InputController::init(GLFWwindow* window) {
     glfwSetCharCallback(window, character_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
-
-    active_window_ = window;
 }
 
 void InputController::key_callback(GLFWwindow* window, int key, int scancode,
@@ -94,23 +92,6 @@ void InputController::mouse_button_callback(GLFWwindow* window, int button,
         log_printf(WARNINGS, "warning",
                    "Unrecognized negative mouse button %d\n", button);
     }
-}
-
-void InputController::set_active_window(GLFWwindow* window) {
-    active_window_ = window;
-}
-
-GLFWwindow* InputController::get_active_window() {
-    return active_window_;
-}
-
-void InputController::set_active_cursor_mode(CursorMode mode) {
-    set_cursor_mode(active_window_, mode);
-    mode_ = mode;
-}
-
-CursorMode get_active_cursor_mode() {
-    return mode_;
 }
 
 void InputController::set_cursor_mode(GLFWwindow* window, CursorMode mode) {

@@ -42,17 +42,6 @@ struct InputController {
     static void mouse_button_callback(GLFWwindow* window, int button,
                                       int action, int mods);
 
-    static void set_active_window(GLFWwindow* window);
-    static GLFWwindow* get_active_window();
-
-    /********************************************************
-    @brief Set the cursor mode to 'mode' in active window
-    @param mode new cursor mode
-    ********************************************************/
-    static void set_active_cursor_mode(CursorMode mode);
-
-    static CursorMode get_active_cursor_mode();
-
     static void set_cursor_mode(GLFWwindow* window, CursorMode mode);
 
     static const InputAction* get_action(const char* name);
@@ -79,10 +68,6 @@ struct InputController {
 
     static double mouse_x, mouse_y;
     static double mouse_delta_x, mouse_delta_y;
-
-    static GLFWwindow *active_window_ = nullptr;
-
-    static CursorMode mode_ = CursorMode::Desktop;
 };
 
 #endif /* __LIB_INPUT_INPUT_CONTROLLER_H */
