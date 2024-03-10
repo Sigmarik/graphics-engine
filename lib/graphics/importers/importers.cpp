@@ -33,39 +33,39 @@ void read_wrap(const tinyxml2::XMLElement* element, TextureSettings& settings) {
         settings.wrap = GL_CLAMP_TO_EDGE;
     } else if (strcmp(name, "clamp_to_border") == 0) {
         settings.wrap = GL_CLAMP_TO_BORDER;
-
-        // CLAMP_TO_BORDER fills unmapped pixels of the image with BORDER_COLOR
-        // This is where the user can define the color they want to use
-
-        // <wrap mode="clamp_to_border" r="1.0" g="0.0" b="1.0"></wrap>
-        //                            ^^^^^^^^^^^^^^^^^^^^^^^
-
-        element->QueryFloatAttribute("r", &settings.color.r);
-        element->QueryFloatAttribute("g", &settings.color.g);
-        element->QueryFloatAttribute("b", &settings.color.b);
-
-        element->QueryFloatAttribute("red", &settings.color.r);
-        element->QueryFloatAttribute("green", &settings.color.g);
-        element->QueryFloatAttribute("blue", &settings.color.b);
-
-        float red = settings.color.r;
-        float green = settings.color.g;
-        float blue = settings.color.b;
-
-        if (red < 0.0 || red > 1.0 || green < 0.0 || green > 1.0 ||
-            blue < 0.0 || blue > 1.0) {
-            settings.color.r = glm::clamp(settings.color.r, 0.0f, 1.0f);
-            settings.color.g = glm::clamp(settings.color.g, 0.0f, 1.0f);
-            settings.color.b = glm::clamp(settings.color.b, 0.0f, 1.0f);
-
-            log_printf(WARNINGS, "warning",
-                       "Clamping invalid border color RGB(%g, %g, %g) to "
-                       "RGB(%g, %g, %g)\n",
-                       red, green, blue, settings.color.r, settings.color.g,
-                       settings.color.b);
-        }
     } else {
         log_printf(WARNINGS, "warning", "Invalid wrap mode \"%s\"\n", name);
+    }
+
+    // CLAMP_TO_BORDER fills unmapped pixels of the image with BORDER_COLOR
+    // This is where the user can define the color they want to use
+
+    // <wrap mode="clamp_to_border" r="1.0" g="0.0" b="1.0"></wrap>
+    //                            ^^^^^^^^^^^^^^^^^^^^^^^
+
+    element->QueryFloatAttribute("r", &settings.color.r);
+    element->QueryFloatAttribute("g", &settings.color.g);
+    element->QueryFloatAttribute("b", &settings.color.b);
+
+    element->QueryFloatAttribute("red", &settings.color.r);
+    element->QueryFloatAttribute("green", &settings.color.g);
+    element->QueryFloatAttribute("blue", &settings.color.b);
+
+    float red = settings.color.r;
+    float green = settings.color.g;
+    float blue = settings.color.b;
+
+    if (red < 0.0 || red > 1.0 || green < 0.0 || green > 1.0 || blue < 0.0 ||
+        blue > 1.0) {
+        settings.color.r = glm::clamp(settings.color.r, 0.0f, 1.0f);
+        settings.color.g = glm::clamp(settings.color.g, 0.0f, 1.0f);
+        settings.color.b = glm::clamp(settings.color.b, 0.0f, 1.0f);
+
+        log_printf(WARNINGS, "warning",
+                   "Clamping invalid border color RGB(%g, %g, %g) to "
+                   "RGB(%g, %g, %g)\n",
+                   red, green, blue, settings.color.r, settings.color.g,
+                   settings.color.b);
     }
 }
 
