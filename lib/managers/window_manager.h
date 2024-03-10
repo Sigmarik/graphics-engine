@@ -13,7 +13,7 @@ class WindowManager {
     static void set_active_window(WindowID active_window_id);
 
     static WindowID construct_window(size_t width, size_t height,
-                                     bool fullscreen);
+                                     bool fullscreen = false);
 
     static const WindowID Invalid_window_id = ~WindowID(0);
 
