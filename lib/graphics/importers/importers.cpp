@@ -29,15 +29,15 @@ void read_wrap(const tinyxml2::XMLElement* element, TextureSettings& settings) {
         settings.wrap = GL_REPEAT;
     } else if (strcmp(name, "mirrored_repeat") == 0) {
         settings.wrap = GL_MIRRORED_REPEAT;
-    } else if (strcmp(name, "clamp_to_border") == 0) {
-        settings.wrap = GL_CLAMP_TO_BORDER;
     } else if (strcmp(name, "clamp_to_edge") == 0) {
         settings.wrap = GL_CLAMP_TO_EDGE;
+    } else if (strcmp(name, "clamp_to_border") == 0) {
+        settings.wrap = GL_CLAMP_TO_BORDER;
 
-        // CLAMP_TO_EDGE fills unmapped pixels of the image with BORDER_COLOR
+        // CLAMP_TO_BORDER fills unmapped pixels of the image with BORDER_COLOR
         // This is where the user can define the color they want to use
 
-        // <wrap mode="clamp_to_edge" r="1.0" g="0.0" b="1.0"></wrap>
+        // <wrap mode="clamp_to_border" r="1.0" g="0.0" b="1.0"></wrap>
         //                            ^^^^^^^^^^^^^^^^^^^^^^^
 
         element->QueryFloatAttribute("r", &settings.color.r);
