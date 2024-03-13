@@ -146,22 +146,6 @@ void Shader::set_uniform_mat4(const char* uniform,
     poll_gl_errors();
 }
 
-void Shader::set_uniform_tex(const char* uniform,
-                             const Texture& texture) const {
-    poll_gl_errors();
-    GLint uni = glGetUniformLocation(id_, uniform);
-    glUniform1i(uni, (GLint)texture.get_slot());
-    poll_gl_errors();
-}
-
-void Shader::set_uniform_tex3d(const char* uniform,
-                               const Texture3D& texture) const {
-    poll_gl_errors();
-    GLint uni = glGetUniformLocation(id_, uniform);
-    glUniform1i(uni, (GLint)texture.get_slot());
-    poll_gl_errors();
-}
-
 void Shader::set_uniform_tex_id(const char* uniform, GLuint tex_slot) const {
     poll_gl_errors();
     GLint uni = glGetUniformLocation(id_, uniform);

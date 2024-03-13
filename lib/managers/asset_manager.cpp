@@ -47,27 +47,6 @@ void AssetManager::unload_all() {
     assets_.clear();
 }
 
-const char* trim_path(const char* path) {
-    static char trimmed[PATH_LENGTH] = "";
-
-    copy_trimmed(trimmed, path);
-
-    return trimmed;
-}
-
-void copy_trimmed(char destination[PATH_LENGTH], const char* source) {
-    char* out = destination;
-
-    for (const char* chr = source; *chr != '\0'; ++chr) {
-        if (!isgraph(*chr)) continue;
-
-        *out = *chr;
-        ++out;
-    }
-
-    *out = '\0';
-}
-
 AbstractImporter::AbstractImporter(size_t type_id, const char* signature)
     : id_(type_id, signature) {
     AssetManager::register_importer(*this);

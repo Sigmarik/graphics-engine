@@ -35,8 +35,6 @@ struct Shader {
     void set_uniform_mat2(const char* uniform, const glm::mat2& matrix) const;
     void set_uniform_mat3(const char* uniform, const glm::mat3& matrix) const;
     void set_uniform_mat4(const char* uniform, const glm::mat4& matrix) const;
-    void set_uniform_tex(const char* uniform, const Texture& texture) const;
-    void set_uniform_tex3d(const char* uniform, const Texture3D& texture) const;
     void set_uniform_tex_id(const char* uniform, GLuint tex_slot) const;
 
    private:

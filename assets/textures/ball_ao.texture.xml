@@ -1,4 +1,5 @@
 <texture>
-    <path>assets/textures/ball_ao.png</path>
-    <slot>1</slot>
+    <file path="assets/textures/ball_ao.png"></file>
+    <interp mode="linear"></interp>
+    <wrap mode="clamp_to_border" r="1.0" g="1.0" b="1.0"></wrap>
 </texture>
