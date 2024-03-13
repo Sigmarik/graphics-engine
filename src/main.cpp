@@ -33,6 +33,7 @@
 #include "logics/components/visual/static_mesh.h"
 #include "logics/scene.h"
 #include "managers/asset_manager.h"
+#include "managers/window_manager.h"
 #include "managers/world_timer.h"
 #include "scenes/pool_game.h"
 #include "utils/main_utils.h"
@@ -55,11 +56,12 @@ int main(const int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    GLFWwindow* window = create_window();
+    WindowID window_id = WindowManager::construct_window(WINDOW_WIDTH, WINDOW_HEIGHT);
+    WindowManager::set_active_window(window_id);
 
     poll_gl_errors();
 
-    InputController::init(window);
+    InputController::init(WindowManager::get_active_window());
 
     static PoolGame world;
 
@@ -82,7 +84,7 @@ int main(const int argc, char** argv) {
     double time = glfwGetTime();
 
     log_printf(STATUS_REPORTS, "status", "Entering the loop.\n");
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(WindowManager::get_active_window())) {
         tick++;
 
         double new_time = glfwGetTime();
@@ -97,7 +99,7 @@ int main(const int argc, char** argv) {
 
         poll_gl_errors();
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(WindowManager::get_active_window());
 
         InputController::poll_events();
     }
