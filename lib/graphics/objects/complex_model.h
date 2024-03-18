@@ -55,8 +55,8 @@ struct ComplexModel final : public Renderable {
      *
      * @return Model&
      */
-    Model& base() { return parts_.begin()->second; }
-    const Model& base() const { return parts_.begin()->second; }
+    Model& get_base() { return parts_.begin()->second; }
+    const Model& get_base() const { return parts_.begin()->second; }
 
     void for_each_part(
         std::function<void(Model&, const std::string&)> function);
