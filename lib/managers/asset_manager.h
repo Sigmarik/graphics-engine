@@ -9,8 +9,7 @@
  *
  */
 
-#ifndef ASSET_MANAGER_H
-#define ASSET_MANAGER_H
+#pragma once
 
 #include <stdlib.h>
 
@@ -39,7 +38,7 @@ struct Asset : public AbstractAsset {
     T content;
 };
 
-struct ImporterId {
+struct ImporterId final {
     ImporterId(size_t type, const char* sign)
         : type_id(type), signature(sign) {}
 
@@ -51,8 +50,8 @@ struct ImporterId {
 
 struct AbstractImporter {
     AbstractImporter(size_t type_id, const char* signature);
-
     virtual ~AbstractImporter() = default;
+
     virtual AbstractAsset* import(const char* path) const = 0;
 
     const ImporterId& get_id() const { return id_; }
@@ -62,7 +61,7 @@ struct AbstractImporter {
 };
 
 template <size_t N>
-struct StringLiteral {
+struct StringLiteral final {
     constexpr StringLiteral(const char (&str)[N]) {
         std::copy_n(str, N, value);
     }
@@ -76,7 +75,7 @@ struct AssetImporter : AbstractImporter {
         : AbstractImporter(typeid(ASSET_T).hash_code(), SIGNATURE.value) {}
 };
 
-struct AssetManager {
+struct AssetManager final {
     static void register_importer(AbstractImporter& importer);
 
     template <typename T>
@@ -84,12 +83,19 @@ struct AssetManager {
 
     void unload_all();
 
+    /**
+     * @brief Register a rogue asset that is not bound to a path string
+     *
+     * @param[in] asset
+     */
+    static void register_rogue(AbstractAsset* asset);
+
    private:
     AssetManager() = delete;
     AssetManager(const AssetManager& manager) = delete;
     AssetManager& operator=(const AssetManager& manager) = delete;
 
-    struct AssetRequest {
+    struct AssetRequest final {
         AssetRequest(const char* asset_path, size_t type)
             : path(asset_path), type_id(type) {}
 
@@ -103,6 +109,7 @@ struct AssetManager {
 
     static std::unordered_map<ImporterId, AbstractImporter*> importers_;
     static std::unordered_map<AssetRequest, AbstractAsset*> assets_;
+    static std::vector<AbstractAsset*> rogues_;
 };
 
 template <>
@@ -118,7 +125,7 @@ struct std::hash<AssetManager::AssetRequest> {
 #include "_am_request.hpp"
 
 /**
- * @brief Create and register asset importer (for .cpp importer lists)
+ * @brief Create and register an asset importer
  *
  */
 #define IMPORTER(type, signature)                                             \
@@ -136,5 +143,3 @@ struct std::hash<AssetManager::AssetRequest> {
                                                                               \
     AbstractAsset* AssetImporter<type, signature>::import(const char* path)   \
         const
-
-#endif

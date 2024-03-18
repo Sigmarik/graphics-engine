@@ -9,8 +9,7 @@
  *
  */
 
-#ifndef MESH_H
-#define MESH_H
+#pragma once
 
 #include <glm/mat4x4.hpp>
 #include <vector>
@@ -23,9 +22,12 @@
 
 struct aiMesh;
 
-struct Mesh {
+struct Mesh final {
     Mesh() = default;
     explicit Mesh(const char* path);
+    explicit Mesh(const aiMesh& mesh);
+
+    Mesh(const Mesh&) = default;
 
     void load(const char* path);
     void append(const std::vector<Vertex>& vertices,
@@ -45,5 +47,3 @@ struct Mesh {
     VBO vbo_ = VBO();
     EBO ebo_ = EBO();
 };
-
-#endif

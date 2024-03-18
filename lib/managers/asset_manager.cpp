@@ -23,6 +23,7 @@ size_t std::hash<AssetManager::AssetRequest>::operator()(
 std::unordered_map<ImporterId, AbstractImporter*> AssetManager::importers_ = {};
 std::unordered_map<AssetManager::AssetRequest, AbstractAsset*>
     AssetManager::assets_ = {};
+std::vector<AbstractAsset*> AssetManager::rogues_ = {};
 
 void AssetManager::register_importer(AbstractImporter& importer) {
     const ImporterId& id = importer.get_id();
@@ -44,7 +45,15 @@ void AssetManager::unload_all() {
         delete cell.second;
     }
 
+    for (AbstractAsset* asset : rogues_) {
+        delete asset;
+    }
+
     assets_.clear();
+}
+
+void AssetManager::register_rogue(AbstractAsset* asset) {
+    rogues_.push_back(asset);
 }
 
 AbstractImporter::AbstractImporter(size_t type_id, const char* signature)

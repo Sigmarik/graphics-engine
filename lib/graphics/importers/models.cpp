@@ -1,5 +1,3 @@
-#pragma once
-
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <stdio.h>
@@ -50,7 +48,11 @@ static Asset<ComplexModel>* load_complex(const char* path) {
                        material_name, mesh_name, path);
         }
 
-        model.add_part(Model(Mesh::parse_ai_mesh(*mesh), *material), mesh_name);
+        Asset<Mesh>* part_mesh = new Asset<Mesh>(*mesh);
+
+        AssetManager::register_rogue(part_mesh);
+
+        model.add_part(Model(part_mesh->content, *material), mesh_name);
     }
 
     return new Asset<ComplexModel>(model);

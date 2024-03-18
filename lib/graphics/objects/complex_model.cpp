@@ -12,9 +12,10 @@ int ComplexModel::render(const RenderInput& input,
     if (input.pass != Model::PASS) return 0;
 
     for (const auto& [key, part] : parts_) {
-        glm::mat4 part_transform = object_matrix_ * part.get_object_matrix();
+        log_printf(STATUS_REPORTS, "status", "Rendering part %s\n",
+                   key.c_str());
 
-        part.render_pure(input, bundle, part_transform);
+        part.render_pure(input, bundle, get_object_matrix());
     }
 
     return 1;

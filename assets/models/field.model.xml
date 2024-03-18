@@ -1,4 +1,0 @@
-<model>
-    <mesh path="assets/models/field.obj"></mesh>
-    <material path="assets/materials/field.material.xml"></material>
-</model>
