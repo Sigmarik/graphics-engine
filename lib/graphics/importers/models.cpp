@@ -9,59 +9,18 @@
 #include "logger/logger.h"
 #include "managers/asset_manager.h"
 
-static Asset<ComplexModel>* load_complex(const char* path) {
-    ComplexModel model;
-
-    static Assimp::Importer import;
-
-    const aiScene* scene = import.ReadFile(
-        path, aiProcess_Triangulate | aiProcess_FlipUVs |
-                  aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices);
-
-    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
-        !scene->mRootNode) {
-        log_printf(ERROR_REPORTS, "error", "Failed to load complex model %s\n",
-                   path);
-        return nullptr;
-    }
-
-    aiMesh** meshes = scene->mMeshes;
-
-    for (size_t mesh_id = 0; mesh_id < scene->mNumMeshes; ++mesh_id) {
-        aiMesh* mesh = meshes[mesh_id];
-
-        const char* mesh_name = mesh->mName.C_Str();
-
-        //* `_box_` objects define collision boxes and should not be imported
-        if (strncmp(mesh_name, "_box_", 5) == 0) continue;
-
-        const char* material_name =
-            scene->mMaterials[mesh->mMaterialIndex]->GetName().C_Str();
-
-        const Material* material =
-            AssetManager::request<Material>(material_name);
-
-        if (material == nullptr) {
-            log_printf(WARNINGS, "warning",
-                       "Failed to load material \"%s\" used by part \"%s\" of "
-                       "the complex mesh \"%s\"\n",
-                       material_name, mesh_name, path);
-        }
-
-        Asset<Mesh>* part_mesh = new Asset<Mesh>(*mesh);
-
-        AssetManager::register_rogue(part_mesh);
-
-        model.add_part(Model(part_mesh->content, *material), mesh_name);
-    }
-
-    return new Asset<ComplexModel>(model);
-}
+static Asset<ComplexModel>* load_complex(const char* path);
+static Asset<Model>* load_simple(const char* path);
 
 IMPORTER(ComplexModel, "obj") { return load_complex(path); }
 IMPORTER(ComplexModel, "fbx") { return load_complex(path); }
 IMPORTER(ComplexModel, "glb") { return load_complex(path); }
 IMPORTER(ComplexModel, "gltf") { return load_complex(path); }
+
+IMPORTER(Model, "obj") { return load_simple(path); }
+IMPORTER(Model, "fbx") { return load_simple(path); }
+IMPORTER(Model, "glb") { return load_simple(path); }
+IMPORTER(Model, "gltf") { return load_simple(path); }
 
 IMPORTER(Mesh, "obj") { return new Asset<Mesh>(path); }
 IMPORTER(Mesh, "fbx") { return new Asset<Mesh>(path); }
@@ -125,4 +84,103 @@ IMPORTER(Model, "model") {
     }
 
     return new Asset<Model>(*mesh, *material);
+}
+
+static Asset<ComplexModel>* load_complex(const char* path) {
+    ComplexModel model;
+
+    static Assimp::Importer import;
+
+    const aiScene* scene = import.ReadFile(
+        path, aiProcess_Triangulate | aiProcess_FlipUVs |
+                  aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices);
+
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
+        !scene->mRootNode) {
+        log_printf(ERROR_REPORTS, "error", "Failed to load complex model %s\n",
+                   path);
+        return nullptr;
+    }
+
+    aiMesh** meshes = scene->mMeshes;
+
+    for (size_t mesh_id = 0; mesh_id < scene->mNumMeshes; ++mesh_id) {
+        aiMesh* mesh = meshes[mesh_id];
+
+        const char* mesh_name = mesh->mName.C_Str();
+
+        //* `_box_` objects define collision boxes and should not be imported
+        if (strncmp(mesh_name, "_box_", 5) == 0) continue;
+
+        const char* material_name =
+            scene->mMaterials[mesh->mMaterialIndex]->GetName().C_Str();
+
+        const Material* material =
+            AssetManager::request<Material>(material_name);
+
+        if (material == nullptr) {
+            log_printf(WARNINGS, "warning",
+                       "Failed to load material \"%s\" used by part \"%s\" of "
+                       "the complex mesh \"%s\"\n",
+                       material_name, mesh_name, path);
+        }
+
+        Asset<Mesh>* part_mesh = new Asset<Mesh>(*mesh);
+
+        AssetManager::register_rogue(part_mesh);
+
+        model.add_part(Model(part_mesh->content, *material), mesh_name);
+    }
+
+    return new Asset<ComplexModel>(model);
+}
+
+static Asset<Model>* load_simple(const char* path) {
+    static Assimp::Importer import;
+
+    const aiScene* scene = import.ReadFile(
+        path, aiProcess_Triangulate | aiProcess_FlipUVs |
+                  aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices);
+
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
+        !scene->mRootNode) {
+        log_printf(ERROR_REPORTS, "error", "Failed to load simple model %s\n",
+                   path);
+        return nullptr;
+    }
+
+    aiMesh** meshes = scene->mMeshes;
+
+    for (size_t mesh_id = 0; mesh_id < scene->mNumMeshes; ++mesh_id) {
+        aiMesh* mesh = meshes[mesh_id];
+
+        const char* mesh_name = mesh->mName.C_Str();
+
+        //* `_box_` objects define collision boxes and should not be imported
+        if (strncmp(mesh_name, "_box_", 5) == 0) continue;
+
+        const char* material_name =
+            scene->mMaterials[mesh->mMaterialIndex]->GetName().C_Str();
+
+        const Material* material =
+            AssetManager::request<Material>(material_name);
+
+        if (material == nullptr) {
+            log_printf(WARNINGS, "warning",
+                       "Failed to load material \"%s\" used by part \"%s\" of "
+                       "the mesh \"%s\"\n",
+                       material_name, mesh_name, path);
+        }
+
+        Asset<Mesh>* part_mesh = new Asset<Mesh>(*mesh);
+
+        AssetManager::register_rogue(part_mesh);
+
+        return new Asset<Model>(part_mesh->content, *material);
+    }
+
+    log_printf(
+        ERROR_REPORTS, "error",
+        "Trying to load a model from a file that has no suitable geometry\n");
+    return nullptr;
 }
