@@ -2,10 +2,7 @@
 
 #include "logics/scene.h"
 
-StaticMesh::StaticMesh(const Mesh& mesh, const Material& material)
-    : model_(mesh, material) {}
-
-StaticMesh::StaticMesh(const Model& model) : model_(model) {}
+StaticMesh::StaticMesh(const ComplexModel& model) : model_(model) {}
 
 void StaticMesh::spawn_self(Scene& scene) {
     scene.get_renderer().track_object(model_);

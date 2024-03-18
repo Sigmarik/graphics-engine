@@ -21,6 +21,8 @@
 #include "vbo.hpp"
 #include "vertex.hpp"
 
+struct aiMesh;
+
 struct Mesh {
     Mesh() = default;
     explicit Mesh(const char* path);
@@ -33,6 +35,8 @@ struct Mesh {
 
     void render(const glm::mat4& proj_matrix, const glm::mat4& obj_matrix,
                 const Shader& shader) const;
+
+    static Mesh parse_ai_mesh(const aiMesh& mesh);
 
    private:
     std::vector<Vertex> vertices_ = {};

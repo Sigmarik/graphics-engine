@@ -129,3 +129,34 @@ void Mesh::render(const glm::mat4& proj_matrix, const glm::mat4& obj_matrix,
     vao_.unbind();
     vbo_.unbind();
 }
+
+Mesh Mesh::parse_ai_mesh(const aiMesh& mesh) {
+    Mesh result;
+
+    size_t vertex_count = mesh.mNumVertices;
+
+    unsigned uv_depth = mesh.GetNumUVChannels();
+
+    for (size_t vrt_id = 0; vrt_id < vertex_count; ++vrt_id) {
+        aiVector3D pos = mesh.mVertices[vrt_id];
+        aiVector3D normal = mesh.mNormals[vrt_id];
+        aiVector3D uv = (uv_depth > 0 && mesh.mTextureCoords[0] != nullptr)
+                            ? mesh.mTextureCoords[0][vrt_id]
+                            : aiVector3D(0.0, 0.0, 0.0);
+        aiVector3D tangent = mesh.mTangents[vrt_id];
+        result.vertices_.push_back(
+            (Vertex){.position = glm::vec3(pos.x, pos.y, pos.z),
+                     .normal = glm::vec3(normal.x, normal.y, normal.z),
+                     .uv = glm::vec2(uv.x, uv.y),
+                     .tangent = glm::vec3(tangent.x, tangent.y, tangent.z)});
+    }
+
+    for (size_t face_id = 0; face_id < mesh.mNumFaces; ++face_id) {
+        aiFace face = mesh.mFaces[face_id];
+        for (unsigned id = 0; id < 3; ++id) {
+            result.indices_.push_back(face.mIndices[id]);
+        }
+    }
+
+    return result;
+}
