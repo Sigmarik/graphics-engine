@@ -95,7 +95,7 @@ struct TickManager final {
  * @brief Main loop of the program
  *
  */
-struct GameLoop {
+struct GameLoop final {
     /**
      * @brief Run the simulation with the given tick manager until it is stopped
      *
@@ -120,5 +120,8 @@ struct GameLoop {
     static bool is_running() { return manager_ != nullptr; }
 
    private:
+    GameLoop() = default;
+
     static TickManager* manager_;
+    static GameLoop instance_;
 };

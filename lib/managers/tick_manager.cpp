@@ -74,6 +74,7 @@ void TickManager::slice_phys_tick() {
 }
 
 TickManager* GameLoop::manager_ = nullptr;
+GameLoop GameLoop::instance_;
 
 void GameLoop::run(TickManager& manager, std::function<bool()> stop_condition) {
     manager_ = &manager;
