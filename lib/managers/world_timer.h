@@ -9,27 +9,18 @@
  *
  */
 
-#ifndef WORLD_TIMER_H
-#define WORLD_TIMER_H
+#pragma once
 
-#include <time.h>
+#include "inttypes.h"
 
-struct WorldTimer {
-    static clock_t get_time();
+struct WorldTimer final {
+    static uint64_t get_time();
 
     static double get_time_sec();
 
    private:
     WorldTimer();
-    WorldTimer(const WorldTimer& timer) = default;
-    WorldTimer& operator=(const WorldTimer& timer) = default;
 
-    static WorldTimer& get_instance() {
-        static WorldTimer timer;
-        return timer;
-    }
-
-    static clock_t SIM_START_;
+    static uint64_t SIM_START_;
+    static WorldTimer instance_;
 };
-
-#endif

@@ -33,6 +33,7 @@
 #include "logics/components/visual/static_mesh.h"
 #include "logics/scene.h"
 #include "managers/asset_manager.h"
+#include "managers/tick_manager.h"
 #include "managers/world_timer.h"
 #include "scenes/pool_game.h"
 #include "utils/main_utils.h"
@@ -77,30 +78,27 @@ int main(const int argc, char** argv) {
 
     poll_gl_errors();
 
-    unsigned tick = 0;
+    TickManager ticker(
+        // Input
+        []() { InputController::poll_events(); },
 
-    double time = glfwGetTime();
+        // Physics
+        [](double delta_time) { world.phys_tick(delta_time); },
+
+        // Graphics
+        [&gbuffers, window](double delta_time, double subtick_time) {
+            world.draw_tick(delta_time, subtick_time);
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            world.get_renderer().render(gbuffers);
+
+            poll_gl_errors();
+
+            glfwSwapBuffers(window);
+        });
 
     log_printf(STATUS_REPORTS, "status", "Entering the loop.\n");
-    while (!glfwWindowShouldClose(window)) {
-        tick++;
-
-        double new_time = glfwGetTime();
-        double delta_time = new_time - time;
-        time = new_time;
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        world.phys_tick(delta_time);
-        world.draw_tick(delta_time, 0.0);
-        world.get_renderer().render(gbuffers);
-
-        poll_gl_errors();
-
-        glfwSwapBuffers(window);
-
-        InputController::poll_events();
-    }
+    GameLoop::run(ticker, [window]() { return glfwWindowShouldClose(window); });
 
     poll_gl_errors();
 

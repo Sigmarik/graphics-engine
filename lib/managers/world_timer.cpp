@@ -1,12 +1,23 @@
 #include "world_timer.h"
 
-clock_t WorldTimer::SIM_START_ = 0;
+#include "GLFW/glfw3.h"
 
-clock_t WorldTimer::get_time() {
-    clock_t current = clock();
+uint64_t WorldTimer::SIM_START_ = glfwGetTimerValue();
+WorldTimer WorldTimer::instance_;
+
+uint64_t WorldTimer::get_time() {
+    uint64_t current = glfwGetTimerValue();
     return current - SIM_START_;
 }
 
-double WorldTimer::get_time_sec() { return (double)get_time() / 100000.0; }
+double WorldTimer::get_time_sec() {
+    uint64_t time = get_time();
+    uint64_t frequency = glfwGetTimerFrequency();
 
-WorldTimer::WorldTimer() { SIM_START_ = clock(); }
+    uint64_t whole = time / frequency;
+    uint64_t remainder = time % frequency;
+
+    return (double)whole + (double)remainder / (double)frequency;
+}
+
+WorldTimer::WorldTimer() { SIM_START_ = glfwGetTimerValue(); }

@@ -12,8 +12,6 @@
 #ifndef DECAL_H
 #define DECAL_H
 
-#include <time.h>
-
 #include "material.h"
 #include "scene.h"
 
@@ -31,7 +29,7 @@ struct Decal : public Renderable {
    private:
     const Material* material_;
     const double time_to_live_;
-    clock_t spawn_time_;
+    uint64_t spawn_time_;
 };
 
 #endif
