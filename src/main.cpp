@@ -11,30 +11,13 @@
 
 #include <unistd.h>
 
-#include <glm/ext/matrix_transform.hpp>
-
-#include "components/misc/rc_head.h"
-#include "generation/noise.h"
 #include "graphics/gl_debug.h"
-#include "graphics/objects/ambient_light.h"
-#include "graphics/objects/decal.h"
-#include "graphics/objects/model.h"
-#include "graphics/objects/point_light.h"
-#include "graphics/objects/postprocessor.h"
-#include "graphics/objects/scene.h"
-#include "graphics/primitives/camera.h"
-#include "graphics/primitives/mesh.h"
-#include "graphics/primitives/render_frame.h"
-#include "graphics/primitives/texture.h"
+#include "input/input_controller.h"
 #include "io/main_io.h"
-#include "lib/input/input_controller.h"
 #include "logger/debug.h"
 #include "logger/logger.h"
-#include "logics/components/visual/static_mesh.h"
-#include "logics/scene.h"
 #include "managers/asset_manager.h"
 #include "managers/tick_manager.h"
-#include "managers/world_timer.h"
 #include "scenes/pool_game.h"
 #include "utils/main_utils.h"
 
