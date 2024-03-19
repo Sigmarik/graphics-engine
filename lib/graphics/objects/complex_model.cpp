@@ -12,9 +12,6 @@ int ComplexModel::render(const RenderInput& input,
     if (input.pass != Model::PASS) return 0;
 
     for (const auto& [key, part] : parts_) {
-        log_printf(STATUS_REPORTS, "status", "Rendering part %s\n",
-                   key.c_str());
-
         part.render_pure(input, bundle, get_object_matrix());
     }
 
