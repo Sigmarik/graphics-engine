@@ -1,4 +1,4 @@
-#include "pipelining/state_machine.h"
+#include "pipelining/state_machine.hpp"
 
 //! WARNING: Some incredibly bad code ahead, don't use it outside of state
 //! machine testing
@@ -6,7 +6,7 @@ struct Weapon {
     int ammo = 1024;
     int clip = 32;
 
-    struct ShootingState : StateMachine::State {
+    struct ShootingState : StateMachine<double>::State {
         ShootingState(Weapon& owner) : owner_(&owner) {}
 
         ShootingState(const ShootingState& instance) = default;
@@ -19,7 +19,7 @@ struct Weapon {
         Weapon* owner_;
     };
 
-    struct ReloadingState : StateMachine::State {
+    struct ReloadingState : StateMachine<double>::State {
         ReloadingState(Weapon& owner) : owner_(&owner) {}
 
         ReloadingState(const ReloadingState& instance) = default;
@@ -38,7 +38,7 @@ struct Weapon {
         Weapon* owner_;
     };
 
-    using IdleState = StateMachine::State;
+    using IdleState = StateMachine<double>::State;
 
     Weapon()
         : shooting_state(*this),
@@ -61,7 +61,7 @@ struct Weapon {
     ReloadingState reloading_state;
     IdleState idle_state;
 
-    StateMachine controller;
+    StateMachine<double> controller;
 };
 
 TEST(StateMachines, Weapon) {

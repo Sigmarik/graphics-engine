@@ -19,6 +19,7 @@
  * @brief State machine class, takes care of state switching
  *
  */
+template <class... Ts>
 struct StateMachine final {
     /**
      * @brief State of a state machine
@@ -36,9 +37,9 @@ struct StateMachine final {
         /**
          * @brief Called every tick the machine is in this state
          *
-         * @param[in] delta_time
+         * @param[in] args
          */
-        virtual void update(double delta_time) {}
+        virtual void update(Ts... args) {}
 
         /**
          * @brief Called whenever the machine leaves the state
@@ -80,9 +81,9 @@ struct StateMachine final {
     /**
      * @brief Update current state, switch states if necessary
      *
-     * @param[in] delta_time
+     * @param[in] args
      */
-    void update(double delta_time);
+    void update(Ts... args);
 
     /**
      * @brief Get current active state of the machine
@@ -98,3 +99,35 @@ struct StateMachine final {
 
     State* active_state_;
 };
+
+template <class... Ts>
+StateMachine<Ts...>::StateMachine(State& start)
+    : map_({{&start, {}}}), active_state_(&start) {
+    active_state_->enter();
+}
+
+template <class... Ts>
+void StateMachine<Ts...>::add_state(State& state) {
+    map_.insert({&state, {}});
+}
+
+template <class... Ts>
+void StateMachine<Ts...>::add_transition(State& from, State& to,
+                                         std::function<bool()> condition) {
+    map_[&from].push_back({&to, condition});
+}
+
+template <class... Ts>
+void StateMachine<Ts...>::update(Ts... args) {
+    for (Transition& transition : map_[active_state_]) {
+        if (!transition.second()) continue;
+
+        active_state_->leave();
+        active_state_ = transition.first;
+        active_state_->enter();
+
+        break;
+    }
+
+    active_state_->update(args...);
+}
