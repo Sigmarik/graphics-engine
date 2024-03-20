@@ -79,7 +79,7 @@ struct TickManager final {
     double time_ = 0.0;
     double phys_time_ = 0.0;
 
-    unsigned tps_ = 0;
+    unsigned tps_ = 60;
     unsigned fps_cap_ = 0;
 
     double delta_time_ = 0.0;
