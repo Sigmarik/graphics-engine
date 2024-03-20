@@ -7,6 +7,8 @@ include/tinyxml2.o
 lib/managers/asset_manager.o
 lib/managers/world_timer.o
 
+lib/pipelining/state_machine.o
+
 lib/geometry/primitives.o
 lib/geometry/transforms.o
 
