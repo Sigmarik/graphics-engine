@@ -15,8 +15,17 @@
 #include <set>
 #include <stdexcept>
 
+/**
+ * @brief Event with payload
+ *
+ * @tparam Ts payload contents
+ */
 template <class... Ts>
 struct HeavyEvent final {
+    /**
+     * @brief Event listener
+     *
+     */
     struct Subscriber {
         explicit Subscriber(const std::function<void(Ts...)>& action)
             : action_(action){};
@@ -64,6 +73,12 @@ struct HeavyEvent final {
 
         void operator()(Ts... args) { action_(args...); }
 
+        /**
+         * @brief Get if subscription is still valid
+         *
+         * @return true if the subscription is bound to a valid event,
+         * @return false otherwise
+         */
         bool subscribed() const { return event_ != nullptr; }
 
         friend HeavyEvent;
@@ -84,11 +99,7 @@ struct HeavyEvent final {
     ~HeavyEvent();
 
     /**
-     * @brief Add subscriber to the event
-     * @warning Note that event subscriber can be called even after its
-     * underlying objects were destroyed. So either unsubscribe it before
-     * destroying or guarantee that the event will not be triggered after the
-     * object destruction.
+     * @brief Subscribe a listener to the event
      *
      * @param[in] subscriber
      */
@@ -96,13 +107,15 @@ struct HeavyEvent final {
 
     /**
      * @brief Unsubscribe the subscriber from the event
+     * @throws `std::runtime_error` if the subscriber is not subscribed to the
+     * event
      *
      * @param[in] subscriber
      */
     void unsubscribe(typename HeavyEvent<Ts...>::Subscriber& subscriber);
 
     /**
-     * @brief Trigger the event
+     * @brief Trigger the event and send the payload to its subscribers
      *
      */
     void trigger(Ts... payload);
@@ -111,6 +124,10 @@ struct HeavyEvent final {
     std::set<typename HeavyEvent<Ts...>::Subscriber*> subscribers_{};
 };
 
+/**
+ * @brief Simple listen-notify event without any payload
+ *
+ */
 using Event = HeavyEvent<>;
 
 template <class... Ts>

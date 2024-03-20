@@ -83,6 +83,10 @@ TEST(StateMachines, Weapon) {
 
     weapon.controller.update(10.0);
 
+    EXPECT_EQ(&weapon.controller.get_active(), &weapon.reloading_state);
+
+    weapon.controller.update(0.0);
+
     EXPECT_EQ(&weapon.controller.get_active(), &weapon.idle_state);
     EXPECT_EQ(weapon.clip, 32);
 

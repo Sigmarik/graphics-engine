@@ -13,8 +13,6 @@ void StateMachine::add_transition(State& from, State& to,
 }
 
 void StateMachine::update(double delta_time) {
-    active_state_->update(delta_time);
-
     for (Transition& transition : map_[active_state_]) {
         if (!transition.second()) continue;
 
@@ -24,4 +22,6 @@ void StateMachine::update(double delta_time) {
 
         break;
     }
+
+    active_state_->update(delta_time);
 }
