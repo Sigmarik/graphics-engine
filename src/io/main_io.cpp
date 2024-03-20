@@ -24,9 +24,9 @@ void Options::set_input_name(const char* new_name) { input_name_ = new_name; }
 static const char OWL_TEXT[] = R"""(You let the owls out!
     A_,,,_A        A_,,,_A        A_,,,_A    
    ((O)V(O))      ((O)V(O))      ((O)V(O))   
-  ("\"|"|"/")    ("\"|"|"/")    ("\"|"|"/")  
-   \"|"|"|"/      \"|"|"|"/      \"|"|"|"/   
-     "| |"          "| |"          "| |"     
+  (w\W|W|W/w)    (w\W|W|W/w)    (w\W|W|W/w)  
+   \v|W|W|v/      \v|W|W|v/      \v|W|W|v/   
+     "|v|"          "|v|"          "|v|"     
       ^ ^            ^ ^            ^ ^      )""";
 
 error_t parse(int key, char* arg, struct argp_state* state) {
