@@ -16,26 +16,31 @@
 #include <stdexcept>
 
 /**
- * @brief Event with payload
+ * @brief Event class. Can be triggered to notify its subscribers and deliver
+ * payload to them.
  *
  * @tparam Ts payload contents
  */
 template <class... Ts>
-struct HeavyEvent final {
+struct Event final {
     /**
      * @brief Event listener
      *
      */
-    struct Subscriber {
-        explicit Subscriber(const std::function<void(Ts...)>& action)
+    struct Listener {
+        explicit Listener(const std::function<void(Ts...)>& action)
             : action_(action){};
 
-        Subscriber(const Subscriber& other)
+        Listener() : Listener([](Ts...) {}) {}
+
+        Listener(const Listener& other)
             : action_(other.action_), event_(other.event_) {
             if (event_) event_->subscribe(*this);
         }
 
-        Subscriber& operator=(const Subscriber& other) {
+        Listener& operator=(const Listener& other) {
+            if (&other == this) return;
+
             if (event_) event_->unsubscribe(*this);
 
             action_ = other.action_;
@@ -46,13 +51,13 @@ struct HeavyEvent final {
             return *this;
         }
 
-        Subscriber(Subscriber&& other)
+        Listener(Listener&& other)
             : action_(other.action_), event_(other.event_) {
             if (event_) event_->subscribe(*this);
             if (other.event_) other.event_->unsubscribe(other);
         }
 
-        Subscriber& operator=(Subscriber&& other) {
+        Listener& operator=(Listener&& other) {
             if (event_) event_->unsubscribe(*this);
 
             action_ = other.action_;
@@ -65,11 +70,11 @@ struct HeavyEvent final {
             return *this;
         }
 
-        ~Subscriber() {
+        ~Listener() {
             if (event_) event_->unsubscribe(*this);
         }
 
-        typename HeavyEvent<Ts...>::Subscriber& operator=(Subscriber& other);
+        typename Event<Ts...>::Listener& operator=(Listener& other);
 
         void operator()(Ts... args) { action_(args...); }
 
@@ -79,31 +84,31 @@ struct HeavyEvent final {
          * @return true if the subscription is bound to a valid event,
          * @return false otherwise
          */
-        bool subscribed() const { return event_ != nullptr; }
+        bool is_subscribed() const { return event_ != nullptr; }
 
-        friend HeavyEvent;
+        friend Event;
 
        private:
         std::function<void(Ts...)> action_;
-        HeavyEvent<Ts...>* event_ = nullptr;
+        Event<Ts...>* event_ = nullptr;
     };
 
-    HeavyEvent() = default;
+    Event() = default;
 
-    HeavyEvent(const HeavyEvent&) = delete;
-    HeavyEvent<Ts...>& operator=(const HeavyEvent&) = delete;
+    Event(const Event&) = delete;
+    Event<Ts...>& operator=(const Event&) = delete;
 
-    HeavyEvent(HeavyEvent&&);
-    HeavyEvent<Ts...>& operator=(HeavyEvent&&);
+    Event(Event&&);
+    Event<Ts...>& operator=(Event&&);
 
-    ~HeavyEvent();
+    ~Event();
 
     /**
      * @brief Subscribe a listener to the event
      *
      * @param[in] subscriber
      */
-    void subscribe(typename HeavyEvent<Ts...>::Subscriber& subscriber);
+    void subscribe(typename Event<Ts...>::Listener& subscriber);
 
     /**
      * @brief Unsubscribe the subscriber from the event
@@ -112,7 +117,7 @@ struct HeavyEvent final {
      *
      * @param[in] subscriber
      */
-    void unsubscribe(typename HeavyEvent<Ts...>::Subscriber& subscriber);
+    void unsubscribe(typename Event<Ts...>::Listener& subscriber);
 
     /**
      * @brief Trigger the event and send the payload to its subscribers
@@ -121,18 +126,14 @@ struct HeavyEvent final {
     void trigger(Ts... payload);
 
    private:
-    std::set<typename HeavyEvent<Ts...>::Subscriber*> subscribers_{};
+    std::set<typename Event<Ts...>::Listener*> subscribers_{};
 };
 
-/**
- * @brief Simple listen-notify event without any payload
- *
- */
-using Event = HeavyEvent<>;
+using SimpleEvent = Event<>;
 
 template <class... Ts>
-inline typename HeavyEvent<Ts...>::Subscriber&
-HeavyEvent<Ts...>::Subscriber::operator=(Subscriber& other) {
+inline typename Event<Ts...>::Listener& Event<Ts...>::Listener::operator=(
+    Listener& other) {
     if (event_) event_->unsubscribe(*this);
     action_ = other.action_;
     event_ = other.event_;
@@ -142,7 +143,7 @@ HeavyEvent<Ts...>::Subscriber::operator=(Subscriber& other) {
 }
 
 template <class... Ts>
-inline HeavyEvent<Ts...>::HeavyEvent(HeavyEvent&& event) : subscribers_() {
+inline Event<Ts...>::Event(Event&& event) : subscribers_() {
     for (auto subscriber : event.subscribers_) {
         subscribers_.insert(subscriber);
         subscriber->event_ = this;
@@ -152,7 +153,7 @@ inline HeavyEvent<Ts...>::HeavyEvent(HeavyEvent&& event) : subscribers_() {
 }
 
 template <class... Ts>
-inline HeavyEvent<Ts...>& HeavyEvent<Ts...>::operator=(HeavyEvent&& event) {
+inline Event<Ts...>& Event<Ts...>::operator=(Event&& event) {
     for (auto subscriber : subscribers_) {
         subscriber->event_ = nullptr;
     }
@@ -170,22 +171,24 @@ inline HeavyEvent<Ts...>& HeavyEvent<Ts...>::operator=(HeavyEvent&& event) {
 }
 
 template <class... Ts>
-inline HeavyEvent<Ts...>::~HeavyEvent() {
+inline Event<Ts...>::~Event() {
     for (auto subscriber : subscribers_) {
         subscriber->event_ = nullptr;
     }
 }
 
 template <class... Ts>
-inline void HeavyEvent<Ts...>::subscribe(
-    typename HeavyEvent<Ts...>::Subscriber& subscriber) {
+inline void Event<Ts...>::subscribe(
+    typename Event<Ts...>::Listener& subscriber) {
+    if (subscribers_.count(&subscriber) > 0) return;
+
     subscribers_.insert(&subscriber);
     subscriber.event_ = this;
 }
 
 template <class... Ts>
-inline void HeavyEvent<Ts...>::unsubscribe(
-    typename HeavyEvent<Ts...>::Subscriber& subscriber) {
+inline void Event<Ts...>::unsubscribe(
+    typename Event<Ts...>::Listener& subscriber) {
     auto find = subscribers_.find(&subscriber);
 
     if (find == subscribers_.end()) {
@@ -198,7 +201,7 @@ inline void HeavyEvent<Ts...>::unsubscribe(
 }
 
 template <class... Ts>
-inline void HeavyEvent<Ts...>::trigger(Ts... payload) {
+inline void Event<Ts...>::trigger(Ts... payload) {
     for (auto& subscriber : subscribers_) {
         subscriber->operator()(payload...);
     }

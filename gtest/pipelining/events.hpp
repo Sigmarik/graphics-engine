@@ -1,7 +1,7 @@
 /**
  * @file events.hpp
  * @author Kudryashov Ilya (kudriashov.it@phystech.edu)
- * @brief Event test suite
+ * @brief SimpleEvent test suite
  * @version 0.1
  * @date 2024-03-20
  *
@@ -12,11 +12,11 @@
 #include "pipelining/event.hpp"
 
 TEST(Events, Trigger) {
-    Event event;
+    SimpleEvent event;
 
     bool received = false;
 
-    Event::Subscriber receiver([&received]() { received = true; });
+    SimpleEvent::Listener receiver([&received]() { received = true; });
 
     event.subscribe(receiver);
 
@@ -28,10 +28,10 @@ TEST(Events, Trigger) {
 TEST(Events, SendReceive) {
     int value = 0;
 
-    typename HeavyEvent<int>::Subscriber receiver(
+    typename Event<int>::Listener receiver(
         [&value](int payload) { value = payload; });
 
-    HeavyEvent<int> event;
+    Event<int> event;
 
     event.subscribe(receiver);
 
@@ -44,12 +44,12 @@ TEST(Events, MultipleReceivers) {
     int value_a = 0;
     int value_b = 0;
 
-    typename HeavyEvent<int>::Subscriber receiver_a(
+    typename Event<int>::Listener receiver_a(
         [&value_a](int payload) { value_a = payload; });
-    typename HeavyEvent<int>::Subscriber receiver_b(
+    typename Event<int>::Listener receiver_b(
         [&value_b](int payload) { value_b = payload; });
 
-    HeavyEvent<int> event;
+    Event<int> event;
 
     event.subscribe(receiver_a);
     event.subscribe(receiver_b);
@@ -61,15 +61,15 @@ TEST(Events, MultipleReceivers) {
 }
 
 TEST(Events, MoveEvent) {
-    Event event;
+    SimpleEvent event;
 
     bool received = false;
 
-    Event::Subscriber receiver([&received]() { received = true; });
+    SimpleEvent::Listener receiver([&received]() { received = true; });
 
     event.subscribe(receiver);
 
-    Event new_event(std::move(event));
+    SimpleEvent new_event(std::move(event));
 
     new_event.trigger();
 
@@ -77,17 +77,17 @@ TEST(Events, MoveEvent) {
 }
 
 TEST(Events, MoveSubscriber) {
-    Event event;
+    SimpleEvent event;
 
     int signals = 0;
 
-    Event::Subscriber receiver([&signals]() { ++signals; });
+    SimpleEvent::Listener receiver([&signals]() { ++signals; });
 
     event.subscribe(receiver);
 
-    Event::Subscriber new_receiver(std::move(receiver));
+    SimpleEvent::Listener new_receiver(std::move(receiver));
 
-    Event new_event(std::move(event));
+    SimpleEvent new_event(std::move(event));
 
     new_event.trigger();
 
@@ -95,46 +95,46 @@ TEST(Events, MoveSubscriber) {
 }
 
 TEST(Events, Unsubscribe) {
-    Event::Subscriber receiver([]() {});
+    SimpleEvent::Listener receiver([]() {});
 
-    EXPECT_EQ(receiver.subscribed(), false);
+    EXPECT_EQ(receiver.is_subscribed(), false);
 
-    Event event;
+    SimpleEvent event;
 
     event.subscribe(receiver);
 
-    EXPECT_EQ(receiver.subscribed(), true);
+    EXPECT_EQ(receiver.is_subscribed(), true);
 
     event.unsubscribe(receiver);
 
-    EXPECT_EQ(receiver.subscribed(), false);
+    EXPECT_EQ(receiver.is_subscribed(), false);
 }
 
 TEST(Events, EventDeath) {
-    Event::Subscriber receiver([]() {});
+    SimpleEvent::Listener receiver([]() {});
 
-    EXPECT_EQ(receiver.subscribed(), false);
+    EXPECT_EQ(receiver.is_subscribed(), false);
 
     {
-        EXPECT_EQ(receiver.subscribed(), false);
+        EXPECT_EQ(receiver.is_subscribed(), false);
 
-        Event event;
+        SimpleEvent event;
 
         event.subscribe(receiver);
 
-        EXPECT_EQ(receiver.subscribed(), true);
+        EXPECT_EQ(receiver.is_subscribed(), true);
     }
 
-    EXPECT_EQ(receiver.subscribed(), false);
+    EXPECT_EQ(receiver.is_subscribed(), false);
 }
 
 TEST(Events, SubscriberDeath) {
     bool triggered = false;
 
-    Event event;
+    SimpleEvent event;
 
     {
-        Event::Subscriber receiver([&triggered]() { triggered = true; });
+        SimpleEvent::Listener receiver([&triggered]() { triggered = true; });
         event.subscribe(receiver);
     }
 
