@@ -16,7 +16,7 @@
 #include <stdexcept>
 
 /**
- * @brief Event class. Can be triggered to notify its subscribers and deliver
+ * @brief Event class. Can be triggered to notify its subscribers and deliver a
  * payload to them.
  *
  * @tparam Ts payload contents
@@ -79,7 +79,7 @@ struct Event final {
         void operator()(Ts... args) { action_(args...); }
 
         /**
-         * @brief Get if subscription is still valid
+         * @brief Check if subscription is still valid
          *
          * @return true if the subscription is bound to a valid event,
          * @return false otherwise
