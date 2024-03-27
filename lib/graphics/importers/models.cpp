@@ -7,34 +7,34 @@
 
 #include "graphics/objects/complex_model.h"
 #include "logger/logger.h"
-#include "managers/asset_manager.h"
+#include "managers/importer.h"
 
 static Asset<ComplexModel>* load_complex(const char* path);
 static Asset<Model>* load_simple(const char* path);
 
-IMPORTER(ComplexModel, "obj") { return load_complex(path); }
-IMPORTER(ComplexModel, "fbx") { return load_complex(path); }
-IMPORTER(ComplexModel, "glb") { return load_complex(path); }
-IMPORTER(ComplexModel, "gltf") { return load_complex(path); }
+IMPORTER(ComplexModel, "obj") { return load_complex(path.c_str()); }
+IMPORTER(ComplexModel, "fbx") { return load_complex(path.c_str()); }
+IMPORTER(ComplexModel, "glb") { return load_complex(path.c_str()); }
+IMPORTER(ComplexModel, "gltf") { return load_complex(path.c_str()); }
 
-IMPORTER(Model, "obj") { return load_simple(path); }
-IMPORTER(Model, "fbx") { return load_simple(path); }
-IMPORTER(Model, "glb") { return load_simple(path); }
-IMPORTER(Model, "gltf") { return load_simple(path); }
+IMPORTER(Model, "obj") { return load_simple(path.c_str()); }
+IMPORTER(Model, "fbx") { return load_simple(path.c_str()); }
+IMPORTER(Model, "glb") { return load_simple(path.c_str()); }
+IMPORTER(Model, "gltf") { return load_simple(path.c_str()); }
 
-IMPORTER(Mesh, "obj") { return new Asset<Mesh>(path); }
-IMPORTER(Mesh, "fbx") { return new Asset<Mesh>(path); }
-IMPORTER(Mesh, "glb") { return new Asset<Mesh>(path); }
-IMPORTER(Mesh, "gltf") { return new Asset<Mesh>(path); }
+IMPORTER(Mesh, "obj") { return new Asset<Mesh>(path.c_str()); }
+IMPORTER(Mesh, "fbx") { return new Asset<Mesh>(path.c_str()); }
+IMPORTER(Mesh, "glb") { return new Asset<Mesh>(path.c_str()); }
+IMPORTER(Mesh, "gltf") { return new Asset<Mesh>(path.c_str()); }
 
 IMPORTER(Model, "model") {
     tinyxml2::XMLDocument doc;
-    doc.LoadFile(path);
+    doc.LoadFile(path.c_str());
 
     const tinyxml2::XMLElement* head = doc.FirstChildElement("model");
 
     if (head == nullptr) {
-        log_printf(ERROR_REPORTS, "error", "Invalid model descriptor header\n");
+        ERROR("Invalid model descriptor header\n");
         return nullptr;
     }
 
@@ -43,8 +43,7 @@ IMPORTER(Model, "model") {
         head->FirstChildElement("material");
 
     if (mesh_xml == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Unspecified model mesh path (missing `mesh` tag)\n");
+        ERROR("Unspecified model mesh path (missing `mesh` tag)\n");
         return nullptr;
     }
     if (material_xml == nullptr) {
@@ -61,8 +60,7 @@ IMPORTER(Model, "model") {
     material_xml->QueryStringAttribute("path", &material_path);
 
     if (mesh_path == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Unspecified model mesh path (missing `path` attribute)\n");
+        ERROR("Unspecified model mesh path (missing `path` attribute)\n");
         return nullptr;
     }
     if (material_path == nullptr) {
@@ -76,10 +74,10 @@ IMPORTER(Model, "model") {
     const Material* material = AssetManager::request<Material>(material_path);
 
     if (mesh == nullptr || material == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Failed to load model dependencies (mesh.has_value() = %d, "
-                   "material.has_value() = %d)\n",
-                   mesh != nullptr, material != nullptr);
+        ERROR(
+            "Failed to load model dependencies (mesh.has_value() = %d, "
+            "material.has_value() = %d)\n",
+            mesh != nullptr, material != nullptr);
         return nullptr;
     }
 

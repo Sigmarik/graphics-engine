@@ -2,7 +2,7 @@
 
 #include "graphics/objects/material.h"
 #include "logger/logger.h"
-#include "managers/asset_manager.h"
+#include "managers/importer.h"
 
 template <class T>
 static T parse(const tinyxml2::XMLElement* element);
@@ -12,13 +12,12 @@ static void parse_uniform(Material& material,
 
 IMPORTER(Material, "material") {
     tinyxml2::XMLDocument doc;
-    doc.LoadFile(path);
+    doc.LoadFile(path.c_str());
 
     const tinyxml2::XMLElement* head = doc.FirstChildElement("material");
 
     if (head == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Invalid material descriptor header\n");
+        ERROR("Invalid material descriptor header\n");
         return nullptr;
     }
 
@@ -35,25 +34,22 @@ IMPORTER(Material, "material") {
     shader_xml->QueryStringAttribute("path", &shader_path);
 
     if (shader_path == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Shader path not specified (missing `path` attribute)\n");
+        ERROR("Shader path not specified (missing `path` attribute)\n");
         return nullptr;
     }
 
     const Shader* shader = AssetManager::request<Shader>(shader_path);
 
     if (shader == nullptr) {
-        log_printf(ERROR_REPORTS, "error", "Failed to load shader \"%s\"\n",
-                   shader_path);
+        ERROR("Failed to load shader \"%s\"\n", shader_path);
         return nullptr;
     }
 
     Asset<Material>* material = new Asset<Material>(*shader);
 
     if (material == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Failed to construct the material from shader \"%s\"\n",
-                   shader_path);
+        ERROR("Failed to construct the material from shader \"%s\"\n",
+              shader_path);
     }
 
     for (const tinyxml2::XMLElement* child = head->FirstChildElement();

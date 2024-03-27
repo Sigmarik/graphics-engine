@@ -12,9 +12,12 @@
 #pragma once
 
 #include <stdlib.h>
+#include <tinyxml2.h>
 
 #include <algorithm>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <typeinfo>
 #include <unordered_map>
 #include <vector>
@@ -23,6 +26,104 @@
 #include "logger/logger.h"
 
 static const size_t PATH_LENGTH = 1024;
+
+struct ImporterId;
+struct AbstractAsset;
+struct AbstractImporter;
+struct AbstractXMLImporter;
+
+/**
+ * @brief Asset/importer registry and dispatcher
+ *
+ */
+struct AssetManager final {
+    /**
+     * @brief Asset import pipeline modifier
+     *
+     */
+    enum RequestFlag {
+        // Do not print any warnings/errors on failure
+        Silent = 0x01,
+        // Ignore cached assets, import anyways
+        Reimport = 0x02,
+        // Do not cache the asset
+        Rogue = 0x04,
+    };
+
+    using RequestFlags = unsigned;
+
+    static void register_importer(AbstractImporter& importer);
+    static void register_importer(AbstractXMLImporter& importer);
+
+    /**
+     * @brief Request asset from a file
+     *
+     * @tparam T asset type
+     * @param[in] path path to the asset file
+     * @param[in] signature optional signature override
+     * @param[in] flags
+     * @return const T* pointer to the asset, `nullptr` if could not import
+     */
+    template <typename T>
+    static const T* request(const std::string& path,
+                            std::optional<std::string_view> signature = {},
+                            RequestFlags flags = 0);
+
+    /**
+     * @brief Request asset of type T from an XML element
+     *
+     * @tparam T asset type
+     * @param[in] element
+     * @param[in] handle optional asset identifier for persistent storage (rogue
+     * import if not specified)
+     * @param[in] flags
+     * @return const T* pointer to the asset, `nullptr` if could not import
+     */
+    template <typename T>
+    static const T* request(tinyxml2::XMLElement& element,
+                            std::optional<std::string_view> handle = {},
+                            RequestFlags flags = 0);
+
+    /**
+     * @brief Clear all cached and rogue assets
+     *
+     */
+    void unload_all();
+
+    /**
+     * @brief Register a rogue asset that is not bound to an identifier
+     *
+     * @param[in] asset
+     */
+    static void register_rogue(AbstractAsset* asset);
+
+   private:
+    AssetManager() = delete;
+    AssetManager(const AssetManager& manager) = delete;
+    AssetManager& operator=(const AssetManager& manager) = delete;
+
+    static std::string extract_signature(std::string_view name);
+
+    static AbstractImporter* find_importer(const ImporterId& id);
+    static AbstractXMLImporter* find_xml_importer(const ImporterId& id);
+
+    struct AssetRequest final {
+        AssetRequest(const std::string& asset_path, size_t type)
+            : path(asset_path), type_id(type) {}
+
+        std::string path;
+        size_t type_id;
+
+        bool operator==(const AssetRequest& request) const;
+    };
+
+    friend struct std::hash<AssetManager::AssetRequest>;
+
+    static std::unordered_map<ImporterId, AbstractImporter*> importers_;
+    static std::unordered_map<ImporterId, AbstractXMLImporter*> xml_importers_;
+    static std::unordered_map<AssetRequest, AbstractAsset*> assets_;
+    static std::vector<AbstractAsset*> rogues_;
+};
 
 struct AbstractAsset {
     virtual ~AbstractAsset() = default;
@@ -39,20 +140,39 @@ struct Asset : public AbstractAsset {
 };
 
 struct ImporterId final {
-    ImporterId(size_t type, const char* sign)
+    ImporterId(size_t type, const std::string& sign)
         : type_id(type), signature(sign) {}
 
     size_t type_id;
-    const char* signature;
+    std::string signature;
 
     bool operator==(const ImporterId& id) const;
 };
 
+template <>
+struct std::hash<ImporterId> {
+    size_t operator()(const ImporterId& id) const noexcept;
+};
+
 struct AbstractImporter {
-    AbstractImporter(size_t type_id, const char* signature);
+    AbstractImporter(size_t type_id, const std::string& signature);
     virtual ~AbstractImporter() = default;
 
-    virtual AbstractAsset* import(const char* path) const = 0;
+    virtual AbstractAsset* import(const std::string& path,
+                                  AssetManager::RequestFlags flags) const = 0;
+
+    const ImporterId& get_id() const { return id_; }
+
+   private:
+    const ImporterId id_;
+};
+
+struct AbstractXMLImporter {
+    AbstractXMLImporter(size_t type_id, const std::string& signature);
+
+    virtual ~AbstractXMLImporter() = default;
+    virtual AbstractAsset* import(tinyxml2::XMLElement& data,
+                                  AssetManager::RequestFlags flags) const = 0;
 
     const ImporterId& get_id() const { return id_; }
 
@@ -75,46 +195,10 @@ struct AssetImporter : AbstractImporter {
         : AbstractImporter(typeid(ASSET_T).hash_code(), SIGNATURE.value) {}
 };
 
-struct AssetManager final {
-    static void register_importer(AbstractImporter& importer);
-
-    template <typename T>
-    static const T* request(const char* path);
-
-    void unload_all();
-
-    /**
-     * @brief Register a rogue asset that is not bound to a path string
-     *
-     * @param[in] asset
-     */
-    static void register_rogue(AbstractAsset* asset);
-
-   private:
-    AssetManager() = delete;
-    AssetManager(const AssetManager& manager) = delete;
-    AssetManager& operator=(const AssetManager& manager) = delete;
-
-    struct AssetRequest final {
-        AssetRequest(const char* asset_path, size_t type)
-            : path(asset_path), type_id(type) {}
-
-        const char* path = nullptr;
-        size_t type_id = 0;
-
-        bool operator==(const AssetRequest& request) const;
-    };
-
-    friend struct std::hash<AssetManager::AssetRequest>;
-
-    static std::unordered_map<ImporterId, AbstractImporter*> importers_;
-    static std::unordered_map<AssetRequest, AbstractAsset*> assets_;
-    static std::vector<AbstractAsset*> rogues_;
-};
-
-template <>
-struct std::hash<ImporterId> {
-    size_t operator()(const ImporterId& id) const noexcept;
+template <class ASSET_T, StringLiteral SIGNATURE>
+struct XMLAssetImporter : AbstractXMLImporter {
+    XMLAssetImporter()
+        : AbstractXMLImporter(typeid(ASSET_T).hash_code(), SIGNATURE.value) {}
 };
 
 template <>
@@ -123,23 +207,3 @@ struct std::hash<AssetManager::AssetRequest> {
 };
 
 #include "_am_request.hpp"
-
-/**
- * @brief Create and register an asset importer
- *
- */
-#define IMPORTER(type, signature)                                             \
-    template <>                                                               \
-    struct AssetImporter<type, signature> : AbstractImporter {                \
-        AssetImporter()                                                       \
-            : AbstractImporter(typeid(type).hash_code(), signature) {}        \
-                                                                              \
-        AbstractAsset* import(const char* path) const override;               \
-                                                                              \
-        static AssetImporter<type, signature> instance_;                      \
-    };                                                                        \
-                                                                              \
-    AssetImporter<type, signature> AssetImporter<type, signature>::instance_; \
-                                                                              \
-    AbstractAsset* AssetImporter<type, signature>::import(const char* path)   \
-        const

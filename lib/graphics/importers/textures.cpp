@@ -9,11 +9,11 @@
 
 #include "graphics/primitives/texture.h"
 #include "logger/logger.h"
-#include "managers/asset_manager.h"
+#include "managers/importer.h"
 
-IMPORTER(Texture, "png") { return new Asset<Texture>(path); }
-IMPORTER(Texture, "jpg") { return new Asset<Texture>(path); }
-IMPORTER(Texture, "bmp") { return new Asset<Texture>(path); }
+IMPORTER(Texture, "png") { return new Asset<Texture>(path.c_str()); }
+IMPORTER(Texture, "jpg") { return new Asset<Texture>(path.c_str()); }
+IMPORTER(Texture, "bmp") { return new Asset<Texture>(path.c_str()); }
 
 void read_wrap(const tinyxml2::XMLElement* element, TextureSettings& settings) {
     if (element == nullptr) return;
@@ -99,13 +99,12 @@ void read_interp(const tinyxml2::XMLElement* element,
 
 IMPORTER(Texture, "texture") {
     tinyxml2::XMLDocument doc;
-    doc.LoadFile(path);
+    doc.LoadFile(path.c_str());
 
     const tinyxml2::XMLElement* element = doc.FirstChildElement("texture");
 
     if (element == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Invalid texture descriptor header\n");
+        ERROR("Invalid texture descriptor header\n");
         return nullptr;
     }
 
@@ -113,8 +112,7 @@ IMPORTER(Texture, "texture") {
         element->FirstChildElement("file");
 
     if (path_element == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Unspecified texture file (missing `file` tag)\n");
+        ERROR("Unspecified texture file (missing `file` tag)\n");
         return nullptr;
     }
 
