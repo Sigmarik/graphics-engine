@@ -42,6 +42,20 @@ void AssetManager::register_importer(AbstractImporter& importer) {
     importers_.insert({id, &importer});
 }
 
+void AssetManager::register_importer(AbstractXMLImporter& importer) {
+    const ImporterId& id = importer.get_id();
+
+    if (importers_.find(id) != importers_.end()) {
+        log_printf(ERROR_REPORTS, "error",
+                   "XML Asset importer of type %0lX for signature \"%s\" has "
+                   "already been registered.\n",
+                   id.type_id, id.signature.c_str());
+        return;
+    }
+
+    xml_importers_.insert({id, &importer});
+}
+
 void AssetManager::unload_all() {
     for (auto cell : assets_) {
         delete cell.second;
@@ -87,6 +101,12 @@ AbstractImporter* AssetManager::find_importer(const ImporterId& id) {
 }
 
 AbstractImporter::AbstractImporter(size_t type_id, const std::string& signature)
+    : id_(type_id, signature) {
+    AssetManager::register_importer(*this);
+}
+
+AbstractXMLImporter::AbstractXMLImporter(size_t type_id,
+                                         const std::string& signature)
     : id_(type_id, signature) {
     AssetManager::register_importer(*this);
 }

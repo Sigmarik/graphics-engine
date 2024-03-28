@@ -4,19 +4,9 @@
 #include "logger/logger.h"
 #include "managers/importer.h"
 
-IMPORTER(Shader, "shader") {
-    tinyxml2::XMLDocument doc;
-    doc.LoadFile(path.c_str());
-
-    const tinyxml2::XMLElement* element = doc.FirstChildElement("shader");
-
-    if (element == nullptr) {
-        ERROR("Invalid shader descriptor header\n");
-        return nullptr;
-    }
-
-    const tinyxml2::XMLElement* vsh_element = element->FirstChildElement("vsh");
-    const tinyxml2::XMLElement* fsh_element = element->FirstChildElement("fsh");
+XML_IMPORTER(Shader, "shader") {
+    const tinyxml2::XMLElement* vsh_element = data.FirstChildElement("vsh");
+    const tinyxml2::XMLElement* fsh_element = data.FirstChildElement("fsh");
 
     if (vsh_element == nullptr) {
         ERROR("Unspecified vertex shader path (missing `vsh` tag)\n");
@@ -47,4 +37,18 @@ IMPORTER(Shader, "shader") {
     }
 
     return new Asset<Shader>(vsh_name, fsh_name);
+}
+
+IMPORTER(Shader, "shader") {
+    tinyxml2::XMLDocument doc;
+    doc.LoadFile(path.c_str());
+
+    const tinyxml2::XMLElement* data = doc.FirstChildElement("shader");
+
+    if (data == nullptr) {
+        ERROR("Could not find the \"shader\" tag in \"%s\"\n", path.c_str());
+        return nullptr;
+    }
+
+    return XMLAssetImporter<Shader, "shader">::import(*data, flags);
 }

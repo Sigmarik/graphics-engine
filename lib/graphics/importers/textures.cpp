@@ -97,19 +97,8 @@ void read_interp(const tinyxml2::XMLElement* element,
     }
 }
 
-IMPORTER(Texture, "texture") {
-    tinyxml2::XMLDocument doc;
-    doc.LoadFile(path.c_str());
-
-    const tinyxml2::XMLElement* element = doc.FirstChildElement("texture");
-
-    if (element == nullptr) {
-        ERROR("Invalid texture descriptor header\n");
-        return nullptr;
-    }
-
-    const tinyxml2::XMLElement* path_element =
-        element->FirstChildElement("file");
+XML_IMPORTER(Texture, "texture") {
+    const tinyxml2::XMLElement* path_element = data.FirstChildElement("file");
 
     if (path_element == nullptr) {
         ERROR("Unspecified texture file (missing `file` tag)\n");
@@ -120,9 +109,7 @@ IMPORTER(Texture, "texture") {
     path_element->QueryStringAttribute("path", &content_path);
 
     if (content_path == nullptr) {
-        log_printf(
-            ERROR_REPORTS, "error",
-            "Unspecified texture file path (missing `path` attribute)\n");
+        ERROR("Unspecified texture file path (missing `path` attribute)\n");
         return nullptr;
     }
 
@@ -130,10 +117,24 @@ IMPORTER(Texture, "texture") {
 
     TextureSettings settings = {.wrap = GL_REPEAT, .interp = GL_NEAREST};
 
-    read_wrap(element->FirstChildElement("wrap"), settings);
-    read_interp(element->FirstChildElement("interp"), settings);
+    read_wrap(data.FirstChildElement("wrap"), settings);
+    read_interp(data.FirstChildElement("interp"), settings);
 
     asset->content.use_settings(settings);
 
     return asset;
+}
+
+IMPORTER(Texture, "texture") {
+    tinyxml2::XMLDocument doc;
+    doc.LoadFile(path.c_str());
+
+    const tinyxml2::XMLElement* data = doc.FirstChildElement("texture");
+
+    if (data == nullptr) {
+        ERROR("Could not find the \"texture\" tag in \"%s\"\n", path.c_str());
+        return nullptr;
+    }
+
+    return XMLAssetImporter<Texture, "texture">::import(*data, flags);
 }

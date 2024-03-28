@@ -43,7 +43,7 @@ const T* AssetManager::request(const std::string& path,
         return nullptr;
     }
 
-    Asset<T>* imported = (Asset<T>*)importer->import(path, flags);
+    Asset<T>* imported = (Asset<T>*)importer->local_import(path, flags);
 
     if (imported == nullptr) {
         if ((flags & RequestFlag::Silent) == 0) {
@@ -68,7 +68,7 @@ const T* AssetManager::request(const std::string& path,
 }
 
 template <typename T>
-const T* AssetManager::request(tinyxml2::XMLElement& element,
+const T* AssetManager::request(const tinyxml2::XMLElement& element,
                                std::optional<std::string_view> handle,
                                RequestFlags flags) {
     const char* tag = element.Name();
@@ -104,7 +104,7 @@ const T* AssetManager::request(tinyxml2::XMLElement& element,
         return nullptr;
     }
 
-    Asset<T>* imported = (Asset<T>*)importer->import(element, flags);
+    Asset<T>* imported = (Asset<T>*)importer->local_import(element, flags);
 
     if (imported == nullptr) {
         if ((flags & RequestFlag::Silent) == 0) {

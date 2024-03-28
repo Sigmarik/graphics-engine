@@ -10,18 +10,8 @@ static T parse(const tinyxml2::XMLElement* element);
 static void parse_uniform(Material& material,
                           const tinyxml2::XMLElement* element);
 
-IMPORTER(Material, "material") {
-    tinyxml2::XMLDocument doc;
-    doc.LoadFile(path.c_str());
-
-    const tinyxml2::XMLElement* head = doc.FirstChildElement("material");
-
-    if (head == nullptr) {
-        ERROR("Invalid material descriptor header\n");
-        return nullptr;
-    }
-
-    const tinyxml2::XMLElement* shader_xml = head->FirstChildElement("shader");
+XML_IMPORTER(Material, "material") {
+    const tinyxml2::XMLElement* shader_xml = data.FirstChildElement("shader");
 
     if (shader_xml == nullptr) {
         log_printf(
@@ -52,12 +42,25 @@ IMPORTER(Material, "material") {
               shader_path);
     }
 
-    for (const tinyxml2::XMLElement* child = head->FirstChildElement();
+    for (const tinyxml2::XMLElement* child = data.FirstChildElement();
          child != nullptr; child = child->NextSiblingElement()) {
         parse_uniform(material->content, child);
     }
 
     return material;
+}
+
+IMPORTER(Material, "material") {
+    tinyxml2::XMLDocument doc;
+    doc.LoadFile(path.c_str());
+
+    const tinyxml2::XMLElement* data = doc.FirstChildElement("material");
+    if (data == nullptr) {
+        ERROR("Could not find the \"material\" tag in \"%s\"\n", path.c_str());
+        return nullptr;
+    }
+
+    return XMLAssetImporter<Material, "material">::import(*data, flags);
 }
 
 template <>

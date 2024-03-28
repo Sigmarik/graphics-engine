@@ -27,20 +27,10 @@ IMPORTER(Mesh, "fbx") { return new Asset<Mesh>(path.c_str()); }
 IMPORTER(Mesh, "glb") { return new Asset<Mesh>(path.c_str()); }
 IMPORTER(Mesh, "gltf") { return new Asset<Mesh>(path.c_str()); }
 
-IMPORTER(Model, "model") {
-    tinyxml2::XMLDocument doc;
-    doc.LoadFile(path.c_str());
-
-    const tinyxml2::XMLElement* head = doc.FirstChildElement("model");
-
-    if (head == nullptr) {
-        ERROR("Invalid model descriptor header\n");
-        return nullptr;
-    }
-
-    const tinyxml2::XMLElement* mesh_xml = head->FirstChildElement("mesh");
+XML_IMPORTER(Model, "model") {
+    const tinyxml2::XMLElement* mesh_xml = data.FirstChildElement("mesh");
     const tinyxml2::XMLElement* material_xml =
-        head->FirstChildElement("material");
+        data.FirstChildElement("material");
 
     if (mesh_xml == nullptr) {
         ERROR("Unspecified model mesh path (missing `mesh` tag)\n");
@@ -82,6 +72,20 @@ IMPORTER(Model, "model") {
     }
 
     return new Asset<Model>(*mesh, *material);
+}
+
+IMPORTER(Model, "model") {
+    tinyxml2::XMLDocument doc;
+    doc.LoadFile(path.c_str());
+
+    const tinyxml2::XMLElement* data = doc.FirstChildElement("model");
+
+    if (data == nullptr) {
+        ERROR("Could not find the \"model\" tag in \"%s\"\n", path.c_str());
+        return nullptr;
+    }
+
+    return XMLAssetImporter<Model, "model">::import(*data, flags);
 }
 
 static Asset<ComplexModel>* load_complex(const char* path) {

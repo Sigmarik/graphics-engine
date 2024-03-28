@@ -24,40 +24,50 @@
         AssetImporter()                                                       \
             : AbstractImporter(typeid(type).hash_code(), signature) {}        \
                                                                               \
-        AbstractAsset* import(                                                \
+        AbstractAsset* local_import(                                          \
             const std::string& path,                                          \
             AssetManager::RequestFlags flags) const override;                 \
+                                                                              \
+        static AbstractAsset* import(const std::string& path,                 \
+                                     AssetManager::RequestFlags flags = 0) {  \
+            return instance_.local_import(path, flags);                       \
+        }                                                                     \
                                                                               \
         static AssetImporter<type, signature> instance_;                      \
     };                                                                        \
                                                                               \
     AssetImporter<type, signature> AssetImporter<type, signature>::instance_; \
                                                                               \
-    AbstractAsset* AssetImporter<type, signature>::import(                    \
+    AbstractAsset* AssetImporter<type, signature>::local_import(              \
         const std::string& path, AssetManager::RequestFlags flags) const
 
 /**
  * @brief Create and register an XML asset importer
  *
  */
-#define XML_IMPORTER(type, signature)                                       \
-    template <>                                                             \
-    struct XMLAssetImporter<type, signature> : AbstractXMLImporter {        \
-        AssetXMLImporter()                                                  \
-            : AbstractXMLImporter(typeid(type).hash_code(), signature) {}   \
-                                                                            \
-        AbstractAsset* import(                                              \
-            const tinyxml2::XMLElement& data,                               \
-            AssetManager::RequestFlags flags) const override;               \
-                                                                            \
-        static XMLAssetImporter<type, signature> instance_;                 \
-    };                                                                      \
-                                                                            \
-    XMLAssetImporter<type, signature>                                       \
-        XMLAssetImporter<type, signature>::instance_;                       \
-                                                                            \
-    AbstractAsset* XMLAssetImporter<type, signature>::import(               \
-        const tinyxml2::XMLElement& data, AssetManager::RequestFlags flags) \
+#define XML_IMPORTER(type, signature)                                        \
+    template <>                                                              \
+    struct XMLAssetImporter<type, signature> : AbstractXMLImporter {         \
+        XMLAssetImporter()                                                   \
+            : AbstractXMLImporter(typeid(type).hash_code(), signature) {}    \
+                                                                             \
+        AbstractAsset* local_import(                                         \
+            const tinyxml2::XMLElement& data,                                \
+            AssetManager::RequestFlags flags) const override;                \
+                                                                             \
+        static AbstractAsset* import(const tinyxml2::XMLElement& data,       \
+                                     AssetManager::RequestFlags flags = 0) { \
+            return instance_.local_import(data, flags);                      \
+        }                                                                    \
+                                                                             \
+        static XMLAssetImporter<type, signature> instance_;                  \
+    };                                                                       \
+                                                                             \
+    XMLAssetImporter<type, signature>                                        \
+        XMLAssetImporter<type, signature>::instance_;                        \
+                                                                             \
+    AbstractAsset* XMLAssetImporter<type, signature>::local_import(          \
+        const tinyxml2::XMLElement& data, AssetManager::RequestFlags flags)  \
         const
 
 #define WARNING(...)                                            \

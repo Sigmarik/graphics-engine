@@ -25,8 +25,6 @@
 #include "hash/murmur.h"
 #include "logger/logger.h"
 
-static const size_t PATH_LENGTH = 1024;
-
 struct ImporterId;
 struct AbstractAsset;
 struct AbstractImporter;
@@ -80,7 +78,7 @@ struct AssetManager final {
      * @return const T* pointer to the asset, `nullptr` if could not import
      */
     template <typename T>
-    static const T* request(tinyxml2::XMLElement& element,
+    static const T* request(const tinyxml2::XMLElement& element,
                             std::optional<std::string_view> handle = {},
                             RequestFlags flags = 0);
 
@@ -158,8 +156,8 @@ struct AbstractImporter {
     AbstractImporter(size_t type_id, const std::string& signature);
     virtual ~AbstractImporter() = default;
 
-    virtual AbstractAsset* import(const std::string& path,
-                                  AssetManager::RequestFlags flags) const = 0;
+    virtual AbstractAsset* local_import(
+        const std::string& path, AssetManager::RequestFlags flags) const = 0;
 
     const ImporterId& get_id() const { return id_; }
 
@@ -171,8 +169,9 @@ struct AbstractXMLImporter {
     AbstractXMLImporter(size_t type_id, const std::string& signature);
 
     virtual ~AbstractXMLImporter() = default;
-    virtual AbstractAsset* import(tinyxml2::XMLElement& data,
-                                  AssetManager::RequestFlags flags) const = 0;
+    virtual AbstractAsset* local_import(
+        const tinyxml2::XMLElement& data,
+        AssetManager::RequestFlags flags) const = 0;
 
     const ImporterId& get_id() const { return id_; }
 
