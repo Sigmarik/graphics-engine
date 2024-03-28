@@ -10,7 +10,7 @@ static T parse(const tinyxml2::XMLElement* element);
 static void parse_uniform(Material& material,
                           const tinyxml2::XMLElement* element);
 
-XML_IMPORTER(Material, "material") {
+XML_BASED_IMPORTER(Material, "material") {
     const tinyxml2::XMLElement* shader_xml = data.FirstChildElement("shader");
 
     if (shader_xml == nullptr) {
@@ -48,19 +48,6 @@ XML_IMPORTER(Material, "material") {
     }
 
     return material;
-}
-
-IMPORTER(Material, "material") {
-    tinyxml2::XMLDocument doc;
-    doc.LoadFile(path.c_str());
-
-    const tinyxml2::XMLElement* data = doc.FirstChildElement("material");
-    if (data == nullptr) {
-        ERROR("Could not find the \"material\" tag in \"%s\"\n", path.c_str());
-        return nullptr;
-    }
-
-    return XMLAssetImporter<Material, "material">::import(*data, flags);
 }
 
 template <>

@@ -97,7 +97,7 @@ void read_interp(const tinyxml2::XMLElement* element,
     }
 }
 
-XML_IMPORTER(Texture, "texture") {
+XML_BASED_IMPORTER(Texture, "texture") {
     const tinyxml2::XMLElement* path_element = data.FirstChildElement("file");
 
     if (path_element == nullptr) {
@@ -123,18 +123,4 @@ XML_IMPORTER(Texture, "texture") {
     asset->content.use_settings(settings);
 
     return asset;
-}
-
-IMPORTER(Texture, "texture") {
-    tinyxml2::XMLDocument doc;
-    doc.LoadFile(path.c_str());
-
-    const tinyxml2::XMLElement* data = doc.FirstChildElement("texture");
-
-    if (data == nullptr) {
-        ERROR("Could not find the \"texture\" tag in \"%s\"\n", path.c_str());
-        return nullptr;
-    }
-
-    return XMLAssetImporter<Texture, "texture">::import(*data, flags);
 }

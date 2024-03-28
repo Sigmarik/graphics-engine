@@ -27,7 +27,7 @@ IMPORTER(Mesh, "fbx") { return new Asset<Mesh>(path.c_str()); }
 IMPORTER(Mesh, "glb") { return new Asset<Mesh>(path.c_str()); }
 IMPORTER(Mesh, "gltf") { return new Asset<Mesh>(path.c_str()); }
 
-XML_IMPORTER(Model, "model") {
+XML_BASED_IMPORTER(Model, "model") {
     const tinyxml2::XMLElement* mesh_xml = data.FirstChildElement("mesh");
     const tinyxml2::XMLElement* material_xml =
         data.FirstChildElement("material");
@@ -72,20 +72,6 @@ XML_IMPORTER(Model, "model") {
     }
 
     return new Asset<Model>(*mesh, *material);
-}
-
-IMPORTER(Model, "model") {
-    tinyxml2::XMLDocument doc;
-    doc.LoadFile(path.c_str());
-
-    const tinyxml2::XMLElement* data = doc.FirstChildElement("model");
-
-    if (data == nullptr) {
-        ERROR("Could not find the \"model\" tag in \"%s\"\n", path.c_str());
-        return nullptr;
-    }
-
-    return XMLAssetImporter<Model, "model">::import(*data, flags);
 }
 
 static Asset<ComplexModel>* load_complex(const char* path) {

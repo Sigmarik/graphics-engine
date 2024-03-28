@@ -4,7 +4,7 @@
 #include "logger/logger.h"
 #include "managers/importer.h"
 
-XML_IMPORTER(Shader, "shader") {
+XML_BASED_IMPORTER(Shader, "shader") {
     const tinyxml2::XMLElement* vsh_element = data.FirstChildElement("vsh");
     const tinyxml2::XMLElement* fsh_element = data.FirstChildElement("fsh");
 
@@ -37,18 +37,4 @@ XML_IMPORTER(Shader, "shader") {
     }
 
     return new Asset<Shader>(vsh_name, fsh_name);
-}
-
-IMPORTER(Shader, "shader") {
-    tinyxml2::XMLDocument doc;
-    doc.LoadFile(path.c_str());
-
-    const tinyxml2::XMLElement* data = doc.FirstChildElement("shader");
-
-    if (data == nullptr) {
-        ERROR("Could not find the \"shader\" tag in \"%s\"\n", path.c_str());
-        return nullptr;
-    }
-
-    return XMLAssetImporter<Shader, "shader">::import(*data, flags);
 }
