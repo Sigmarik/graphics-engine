@@ -28,7 +28,7 @@ XML_BASED_IMPORTER(Material, "material") {
         return nullptr;
     }
 
-    const Shader* shader = AssetManager::request<Shader>(shader_path);
+    const Shader* shader = AssetManager::request<Shader>(shader_path, "shader");
 
     if (shader == nullptr) {
         ERROR("Failed to load shader \"%s\"\n", shader_path);
@@ -199,7 +199,7 @@ const Texture* parse<const Texture*>(const tinyxml2::XMLElement* element) {
         return nullptr;
     }
 
-    return AssetManager::request<Texture>(path);
+    return AssetManager::request<Texture>(path, "texture");
 }
 
 static void parse_uniform(Material& material,

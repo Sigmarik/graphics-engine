@@ -61,7 +61,8 @@ XML_BASED_IMPORTER(Model, "model") {
     }
 
     const Mesh* mesh = AssetManager::request<Mesh>(mesh_path);
-    const Material* material = AssetManager::request<Material>(material_path);
+    const Material* material =
+        AssetManager::request<Material>(material_path, "material");
 
     if (mesh == nullptr || material == nullptr) {
         ERROR(
@@ -104,7 +105,7 @@ static Asset<ComplexModel>* load_complex(const char* path) {
             scene->mMaterials[mesh->mMaterialIndex]->GetName().C_Str();
 
         const Material* material =
-            AssetManager::request<Material>(material_name);
+            AssetManager::request<Material>(material_name, "material");
 
         if (material == nullptr) {
             log_printf(WARNINGS, "warning",
@@ -151,7 +152,7 @@ static Asset<Model>* load_simple(const char* path) {
             scene->mMaterials[mesh->mMaterialIndex]->GetName().C_Str();
 
         const Material* material =
-            AssetManager::request<Material>(material_name);
+            AssetManager::request<Material>(material_name, "material");
 
         if (material == nullptr) {
             log_printf(WARNINGS, "warning",
