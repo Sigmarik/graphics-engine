@@ -1,7 +1,5 @@
 #include <string.h>
 
-// TODO: Rewrite
-
 template <typename T>
 const T* AssetManager::request(const std::string& path,
                                std::optional<std::string_view> sign_suggestion,
@@ -10,8 +8,7 @@ const T* AssetManager::request(const std::string& path,
 
     std::string id_path = path;
     if (sign_suggestion && signature != *sign_suggestion) {
-        id_path =
-            std::string(".") + std::string(*sign_suggestion) + ".||" + path;
+        id_path = path + "\t//." + std::string(*sign_suggestion) + ".//";
     }
 
     AssetManager::AssetRequest identifier(id_path, typeid(T).hash_code());

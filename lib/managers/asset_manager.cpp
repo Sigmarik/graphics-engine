@@ -72,6 +72,21 @@ void AssetManager::register_rogue(AbstractAsset* asset) {
     rogues_.push_back(asset);
 }
 
+void AssetManager::dump(unsigned importance) {
+    log_printf(importance, "dump",
+               "Currently loaded assets (%lu unique, %lu rogues):\n",
+               assets_.size(), rogues_.size());
+
+    size_t index = 0;
+    for (auto& [key, value] : assets_) {
+        _log_printf(importance, "dump", "\t%6lu (%lu)\t%s\n", index,
+                    key.type_id, key.path.c_str());
+        ++index;
+    }
+
+    _log_printf(importance, "dump", "\t+%lu rogues\n", rogues_.size());
+}
+
 std::string AssetManager::extract_signature(std::string_view name) {
     std::string answer;
 

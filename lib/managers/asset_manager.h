@@ -86,7 +86,7 @@ struct AssetManager final {
      * @brief Clear all cached and rogue assets
      *
      */
-    void unload_all();
+    static void unload_all();
 
     /**
      * @brief Register a rogue asset that is not bound to an identifier
@@ -94,6 +94,13 @@ struct AssetManager final {
      * @param[in] asset
      */
     static void register_rogue(AbstractAsset* asset);
+
+    /**
+     * @brief Dump currently loaded asset identifiers
+     *
+     * @param[in] importance
+     */
+    static void dump(unsigned importance = STATUS_REPORTS);
 
    private:
     AssetManager() = delete;

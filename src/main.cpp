@@ -83,6 +83,8 @@ int main(const int argc, char** argv) {
     // Synch physics and graphics ticks, disable TPS requirements
     ticker.set_tps_req(0);
 
+    AssetManager::dump();
+
     log_printf(STATUS_REPORTS, "status", "Entering the loop.\n");
     GameLoop::run(ticker, [window]() { return glfwWindowShouldClose(window); });
 
