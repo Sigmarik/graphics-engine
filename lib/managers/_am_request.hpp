@@ -6,7 +6,15 @@ template <typename T>
 const T* AssetManager::request(const std::string& path,
                                std::optional<std::string_view> sign_suggestion,
                                RequestFlags flags) {
-    AssetManager::AssetRequest identifier(path, typeid(T).hash_code());
+    std::string signature = extract_signature(path);
+
+    std::string id_path = path;
+    if (sign_suggestion && signature != *sign_suggestion) {
+        id_path =
+            std::string(".") + std::string(*sign_suggestion) + ".||" + path;
+    }
+
+    AssetManager::AssetRequest identifier(id_path, typeid(T).hash_code());
 
     if ((flags & RequestFlag::Reimport) == 0) {
         auto asset = assets_.find(identifier);
@@ -18,7 +26,6 @@ const T* AssetManager::request(const std::string& path,
     log_printf(STATUS_REPORTS, "status", "Loading asset \"%s\" (type %0lX)\n",
                identifier.path.c_str(), identifier.type_id);
 
-    std::string signature = extract_signature(path);
     ImporterId importer_id(typeid(T).hash_code(), signature);
 
     AbstractImporter* importer = find_importer(importer_id);
