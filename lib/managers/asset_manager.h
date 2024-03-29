@@ -58,7 +58,7 @@ struct AssetManager final {
      *
      * @tparam T asset type
      * @param[in] path path to the asset file
-     * @param[in] signature optional signature override
+     * @param[in] signature optional signature suggestion
      * @param[in] flags
      * @return const T* pointer to the asset, `nullptr` if could not import
      */
