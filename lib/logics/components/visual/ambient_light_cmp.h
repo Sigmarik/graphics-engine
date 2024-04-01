@@ -9,8 +9,7 @@
  *
  */
 
-#ifndef __LIB_LOGICS_COMPONENTS_VISUAL_AMBIENT_LIGHT_CMP_H
-#define __LIB_LOGICS_COMPONENTS_VISUAL_AMBIENT_LIGHT_CMP_H
+#pragma once
 
 #include "graphics/objects/ambient_light.h"
 #include "logics/scene_component.h"
@@ -18,13 +17,12 @@
 struct AmbientLightComponent : public SceneComponent {
     AmbientLightComponent(const glm::vec3& color);
 
-    void spawn_self(Scene& scene) override;
-
     glm::vec3 get_color() const { return light_.get_color(); }
     void set_color(const glm::vec3& color) { light_.set_color(color); }
+
+   protected:
+    void begin_play(Scene& scene) override;
 
    private:
     AmbientLight light_;
 };
-
-#endif /* __LIB_LOGICS_COMPONENTS_VISUAL_AMBIENT_LIGHT_CMP_H */

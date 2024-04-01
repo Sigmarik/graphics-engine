@@ -24,17 +24,17 @@ PoolGame::PoolGame()
 
     get_renderer().track_object(contrast_vignette_);
 
-    table_.spawn_self(*this);
+    add_component(table_);
+    add_component(player_);
 
-    player_.spawn_self(*this);
-
-    main_lamp_.spawn_self(*this);
-    sun_.spawn_self(*this);
-    ambient_.spawn_self(*this);
+    add_component(main_lamp_);
+    add_component(sun_);
+    add_component(ambient_);
 
     for (size_t id = 0; id < sizeof(balls_) / sizeof(*balls_); ++id) {
-        balls_[id] = GenericBall(glm::vec3(0.0));
-        balls_[id].spawn_self(*this);
+        balls_[id] =
+            std::shared_ptr<GenericBall>(new GenericBall(glm::vec3(0.0)));
+        add_component(balls_[id]);
     }
 
     get_renderer().set_viewpoint(&player_.get_camera());
@@ -69,8 +69,8 @@ void PoolGame::reset() {
                 POOL_BALL_RADIUS * y_id * 2.0 - POOL_BALL_RADIUS * x_id,
                 POOL_BALL_RADIUS, -POOL_BALL_RADIUS * x_id * 1.73 - 0.5);
 
-            balls_[ball_id].set_position(position);
-            balls_[ball_id].set_velocity(glm::vec3(0.0));
+            balls_[ball_id]->set_position(position);
+            balls_[ball_id]->set_velocity(glm::vec3(0.0));
 
             ++ball_id;
         }
@@ -82,7 +82,7 @@ void PoolGame::reset() {
 
 bool PoolGame::has_moving_parts() const {
     for (size_t id = 0; id < sizeof(balls_) / sizeof(*balls_); ++id) {
-        if (balls_[id].is_moving()) return true;
+        if (balls_[id]->is_moving()) return true;
     }
 
     return player_.is_moving();
@@ -91,11 +91,11 @@ bool PoolGame::has_moving_parts() const {
 void PoolGame::process_int_collisions() {
     for (size_t id_a = 1; id_a < sizeof(balls_) / sizeof(*balls_); ++id_a) {
         for (size_t id_b = 0; id_b < id_a; ++id_b) {
-            balls_[id_a].collide(balls_[id_b]);
+            balls_[id_a]->collide(*balls_[id_b]);
         }
     }
 
     for (size_t id = 0; id < sizeof(balls_) / sizeof(*balls_); ++id) {
-        player_.collide(balls_[id]);
+        player_.collide(*balls_[id]);
     }
 }

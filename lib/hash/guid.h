@@ -9,8 +9,7 @@
  *
  */
 
-#ifndef __HASH_GUID_H
-#define __HASH_GUID_H
+#pragma once
 
 #include <inttypes.h>
 
@@ -22,25 +21,32 @@ struct GUID {
 
     bool valid() const { return left > 0 || right > 0; }
 
-    bool operator==(const GUID& guid) const {
-        return left == guid.left && right == guid.right;
+    friend bool operator==(const GUID& alpha, const GUID& beta) {
+        return alpha.left == beta.left && alpha.right == beta.right;
     }
 
-    bool operator>(const GUID& guid) const {
-        if (left != guid.left) {
-            return left > guid.left;
-        }
-        return right > guid.right;
+    friend bool operator!=(const GUID& alpha, const GUID& beta) {
+        return !(alpha == beta);
     }
 
-    bool operator<(const GUID& guid) const { return guid.operator>(*this); }
+    friend bool operator<(const GUID& alpha, const GUID& beta) {
+        return alpha.left < beta.left ||
+               (alpha.left == beta.left && alpha.right < beta.right);
+    }
 
-    bool operator>=(const GUID& guid) const { return !operator<(guid); }
+    friend bool operator>(const GUID& alpha, const GUID& beta) {
+        return alpha.left > beta.left ||
+               (alpha.left == beta.left && alpha.right > beta.right);
+    }
 
-    bool operator<=(const GUID& guid) const { return !operator>(guid); }
+    friend bool operator<=(const GUID& alpha, const GUID& beta) {
+        return alpha < beta || alpha == beta;
+    }
+
+    friend bool operator>=(const GUID& alpha, const GUID& beta) {
+        return alpha > beta || alpha == beta;
+    }
 
     uint64_t left = 0;
     uint64_t right = 0;
 };
-
-#endif

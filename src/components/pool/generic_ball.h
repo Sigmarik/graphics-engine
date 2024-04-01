@@ -9,13 +9,10 @@
  *
  */
 
-#ifndef __SRC_COMPONENTS_POOL_GENERIC_BALL_H
-#define __SRC_COMPONENTS_POOL_GENERIC_BALL_H
+#pragma once
 
 #include "ball.h"
 
 struct GenericBall : public PoolBall {
     GenericBall(const glm::vec3& position = glm::vec3(0.0, 0.0, 0.0));
 };
-
-#endif /* __SRC_COMPONENTS_POOL_GENERIC_BALL_H */

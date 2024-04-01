@@ -44,7 +44,7 @@ struct PoolGame : public Scene {
     PointLightComponent sun_;
     AmbientLightComponent ambient_;
 
-    GenericBall balls_[6];
+    std::shared_ptr<GenericBall> balls_[6];
     PlayerBall player_;
 };
 

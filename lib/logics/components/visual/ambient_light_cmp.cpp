@@ -5,8 +5,8 @@
 AmbientLightComponent::AmbientLightComponent(const glm::vec3& color)
     : light_(color) {}
 
-void AmbientLightComponent::spawn_self(Scene& scene) {
-    scene.get_renderer().track_object(light_);
+void AmbientLightComponent::begin_play(Scene& scene) {
+    SceneComponent::begin_play(scene);
 
-    SceneComponent::spawn_self(scene);
+    get_scene().get_renderer().track_object(light_);
 }
