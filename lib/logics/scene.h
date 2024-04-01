@@ -54,6 +54,8 @@ struct Scene {
     void for_each_component(
         std::function<void(SceneComponent&)> function) const;
 
+    SceneComponent* get_component(GUID guid);
+
    private:
     /**
      * @brief Delete component from the scene in the next tick
@@ -67,7 +69,6 @@ struct Scene {
     void process_deletions();
 
    private:
-    // TODO: Replace with grid-based component storage
     std::map<GUID, std::shared_ptr<SceneComponent>> shared_components_{};
     std::map<GUID, SceneComponent*> static_components_{};
 

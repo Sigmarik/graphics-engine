@@ -23,6 +23,20 @@ void Scene::for_each_component(
     }
 }
 
+SceneComponent* Scene::get_component(GUID guid) {
+    auto shared_found = shared_components_.find(guid);
+    if (shared_found != shared_components_.end()) {
+        return shared_found->second.operator->();
+    }
+
+    auto static_found = static_components_.find(guid);
+    if (static_found != static_components_.end()) {
+        return static_found->second;
+    }
+
+    return nullptr;
+}
+
 void Scene::delete_component(SceneComponent& component) {
     deletion_queue_.push_back(component.get_guid());
 }

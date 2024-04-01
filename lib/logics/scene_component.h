@@ -46,20 +46,56 @@ struct SceneComponent {
     virtual void phys_tick(double delta_time) {}
     virtual void draw_tick(double delta_time, double subtick_time = 0.0) {}
 
+    /**
+     * @brief Request a destroyed event of the component that is triggered when
+     * the component gets destroyed
+     *
+     * @return Event<EndPlayReason>&
+     */
     Event<EndPlayReason>& get_destroyed_event() { return destroyed_event_; }
 
     GUID get_guid() const { return guid_; }
 
+    /**
+     * @brief Check if the component is bound to a scene and alive
+     *
+     * @return true
+     * @return false
+     */
     bool is_valid() const;
 
+    /**
+     * @brief Get the owning scene of the component
+     *
+     * @warning Should only be called on `valid` components
+     *
+     * @return Scene&
+     */
     Scene& get_scene() const;
 
+    /**
+     * @brief Destroy the component and remove it from the scene
+     *
+     * @param[in] reason
+     */
     void destroy(EndPlayReason reason = EndPlayReason::Destroyed);
 
    protected:
     Event<Scene&>& get_spawned_event() { return spawned_event_; }
 
+    /**
+     * @brief A function that is called when the component gets added to a scene
+     *
+     * @param[in] scene owning scene
+     */
     virtual void begin_play(Scene& scene);
+
+    /**
+     * @brief A function that is called when the component gets removed from the
+     * scene
+     *
+     * @param[in] reason removal reason
+     */
     virtual void end_play(EndPlayReason reason) {}
 
     /**
@@ -111,6 +147,11 @@ struct SceneComponent {
     template <class T, class... Ts>
     std::shared_ptr<T> construct_child(Ts... args);
 
+    /**
+     * @brief Make the `parent` component owner of `this`
+     *
+     * @param[in] parent parent component
+     */
     void attach(SceneComponent& parent);
 
    private:
@@ -123,9 +164,9 @@ struct SceneComponent {
     SubtickEvent::Listener draw_ticker_{};
 
     Event<Scene&> spawned_event_{};
-    Event<Scene&>::Listener parent_spawned_listener_{};
-
     Event<EndPlayReason> destroyed_event_{};
+
+    Event<Scene&>::Listener parent_spawned_listener_{};
     Event<EndPlayReason>::Listener parent_destroyed_listener_{};
 
     std::unordered_map<std::string, RelativePtr<Channel>> outputs_{};
