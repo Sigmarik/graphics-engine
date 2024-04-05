@@ -87,6 +87,9 @@ struct SceneComponent {
      */
     void destroy(EndPlayReason reason = EndPlayReason::Destroyed);
 
+    Channel* get_output(const std::string& name);
+    Channel::Listener* get_input(const std::string& name);
+
    protected:
     Event<Scene&>& get_spawned_event() { return spawned_event_; }
 

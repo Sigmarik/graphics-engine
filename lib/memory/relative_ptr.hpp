@@ -16,11 +16,11 @@
 template <class T>
 struct RelativePtr {
     RelativePtr(T* data, void* origin)
-        : shift_(reinterpret_cast<const char*>(data) -
-                 reinterpret_cast<const char*>(origin)) {}
+        : shift_(reinterpret_cast<char*>(data) -
+                 reinterpret_cast<char*>(origin)) {}
 
-    T& of(const void* origin) const {
-        const char* ptr_origin = reinterpret_cast<const char*>(origin);
+    T& of(void* origin) const {
+        char* ptr_origin = reinterpret_cast<char*>(origin);
         return *(reinterpret_cast<T*>(ptr_origin + shift_));
     }
 

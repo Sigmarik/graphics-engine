@@ -30,6 +30,19 @@ void SceneComponent::destroy(EndPlayReason reason) {
     if (scene_) scene_->delete_component(*this);
 }
 
+SceneComponent::Channel* SceneComponent::get_output(const std::string& name) {
+    auto found = outputs_.find(name);
+    if (found == outputs_.end()) return nullptr;
+    return &found->second.of(this);
+}
+
+SceneComponent::Channel::Listener* SceneComponent::get_input(
+    const std::string& name) {
+    auto found = inputs_.find(name);
+    if (found == inputs_.end()) return nullptr;
+    return &found->second.of(this);
+}
+
 void SceneComponent::begin_play(Scene& scene) {
     scene_ = &scene;
     spawned_event_.trigger(scene);
