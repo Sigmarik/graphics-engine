@@ -8,8 +8,7 @@
 
 PoolBall::PoolBall(const glm::vec3& position, const Model& model)
     : model_(model), bouncer_(position, POOL_BALL_RADIUS) {
-    shadow_ =
-        construct_child<PointLightComponent>(position, glm::vec3(-1.0) * 0.4f);
+    shadow_ = new_child<PointLightComponent>(position, glm::vec3(-1.0) * 0.4f);
 
     shadow_->set_spread(0.0005f);
     shadow_->set_radius(0.028f);

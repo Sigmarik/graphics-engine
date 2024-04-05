@@ -32,12 +32,11 @@ PoolGame::PoolGame()
     add_component(ambient_);
 
     for (size_t id = 0; id < sizeof(balls_) / sizeof(*balls_); ++id) {
-        balls_[id] =
-            std::shared_ptr<GenericBall>(new GenericBall(glm::vec3(0.0)));
+        balls_[id] = Subcomponent<GenericBall>(glm::vec3(0.0));
         add_component(balls_[id]);
     }
 
-    get_renderer().set_viewpoint(&player_.get_camera());
+    get_renderer().set_viewpoint(&player_->get_camera());
 
     reset();
 }
@@ -47,11 +46,11 @@ void PoolGame::phys_tick(double delta_time) {
 
     process_int_collisions();
 
-    if (player_.get_position().y < -0.5) {
+    if (player_->get_position().y < -0.5) {
         reset();
     }
 
-    player_.set_input_lock(has_moving_parts());
+    player_->set_input_lock(has_moving_parts());
 
     static BinaryInput reset_input = *AssetManager::request<BinaryInput>(
         "assets/controls/reset.keybind.xml");
@@ -76,8 +75,8 @@ void PoolGame::reset() {
         }
     }
 
-    player_.set_position(glm::vec3(0.0, POOL_BALL_RADIUS, 0.5));
-    player_.set_velocity(glm::vec3(0.0));
+    player_->set_position(glm::vec3(0.0, POOL_BALL_RADIUS, 0.5));
+    player_->set_velocity(glm::vec3(0.0));
 }
 
 bool PoolGame::has_moving_parts() const {
@@ -85,7 +84,7 @@ bool PoolGame::has_moving_parts() const {
         if (balls_[id]->is_moving()) return true;
     }
 
-    return player_.is_moving();
+    return player_->is_moving();
 }
 
 void PoolGame::process_int_collisions() {
@@ -96,6 +95,6 @@ void PoolGame::process_int_collisions() {
     }
 
     for (size_t id = 0; id < sizeof(balls_) / sizeof(*balls_); ++id) {
-        player_.collide(*balls_[id]);
+        player_->collide(*balls_[id]);
     }
 }

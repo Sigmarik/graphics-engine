@@ -60,15 +60,16 @@ void SceneComponent::register_input(const std::string& name,
     inputs_.insert({name, RelativePtr<Channel::Listener>(&input, this)});
 }
 
-void SceneComponent::attach(SceneComponent& parent) {
-    parent_destroyed_listener_ = Event<EndPlayReason>::Listener(
+void SceneComponent::attach(Subcomponent<SceneComponent> child) {
+    child->parent_destroyed_listener_ = Event<EndPlayReason>::Listener(
         [this](EndPlayReason reason) { destroy(reason); });
 
-    parent_spawned_listener_ = Event<Scene&>::Listener([this](Scene& scene) {
-        scene.add_component(*this);
-        begin_play(scene);
-    });
+    child->parent_spawned_listener_ =
+        Event<Scene&>::Listener([self = child](Scene& scene) {
+            scene.add_component(self);
+            self->begin_play(scene);
+        });
 
-    parent.get_destroyed_event().subscribe(parent_destroyed_listener_);
-    parent.get_spawned_event().subscribe(parent_spawned_listener_);
+    get_destroyed_event().subscribe(child->parent_destroyed_listener_);
+    get_spawned_event().subscribe(child->parent_spawned_listener_);
 }

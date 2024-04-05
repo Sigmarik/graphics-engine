@@ -31,10 +31,7 @@ struct Scene {
     Scene(Scene&&) = delete;
     Scene& operator=(Scene&&) = delete;
 
-    std::shared_ptr<SceneComponent> add_component(
-        std::shared_ptr<SceneComponent> component);
-
-    void add_component(SceneComponent& component);
+    void add_component(Subcomponent<SceneComponent> component);
 
     virtual void phys_tick(double delta_time);
     virtual void draw_tick(double delta_time, double subtick_time);
@@ -69,8 +66,7 @@ struct Scene {
     void process_deletions();
 
    private:
-    std::map<GUID, std::shared_ptr<SceneComponent>> shared_components_{};
-    std::map<GUID, SceneComponent*> static_components_{};
+    std::map<GUID, Subcomponent<SceneComponent>> shared_components_{};
 
     std::deque<GUID> deletion_queue_{};
 

@@ -45,5 +45,5 @@ struct PoolBall : public SceneComponent {
     Model model_;
     BouncyObject bouncer_;
 
-    std::shared_ptr<PointLightComponent> shadow_{};
+    Subcomponent<PointLightComponent> shadow_{};
 };

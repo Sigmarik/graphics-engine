@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <concepts>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -22,6 +23,12 @@
 #include "physics/level_geometry.h"
 
 struct Scene;
+
+struct SceneComponent;
+
+template <class T>
+requires std::derived_from<T, SceneComponent>
+struct Subcomponent;
 
 struct SceneComponent {
     friend struct Scene;
@@ -142,17 +149,17 @@ struct SceneComponent {
      * @tparam T child type
      * @tparam Ts child constructions arguments
      * @param[in] args
-     * @return std::shared_ptr<T> child
+     * @return Subcomponent<T> child
      */
     template <class T, class... Ts>
-    std::shared_ptr<T> construct_child(Ts... args);
+    Subcomponent<T> new_child(Ts&&... args);
 
     /**
-     * @brief Make the `parent` component owner of `this`
+     * @brief Attach a child to the component
      *
-     * @param[in] parent parent component
+     * @param[in] child child component
      */
-    void attach(SceneComponent& parent);
+    void attach(Subcomponent<SceneComponent> child);
 
    private:
     GUID guid_;
@@ -173,11 +180,57 @@ struct SceneComponent {
     std::unordered_map<std::string, RelativePtr<Channel::Listener>> inputs_{};
 };
 
-template <class T, class... Ts>
-inline std::shared_ptr<T> SceneComponent::construct_child(Ts... args) {
-    std::shared_ptr<T> child(new T(args...));
+/**
+ * @brief `SceneComponent` wrapper for use in other components and scenes
+ *
+ * @note This wrapper is a limited equivalent of `std::shared_ptr`
+ *
+ * @tparam T component type
+ */
+template <class T>
+requires std::derived_from<T, SceneComponent>
+struct Subcomponent final {
+    Subcomponent() = default;
 
-    child->attach(*this);
+    template <class U>
+    friend struct Subcomponent;
+
+    template <class... Ts>
+    requires std::constructible_from<T, Ts&&...> Subcomponent(Ts&&... args)
+        : ptr_(std::make_shared<T>(args...)) {}
+
+    T& operator*() const { return *ptr_; }
+    T* operator->() const { return ptr_.operator->(); }
+
+    template <class U>
+    requires std::derived_from<U, T> Subcomponent(const Subcomponent<U>& other)
+        : ptr_(other.ptr_) {}
+
+    template <class U>
+    requires std::derived_from<U, T> Subcomponent(Subcomponent<U>&& other)
+        : ptr_(std::move(other.ptr_)) {}
+
+    template <class U>
+    requires std::derived_from<U, T> Subcomponent& operator=(
+        const Subcomponent<U>& other) {
+        ptr_ = other.ptr_;
+    }
+
+    template <class U>
+    requires std::derived_from<U, T> Subcomponent& operator=(
+        Subcomponent&& other) {
+        ptr_ = other.ptr_;
+    }
+
+   private:
+    std::shared_ptr<T> ptr_{};
+};
+
+template <class T, class... Ts>
+inline Subcomponent<T> SceneComponent::new_child(Ts&&... args) {
+    Subcomponent<T> child(args...);
+
+    attach(child);
 
     return child;
 }
