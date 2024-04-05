@@ -33,7 +33,7 @@ struct Subcomponent;
 struct SceneComponent {
     friend struct Scene;
 
-    using Channel = Event<std::string>;
+    using Channel = Event<const std::string&>;
 
     enum class EndPlayReason {
         Destroyed,
