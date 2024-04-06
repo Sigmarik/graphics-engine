@@ -14,7 +14,7 @@
 #include <inttypes.h>
 
 template <class T>
-struct RelativePtr {
+struct RelativePtr final {
     RelativePtr(T* data, void* origin)
         : shift_(reinterpret_cast<char*>(data) -
                  reinterpret_cast<char*>(origin)) {}
