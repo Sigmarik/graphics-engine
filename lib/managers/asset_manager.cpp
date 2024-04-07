@@ -21,6 +21,8 @@ size_t std::hash<AssetManager::AssetRequest>::operator()(
 }
 
 std::unordered_map<ImporterId, AbstractImporter*> AssetManager::importers_ = {};
+std::unordered_map<ImporterId, AbstractXMLImporter*>
+    AssetManager::xml_importers_ = {};
 std::unordered_map<AssetManager::AssetRequest, AbstractAsset*>
     AssetManager::assets_ = {};
 std::vector<AbstractAsset*> AssetManager::rogues_ = {};
@@ -33,11 +35,25 @@ void AssetManager::register_importer(AbstractImporter& importer) {
             ERROR_REPORTS, "error",
             "Asset importer of type %0lX for signature \"%s\" has already been "
             "registered.\n",
-            id.type_id, id.signature);
+            id.type_id, id.signature.c_str());
         return;
     }
 
     importers_.insert({id, &importer});
+}
+
+void AssetManager::register_importer(AbstractXMLImporter& importer) {
+    const ImporterId& id = importer.get_id();
+
+    if (importers_.find(id) != importers_.end()) {
+        log_printf(ERROR_REPORTS, "error",
+                   "XML Asset importer of type %0lX for signature \"%s\" has "
+                   "already been registered.\n",
+                   id.type_id, id.signature.c_str());
+        return;
+    }
+
+    xml_importers_.insert({id, &importer});
 }
 
 void AssetManager::unload_all() {
@@ -56,21 +72,68 @@ void AssetManager::register_rogue(AbstractAsset* asset) {
     rogues_.push_back(asset);
 }
 
-AbstractImporter::AbstractImporter(size_t type_id, const char* signature)
+void AssetManager::dump(unsigned importance) {
+    log_printf(importance, "dump",
+               "Currently loaded assets (%lu unique, %lu rogues):\n",
+               assets_.size(), rogues_.size());
+
+    size_t index = 0;
+    for (auto& [key, value] : assets_) {
+        _log_printf(importance, "dump", "\t%6lu (%lu)\t%s\n", index,
+                    key.type_id, key.path.c_str());
+        ++index;
+    }
+
+    _log_printf(importance, "dump", "\t+%lu rogues\n", rogues_.size());
+}
+
+std::string AssetManager::extract_signature(std::string_view name) {
+    std::string answer;
+
+    unsigned section_count = 0;
+
+    for (char current : name) {
+        if (current == '.')
+            section_count++;
+        else if (section_count == 1) {
+            answer.append(1, current);
+        }
+    }
+
+    return answer;
+}
+
+AbstractXMLImporter* AssetManager::find_xml_importer(const ImporterId& id) {
+    auto cell = xml_importers_.find(id);
+    if (cell == xml_importers_.end()) return nullptr;
+    return cell->second;
+}
+
+AbstractImporter* AssetManager::find_importer(const ImporterId& id) {
+    auto cell = importers_.find(id);
+    if (cell == importers_.end()) return nullptr;
+    return cell->second;
+}
+
+AbstractImporter::AbstractImporter(size_t type_id, const std::string& signature)
+    : id_(type_id, signature) {
+    AssetManager::register_importer(*this);
+}
+
+AbstractXMLImporter::AbstractXMLImporter(size_t type_id,
+                                         const std::string& signature)
     : id_(type_id, signature) {
     AssetManager::register_importer(*this);
 }
 
 bool AssetManager::AssetRequest::operator==(const AssetRequest& request) const {
     if (request.type_id != type_id) return false;
-    if (request.path == path) return true;
 
-    return strcmp(request.path, path) == 0;
+    return request.path == path;
 }
 
 bool ImporterId::operator==(const ImporterId& id) const {
     if (id.type_id != type_id) return false;
-    if (id.signature == signature) return true;
 
-    return strcmp(id.signature, signature) == 0;
+    return id.signature == signature;
 }

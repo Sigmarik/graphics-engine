@@ -2,31 +2,18 @@
 
 #include "graphics/primitives/shader.h"
 #include "logger/logger.h"
-#include "managers/asset_manager.h"
+#include "managers/importer.h"
 
-IMPORTER(Shader, "shader") {
-    tinyxml2::XMLDocument doc;
-    doc.LoadFile(path);
-
-    const tinyxml2::XMLElement* element = doc.FirstChildElement("shader");
-
-    if (element == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Invalid shader descriptor header\n");
-        return nullptr;
-    }
-
-    const tinyxml2::XMLElement* vsh_element = element->FirstChildElement("vsh");
-    const tinyxml2::XMLElement* fsh_element = element->FirstChildElement("fsh");
+XML_BASED_IMPORTER(Shader, "shader") {
+    const tinyxml2::XMLElement* vsh_element = data.FirstChildElement("vsh");
+    const tinyxml2::XMLElement* fsh_element = data.FirstChildElement("fsh");
 
     if (vsh_element == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Unspecified vertex shader path (missing `vsh` tag)\n");
+        ERROR("Unspecified vertex shader path (missing `vsh` tag)\n");
         return nullptr;
     }
     if (fsh_element == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Unspecified fragment shader path (missing `fsh` tag)\n");
+        ERROR("Unspecified fragment shader path (missing `fsh` tag)\n");
         return nullptr;
     }
 
