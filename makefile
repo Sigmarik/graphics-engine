@@ -78,6 +78,7 @@ $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME): asset $(MAIN_DEPS) $(MAIN_MAIN)
 	@$(CC) $(MAIN_MAIN) $(MAIN_OBJECTS) $(CPPFLAGS) $(LIB_FLAGS) -o $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME)
 
 TEST_MAIN = ./gtest/gtest.o
+TEST_FOLDER = ./gtest
 LIBGTEST_MAIN = /usr/lib/libgtest_main.a
 LIBGTEST = /usr/lib/libgtest.a
 
@@ -87,6 +88,7 @@ test: $(TEST_MAIN) $(MAIN_DEPS)
 	@cp -r gtest/assets/. $(BLD_FOLDER)/$(ASSET_FOLDER)
 	@$(CC)  $(TEST_MAIN) $(MAIN_DEPS) $(LIBGTEST_MAIN) $(LIBGTEST) $(LIB_FLAGS) $(CPPFLAGS) -o $(BLD_FOLDER)/test_$(MAIN_BLD_FULL_NAME)
 	@cd $(BLD_FOLDER) && exec ./test_$(MAIN_BLD_FULL_NAME)
+	@cd $(TEST_FOLDER) && find . -type f -name "*.o" -delete
 
 run: asset $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME)
 	@echo $(PINK)$(BOLD)Running $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME)$(STYLE_RESET)
@@ -140,7 +142,6 @@ clean:
 rmbld:
 	@echo $(RED)Clearing build and test folders$(STYLE_RESET)
 	@rm -rf $(BLD_FOLDER)
-	@rm -rf $(TEST_FOLDER)
 
 rm: clean rmbld
 	@echo $(RED)$(BOLD)Project cleanup finished$(STYLE_RESET)

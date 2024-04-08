@@ -13,3 +13,4 @@
 
 #include "pipelining/events.hpp"
 #include "pipelining/state_machines.hpp"
+#include "subcomponents/subcomponents.hpp"
