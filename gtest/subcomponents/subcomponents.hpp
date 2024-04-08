@@ -38,7 +38,7 @@ TEST(Subcomponent, Derivation) {
 }
 
 TEST(Subcomponent, Construction) {
-    Subcomponent<TrickyConstructor> component{static_cast<void*>(nullptr)};
+    Subcomponent<TrickyConstructor> component{nullptr};
     Subcomponent<SceneComponent> other_component(component);
 
     EXPECT_EQ(component->id, 0xDEADBEEF);
@@ -47,11 +47,11 @@ TEST(Subcomponent, Construction) {
 }
 
 TEST(Subcomponent, DelayedConstruction) {
-    Subcomponent<TrickyConstructor> component{nullptr};
+    Subcomponent<TrickyConstructor> component{SubcomponentNone};
 
     EXPECT_EXIT(component->id = 0, ::testing::KilledBySignal(SIGSEGV), ".*");
 
-    component = Subcomponent<TrickyConstructor>(static_cast<void*>(nullptr));
+    component = Subcomponent<TrickyConstructor>(nullptr);
 
     EXPECT_EQ(component->id, 0xDEADBEEF);
 }
