@@ -16,7 +16,9 @@ struct BaseComponent : public SceneComponent {};
 struct DerivedComponent : public BaseComponent {};
 
 struct TrickyConstructor : public SceneComponent {
-    TrickyConstructor(int){};
+    TrickyConstructor(void*) : id(0xDEADBEEF){};
+
+    unsigned long long id = 0;
 };
 
 TEST(Subcomponent, Sharing) {
@@ -36,11 +38,22 @@ TEST(Subcomponent, Derivation) {
 }
 
 TEST(Subcomponent, Construction) {
-    Subcomponent<TrickyConstructor> component{0};
+    Subcomponent<TrickyConstructor> component{static_cast<void*>(nullptr)};
     Subcomponent<SceneComponent> other_component(component);
 
+    EXPECT_EQ(component->id, 0xDEADBEEF);
     EXPECT_EQ(static_cast<void*>(&*component),
               static_cast<void*>(&*other_component));
+}
+
+TEST(Subcomponent, DelayedConstruction) {
+    Subcomponent<TrickyConstructor> component{nullptr};
+
+    EXPECT_EXIT(component->id = 0, ::testing::KilledBySignal(SIGSEGV), ".*");
+
+    component = Subcomponent<TrickyConstructor>(static_cast<void*>(nullptr));
+
+    EXPECT_EQ(component->id, 0xDEADBEEF);
 }
 
 TEST(WeakSubcomponent, FromStrong) {

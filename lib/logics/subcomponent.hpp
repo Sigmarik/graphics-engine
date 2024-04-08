@@ -33,6 +33,8 @@ struct Subcomponent final {
     template <class U>
     friend struct WeakSubcomponent;
 
+    Subcomponent(std::nullptr_t){};
+
     template <class... Ts>
     requires std::constructible_from<T, Ts&&...> Subcomponent(Ts&&... args)
         : ptr_(std::make_shared<T>(args...)) {}

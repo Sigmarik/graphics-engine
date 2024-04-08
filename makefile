@@ -87,7 +87,7 @@ test: $(TEST_MAIN) $(MAIN_DEPS)
 	@mkdir -p $(BLD_FOLDER)/$(ASSET_FOLDER)
 	@cp -r gtest/assets/. $(BLD_FOLDER)/$(ASSET_FOLDER)
 	@$(CC)  $(TEST_MAIN) $(MAIN_DEPS) $(LIBGTEST_MAIN) $(LIBGTEST) $(LIB_FLAGS) $(CPPFLAGS) -o $(BLD_FOLDER)/test_$(MAIN_BLD_FULL_NAME)
-	@cd $(BLD_FOLDER) && exec ./test_$(MAIN_BLD_FULL_NAME)
+	@-cd $(BLD_FOLDER) && exec ./test_$(MAIN_BLD_FULL_NAME)
 	@cd $(TEST_FOLDER) && find . -type f -name "*.o" -delete
 
 run: asset $(BLD_FOLDER)/$(MAIN_BLD_FULL_NAME)
