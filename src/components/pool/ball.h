@@ -45,5 +45,5 @@ struct PoolBall : public SceneComponent {
     Model model_;
     BouncyObject bouncer_;
 
-    Subcomponent<PointLightComponent> shadow_{nullptr};
+    Subcomponent<PointLightComponent> shadow_{SubcomponentNone};
 };

@@ -18,6 +18,13 @@
 struct SceneComponent;
 
 /**
+ * @brief Empty component construction helper
+ *
+ */
+static const struct {
+} SubcomponentNone;
+
+/**
  * @brief `SceneComponent` wrapper for use in other components and scenes
  *
  * @note This wrapper is a limited equivalent of `std::shared_ptr`
@@ -33,7 +40,11 @@ struct Subcomponent final {
     template <class U>
     friend struct WeakSubcomponent;
 
-    Subcomponent(std::nullptr_t){};
+    /**
+     * @brief Construct a subcomponent with undefined value
+     *
+     */
+    Subcomponent(decltype(SubcomponentNone)){};
 
     template <class... Ts>
     requires std::constructible_from<T, Ts&&...> Subcomponent(Ts&&... args)

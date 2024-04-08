@@ -58,9 +58,6 @@ void PoolBall::collide(PoolBall& ball) {
     glm::vec3 position_diff = get_position() - ball.get_position();
     glm::vec3 avg_velocity = (get_velocity() + ball.get_velocity()) / 2.0f;
 
-    // set_velocity(glm::vec3(0.0));
-    // ball.set_velocity(glm::vec3(0.0));
-
     set_velocity(avg_velocity +
                  reflect_plane(velocity_diff, position_diff) / 2.0f);
     ball.set_velocity(avg_velocity -
