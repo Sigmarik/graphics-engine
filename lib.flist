@@ -19,6 +19,8 @@ lib/input/action.o
 
 lib/logics/scene.o
 lib/logics/scene_component.o
+lib/logics/blueprints/external_level.o
+lib/logics/blueprints/scene_importer.o
 lib/logics/components/visual/static_mesh.o
 lib/logics/components/visual/point_light_cmp.o
 lib/logics/components/visual/ambient_light_cmp.o

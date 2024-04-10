@@ -139,7 +139,7 @@ struct AbstractAsset {
 template <class T>
 struct Asset : public AbstractAsset {
     template <class... Ts>
-    Asset(Ts&&... args) : content(args...) {}
+    Asset(Ts&&... args) : content(std::forward<Ts>(args)...) {}
 
     T content;
 };
