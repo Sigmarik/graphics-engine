@@ -81,7 +81,8 @@ const T* AssetManager::request(const tinyxml2::XMLElement& element,
     std::optional<AssetManager::AssetRequest> identifier{};
 
     if (handle) {
-        identifier = AssetManager::AssetRequest(*handle, typeid(T).hash_code());
+        identifier = AssetManager::AssetRequest(std::string(*handle),
+                                                typeid(T).hash_code());
     }
 
     if (identifier && (flags & RequestFlag::Reimport) == 0) {

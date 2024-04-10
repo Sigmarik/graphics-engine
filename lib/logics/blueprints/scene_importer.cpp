@@ -13,7 +13,38 @@
 #include "managers/importer.h"
 
 XML_BASED_IMPORTER(ExternalLevel, "level") {
-    // TODO: Implement
+    ExternalLevel::Factory factory{};
 
-    return new Asset<ExternalLevel>(ExternalLevel::Factory());
+    for (const tinyxml2::XMLElement* child = data.FirstChildElement();
+         child != nullptr; child = child->NextSiblingElement()) {
+        if (strcmp(child->Name(), "script") == 0) {
+            // TODO: Import and register a pipeliner script
+
+            continue;
+        }
+
+        const char* name = nullptr;
+        child->QueryStringAttribute("name", &name);
+
+        if (name == nullptr) {
+            ERROR(
+                "Unnamed scene component of type \"%s\", missing `name` "
+                "attribute\n",
+                child->Name());
+            continue;
+        }
+
+        const ExternalLevel::Factory::Producer* producer =
+            AssetManager::request<ExternalLevel::Factory::Producer>(*child);
+
+        if (producer == nullptr) {
+            ERROR("Failed to request producer for object type \"%s\"\n",
+                  child->Name());
+            continue;
+        }
+
+        factory.register_producer(name, *producer);
+    }
+
+    return new Asset<ExternalLevel>(factory);
 }
