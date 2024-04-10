@@ -38,7 +38,7 @@ XML_BASED_IMPORTER(ExternalLevel, "level") {
             AssetManager::request<ExternalLevel::Factory::Producer>(*child);
 
         if (producer == nullptr) {
-            ERROR("Failed to request producer for object type \"%s\"\n",
+            ERROR("Failed to request a producer for an object type of \"%s\"\n",
                   child->Name());
             continue;
         }
