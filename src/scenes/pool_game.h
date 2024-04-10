@@ -36,16 +36,16 @@ struct PoolGame : public Scene {
    private:
     void process_int_collisions();
 
-    StaticMesh table_;
+    Subcomponent<StaticMesh> table_;
 
     Postprocessor contrast_vignette_;
 
-    PointLightComponent main_lamp_;
-    PointLightComponent sun_;
-    AmbientLightComponent ambient_;
+    Subcomponent<PointLightComponent> main_lamp_;
+    Subcomponent<PointLightComponent> sun_;
+    Subcomponent<AmbientLightComponent> ambient_;
 
-    GenericBall balls_[6];
-    PlayerBall player_;
+    Subcomponent<GenericBall> balls_[6];
+    Subcomponent<PlayerBall> player_;
 };
 
 #endif /* __SRC_SCENES_POOL_GAME_H */

@@ -39,7 +39,7 @@ struct Event final {
         }
 
         Listener& operator=(const Listener& other) {
-            if (&other == this) return;
+            if (&other == this) return *this;
 
             if (event_) event_->unsubscribe(*this);
 

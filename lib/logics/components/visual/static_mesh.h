@@ -17,8 +17,6 @@
 struct StaticMesh : public SceneComponent {
     explicit StaticMesh(const ComplexModel& model);
 
-    void spawn_self(Scene& scene) override;
-
     void set_transform(const glm::mat4& transform);
     const glm::mat4& get_transform() const {
         return model_.get_object_matrix();
@@ -27,6 +25,9 @@ struct StaticMesh : public SceneComponent {
     ComplexModel& get_model() { return model_; }
     const ComplexModel& get_model() const { return model_; }
     void set_model(const Model& model) { model_ = model; }
+
+   protected:
+    void begin_play(Scene& scene) override;
 
    private:
     ComplexModel model_;

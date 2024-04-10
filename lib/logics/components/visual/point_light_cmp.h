@@ -17,8 +17,6 @@
 struct PointLightComponent : public SceneComponent {
     PointLightComponent(const glm::vec3& position, const glm::vec3& color);
 
-    void spawn_self(Scene& scene) override;
-
     glm::vec3 get_position() const { return position_; }
     void set_position(const glm::vec3& position);
 
@@ -30,6 +28,9 @@ struct PointLightComponent : public SceneComponent {
 
     float get_radius() const { return light_.get_radius(); }
     void set_radius(float radius) { light_.set_radius(radius); }
+
+   protected:
+    void begin_play(Scene& scene) override;
 
    private:
     glm::vec3 position_;

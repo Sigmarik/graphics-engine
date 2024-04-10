@@ -6,35 +6,63 @@ Scene::Scene(double width, double height, double cell_size)
     : collision_(Box(glm::vec3(0.0, 0.0, 0.0), glm::vec3(width, height, width)),
                  (size_t)(width / cell_size), (size_t)(height / cell_size)) {}
 
-void Scene::add_component(SceneComponent& component) {
-    components_.insert(&component);
+Scene::~Scene() {
+    for (auto& [guid, component] : shared_components_) {
+        component->destroy(SceneComponent::EndPlayReason::Quit);
+    }
+}
+
+void Scene::for_each_component(
+    std::function<void(SceneComponent&)> function) const {
+    for (auto& [guid, component] : shared_components_) {
+        function(*component);
+    }
+}
+
+SceneComponent* Scene::get_component(GUID guid) {
+    auto shared_found = shared_components_.find(guid);
+    if (shared_found != shared_components_.end()) {
+        return shared_found->second.operator->();
+    }
+
+    return nullptr;
 }
 
 void Scene::delete_component(SceneComponent& component) {
-    auto address = components_.find(&component);
+    deletion_queue_.push_back(component.get_guid());
+}
 
-    if (address == components_.end()) {
-        log_printf(WARNINGS, "warning",
-                   "Deleting non-existent scene component " GUID_ES "\n",
-                   GUID_OUT(component.get_guid()));
-        return;
+void Scene::process_deletions() {
+    while (!deletion_queue_.empty()) {
+        GUID deleted = deletion_queue_.front();
+        deletion_queue_.pop_front();
+
+        auto shared_found = shared_components_.find(deleted);
+        if (shared_found != shared_components_.end()) {
+            shared_components_.erase(shared_found);
+            continue;
+        }
+
+        log_printf(
+            ERROR_REPORTS, "error",
+            "Deleting a scene component not bound to the scene (GUID: " GUID_ES
+            ")\n",
+            GUID_OUT(deleted));
     }
+}
 
-    components_.erase(address);
+void Scene::add_component(Subcomponent<SceneComponent> component) {
+    shared_components_.insert({component->get_guid(), component});
+
+    component->begin_play(*this);
 }
 
 void Scene::phys_tick(double delta_time) {
-    for (SceneComponent* component : components_) {
-        assert(component);
+    phys_tick_.trigger(delta_time);
 
-        component->phys_tick(delta_time);
-    }
+    process_deletions();
 }
 
 void Scene::draw_tick(double delta_time, double subtick_time) {
-    for (SceneComponent* component : components_) {
-        assert(component);
-
-        component->draw_tick(delta_time, subtick_time);
-    }
+    draw_tick_.trigger(delta_time, subtick_time);
 }
