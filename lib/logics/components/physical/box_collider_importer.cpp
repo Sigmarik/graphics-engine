@@ -16,10 +16,20 @@
 XML_BASED_IMPORTER(Producer, "box_collider") {
     glm::mat4 transform = demand<glm::mat4>(data, "transform", glm::mat4(1.0));
 
-    glm::vec3 size = demand<glm::vec3>(data, "size", glm::vec3(1.0));
-
     return new Asset<Producer>([=](const glm::mat4& parent_tform) {
-        return Subcomponent<StaticBoxCollider>(
-            BoxCollider(Box(glm::vec3(0.0), size), parent_tform * transform));
+        glm::vec4 size_proto =
+            parent_tform * transform * glm::vec4(1.0, 1.0, 1.0, 0.0);
+
+        glm::vec3 size(size_proto.x, size_proto.y, size_proto.z);
+
+        // clang-format off
+        glm::mat4 descale(1.0 / size.x, 0.0, 0.0, 0.0,
+                          0.0, 1.0 / size.y, 0.0, 0.0,
+                          0.0, 0.0, 1.0 / size.z, 0.0,
+                          0.0, 0.0, 0.0, 1.0);
+        // clang-format on
+
+        return Subcomponent<StaticBoxCollider>(BoxCollider(
+            Box(glm::vec3(0.0), size), parent_tform * transform * descale));
     });
 }
