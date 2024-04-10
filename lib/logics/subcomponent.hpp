@@ -47,8 +47,9 @@ struct Subcomponent final {
     Subcomponent(decltype(SubcomponentNone)){};
 
     template <class... Ts>
-    requires std::constructible_from<T, Ts&&...> Subcomponent(Ts&&... args)
-        : ptr_(std::make_shared<T>(args...)) {}
+    requires std::constructible_from<T, Ts&&...>
+    explicit Subcomponent(Ts&&... args)
+        : ptr_(std::make_shared<T>(std::forward<Ts>(args)...)) {}
 
     T& operator*() const { return *ptr_; }
     T* operator->() const { return ptr_.operator->(); }
