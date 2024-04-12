@@ -38,7 +38,7 @@ def export_object(object, file):
     if "type" not in object.keys():
         return
 
-    file.write('<%s name="%s"' % (object.data["type"], object.name))
+    file.write('<%s name="%s">' % (object["type"], object.name))
 
     print_matrix("transform", object.matrix_world, file)
 
@@ -59,7 +59,7 @@ def export_object(object, file):
 
     file.write('<blender_type value="%s"></blender_type>\n' % object.type)
 
-    file.write("</%s>\n\n" % object.data["type"])
+    file.write("</%s>\n\n" % object["type"])
 
 
 def write_some_data(context, filepath, settings):
