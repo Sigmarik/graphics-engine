@@ -15,7 +15,7 @@ def print_matrix(name, matrix, file):
     for x in range(4):
         file.write("<d%s " % letters[x])
         for y in range(4):
-            file.write(' %s="%g"' % (letters[y], matrix[y][x]))
+            file.write(' %s="%f"' % (letters[y], matrix[y][x]))
         file.write("></d%s>\n" % letters[x])
     file.write("</" + str(name) + ">\n")
 
@@ -53,7 +53,7 @@ def export_object(object, file):
         power = object.data.energy / 10.0
         color = object.data.color
         file.write(
-            """<color x="%g" y="%g" z="%g"></color>\n"""
+            """<color x="%f" y="%f" z="%f"></color>\n"""
             % (color.r * power, color.g * power, color.b * power)
         )
 
