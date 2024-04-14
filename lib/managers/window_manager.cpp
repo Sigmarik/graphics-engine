@@ -2,19 +2,10 @@
 
 #include "lib/logger/logger.h"
 
-std::vector<GLFWwindow*> WindowManager::windows_ = {};
-WindowID WindowManager::active_window_id_ = 0;
+GLFWwindow* WindowManager::window_ = nullptr;
 
-GLFWwindow* WindowManager::get_active_window() {
-    return windows_.at(active_window_id_);
-}
-
-void WindowManager::set_active_window(WindowID active_window_id) {
-    active_window_id_ = active_window_id;
-}
-
-WindowID WindowManager::construct_window(size_t width, size_t height,
-                                         bool fullscreen) {
+void WindowManager::window_init(size_t width, size_t height,
+                                     const char* title, bool fullscreen) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -22,26 +13,28 @@ WindowID WindowManager::construct_window(size_t width, size_t height,
 
     glfwWindowHint(GLFW_SAMPLES, 4);
 
-    GLFWwindow* window =
-        glfwCreateWindow(int(width), int(height), "Window Title",
+    window_ =
+        glfwCreateWindow(int(width), int(height), title,
                          fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
-    if (window == NULL) {
+
+    if (window_ == NULL) {
         log_printf(ERROR_REPORTS, "error",
                    "Failed to initialize window. Terminating.\n");
         glfwTerminate();
-        return Invalid_window_id;
+        return;
     }
 
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(window_);
 
     if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) == 0) {
         log_printf(ERROR_REPORTS, "error",
                    "Failed to initialize GLAD. Terminating.\n");
-        return Invalid_window_id;
+        return;
     }
 
     glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+}
 
-    windows_.push_back(window);
-    return windows_.size() - 1;
+GLFWwindow* WindowManager::get_active_window() {
+    return window_;
 }

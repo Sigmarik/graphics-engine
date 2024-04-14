@@ -4,20 +4,14 @@
 
 #include "graphics/libs.h"
 
-typedef size_t WindowID;
-
 class WindowManager {
    public:
+    static void window_init(size_t width, size_t height,
+                                 const char* title = "Unnamed",
+                                 bool fullscreen = false);
+    
     static GLFWwindow* get_active_window();
 
-    static void set_active_window(WindowID active_window_id);
-
-    static WindowID construct_window(size_t width, size_t height,
-                                     bool fullscreen = false);
-
-    static const WindowID Invalid_window_id = ~WindowID(0);
-
    private:
-    static std::vector<GLFWwindow*> windows_;
-    static WindowID active_window_id_;
+    static GLFWwindow* window_;
 };

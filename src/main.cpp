@@ -56,8 +56,7 @@ int main(const int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    WindowID window_id = WindowManager::construct_window(WINDOW_WIDTH, WINDOW_HEIGHT);
-    WindowManager::set_active_window(window_id);
+    WindowManager::window_init(WINDOW_WIDTH, WINDOW_HEIGHT, "Pool game", true);
 
     poll_gl_errors();
 
