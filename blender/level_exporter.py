@@ -38,7 +38,7 @@ def export_object(object, file):
     if "type" not in object.keys():
         return
 
-    file.write('<%s name="%s">' % (object["type"], object.name))
+    file.write('<%s name="%s">\n' % (object["type"], object.name))
 
     print_matrix("transform", object.matrix_world, file)
 
@@ -66,6 +66,8 @@ def write_some_data(context, filepath, settings):
     print("exporting current scene as level %s..." % filepath)
     f = open(filepath, "w", encoding="utf-8")
 
+    f.write("<!-- Blender %s www.blender.org -->\n\n" % bpy.app.version_string)
+
     f.write("<level>\n")
 
     scene = context.scene
@@ -75,7 +77,7 @@ def write_some_data(context, filepath, settings):
 
     if settings["al"]:
         f.write('<ambient_light name="__WORLD_AMBIENT_LIGHT__">\n')
-        write_option("color", settings["al_color"], f)
+        write_option("color", scene.world.color, f)
         f.write("</ambient_light>\n")
 
     f.write("</level>\n")
@@ -107,21 +109,14 @@ class ExportSomeData(Operator, ExportHelper):
     al_enabled: BoolProperty(
         name="Add ambient light",
         description="Add ambient light object to the scene",
-        default=False,
-    )
-
-    al_color: FloatVectorProperty(
-        name="Ambient color",
-        description="Ambient light color and intensity",
-        default=[0.3, 0.3, 0.4],
-        subtype="COLOR",
+        default=True,
     )
 
     def execute(self, context):
         return write_some_data(
             context,
             self.filepath,
-            {"al": self.al_enabled, "al_color": self.al_color},
+            {"al": self.al_enabled},
         )
 
 
