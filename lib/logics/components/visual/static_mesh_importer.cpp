@@ -17,7 +17,7 @@
 XML_BASED_IMPORTER(Producer, "static_mesh") {
     glm::mat4 transform = demand<glm::mat4>(data, "transform", glm::mat4(1.0));
 
-    std::string path = demand<std::string>(data, "model", "NOT_MENTIONED");
+    std::string path = demand<std::string>(data, "source", "NOT_MENTIONED");
 
     const ComplexModel* model = AssetManager::request<ComplexModel>(path);
 
