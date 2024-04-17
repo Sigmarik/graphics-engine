@@ -39,19 +39,30 @@ void AssetManager::register_importer(AbstractImporter& importer) {
         return;
     }
 
+    log_printf(
+        STATUS_REPORTS, "status",
+        "Asset importer of type %0lX for signature \"%s\" was successfully "
+        "registered.\n",
+        id.type_id, id.signature.c_str());
+
     importers_.insert({id, &importer});
 }
 
 void AssetManager::register_importer(AbstractXMLImporter& importer) {
     const ImporterId& id = importer.get_id();
 
-    if (importers_.find(id) != importers_.end()) {
+    if (xml_importers_.find(id) != xml_importers_.end()) {
         log_printf(ERROR_REPORTS, "error",
                    "XML Asset importer of type %0lX for signature \"%s\" has "
                    "already been registered.\n",
                    id.type_id, id.signature.c_str());
         return;
     }
+
+    log_printf(STATUS_REPORTS, "status",
+               "XML Asset importer of type %0lX for signature \"%s\" was "
+               "successfully registered.\n",
+               id.type_id, id.signature.c_str());
 
     xml_importers_.insert({id, &importer});
 }

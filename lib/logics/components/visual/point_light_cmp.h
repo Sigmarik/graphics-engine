@@ -16,6 +16,7 @@
 
 struct PointLightComponent : public SceneComponent {
     PointLightComponent(const glm::vec3& position, const glm::vec3& color);
+    ~PointLightComponent();
 
     glm::vec3 get_position() const { return position_; }
     void set_position(const glm::vec3& position);

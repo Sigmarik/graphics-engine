@@ -14,6 +14,14 @@ PoolBall::PoolBall(const glm::vec3& position, const Model& model)
     shadow_->set_radius(0.028f);
 }
 
+PoolBall::~PoolBall() {
+    //! NOTE: Should have used StaticMesh subcomponent instead of reimplementing
+    //! it
+    if (has_scene()) {
+        get_scene().get_renderer().untrack_object(model_);
+    }
+}
+
 void PoolBall::phys_tick(double delta_time) {
     bouncer_.tick(get_scene().get_collision(), delta_time);
 

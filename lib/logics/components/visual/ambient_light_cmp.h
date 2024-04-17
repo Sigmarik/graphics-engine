@@ -16,6 +16,7 @@
 
 struct AmbientLightComponent : public SceneComponent {
     AmbientLightComponent(const glm::vec3& color);
+    ~AmbientLightComponent();
 
     glm::vec3 get_color() const { return light_.get_color(); }
     void set_color(const glm::vec3& color) { light_.set_color(color); }

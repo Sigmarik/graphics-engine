@@ -78,7 +78,7 @@ XML_BASED_IMPORTER(Model, "model") {
 static Asset<ComplexModel>* load_complex(const char* path) {
     ComplexModel model;
 
-    static Assimp::Importer import;
+    Assimp::Importer import;
 
     const aiScene* scene = import.ReadFile(
         path, aiProcess_Triangulate | aiProcess_FlipUVs |
@@ -121,7 +121,7 @@ static Asset<ComplexModel>* load_complex(const char* path) {
         model.add_part(Model(part_mesh->content, *material), mesh_name);
     }
 
-    return new Asset<ComplexModel>(model);
+    return new Asset<ComplexModel>(std::move(model));
 }
 
 static Asset<Model>* load_simple(const char* path) {

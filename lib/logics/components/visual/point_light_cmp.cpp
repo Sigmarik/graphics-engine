@@ -1,11 +1,18 @@
 #include "point_light_cmp.h"
 
+#include "logger/logger.h"
 #include "logics/scene.h"
 
 PointLightComponent::PointLightComponent(const glm::vec3& position,
                                          const glm::vec3& color)
     : position_(position), light_(color) {
     set_position(position_);
+}
+
+PointLightComponent::~PointLightComponent() {
+    if (has_scene()) {
+        get_scene().get_renderer().untrack_object(light_);
+    }
 }
 
 void PointLightComponent::set_position(const glm::vec3& position) {

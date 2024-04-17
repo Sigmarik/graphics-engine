@@ -20,7 +20,7 @@ struct ExternalLevel final {
 
     ExternalLevel(const Factory& factory) : factory_(factory) {}
 
-    void build(Scene& scene, const glm::mat4& transform);
+    SubcomponentNameMap build(Scene& scene, const glm::mat4& transform) const;
 
    private:
     Factory factory_;

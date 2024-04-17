@@ -14,6 +14,7 @@
 #include <concepts>
 #include <iostream>
 #include <memory>
+#include <optional>
 
 struct SceneComponent;
 
@@ -46,6 +47,18 @@ struct Subcomponent final {
      */
     Subcomponent(decltype(SubcomponentNone)){};
 
+    template <class U, class V>
+    friend Subcomponent<U> static_subcomponent_cast(
+        const Subcomponent<V>& component);
+
+    template <class U, class V>
+    friend Subcomponent<U> dynamic_subcomponent_cast(
+        const Subcomponent<V>& component);
+
+    template <class U, class V>
+    friend Subcomponent<U> asserting_subcomponent_cast(
+        const Subcomponent<V>& component);
+
     template <class... Ts>
     requires std::constructible_from<T, Ts&&...>
     explicit Subcomponent(Ts&&... args)
@@ -76,6 +89,8 @@ struct Subcomponent final {
         return *this;
     }
 
+    operator bool() const { return static_cast<bool>(ptr_); }
+
    private:
     template <class U>
     requires std::derived_from<U, T> Subcomponent(
@@ -85,6 +100,25 @@ struct Subcomponent final {
     std::shared_ptr<T> ptr_{};
 };
 
+template <class U, class V>
+Subcomponent<U> static_subcomponent_cast(const Subcomponent<V>& component) {
+    return Subcomponent<U>(std::static_pointer_cast<U>(component.ptr_));
+}
+
+template <class U, class V>
+inline Subcomponent<U> dynamic_subcomponent_cast(
+    const Subcomponent<V>& component) {
+    return Subcomponent<U>(std::dynamic_pointer_cast<U>(component.ptr_));
+}
+
+template <class U, class V>
+inline Subcomponent<U> asserting_subcomponent_cast(
+    const Subcomponent<V>& component) {
+    auto result = dynamic_subcomponent_cast<U>(component);
+    assert(result);
+    return *result;
+}
+
 /**
  * @brief Weak `SceneComponent` wrapper for use in other components and scenes
  *
@@ -92,7 +126,7 @@ struct Subcomponent final {
  *
  * @tparam T component type
  */
-template <class T>
+template <class T = SceneComponent>
 requires std::derived_from<T, SceneComponent>
 struct WeakSubcomponent final {
     WeakSubcomponent() = default;
@@ -138,6 +172,8 @@ struct WeakSubcomponent final {
         ptr_ = other.ptr_;
         return *this;
     }
+
+    operator bool() const { return static_cast<bool>(lock()); }
 
    private:
     std::weak_ptr<T> ptr_{};

@@ -30,7 +30,7 @@ int main(const int argc, char** argv) {
 
     Options options;
 
-    log_init("program_log.html", LOG_THRESHOLD, &errno);
+    set_logging_threshold(LOG_THRESHOLD);
     print_label();
 
     log_printf(STATUS_REPORTS, "status", "Initializing\n");

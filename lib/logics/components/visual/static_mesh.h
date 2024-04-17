@@ -16,6 +16,7 @@
 
 struct StaticMesh : public SceneComponent {
     explicit StaticMesh(const ComplexModel& model);
+    ~StaticMesh();
 
     void set_transform(const glm::mat4& transform);
     const glm::mat4& get_transform() const {

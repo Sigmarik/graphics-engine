@@ -17,6 +17,12 @@ PlayerBall::PlayerBall(const glm::vec3& position)
     camera_.direct(glm::vec3(0.25, -1.0, 0.0), glm::vec3(1.0, 0.0, 0.0));
 }
 
+PlayerBall::~PlayerBall() {
+    if (has_scene()) {
+        get_scene().get_renderer().untrack_object(arrow_);
+    }
+}
+
 void PlayerBall::begin_play(Scene& scene) {
     PoolBall::begin_play(scene);
 

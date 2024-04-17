@@ -2,7 +2,8 @@
 
 #include "logics/scene.h"
 
-void ExternalLevel::build(Scene& scene, const glm::mat4& transform) {
+SubcomponentNameMap ExternalLevel::build(Scene& scene,
+                                         const glm::mat4& transform) const {
     SubcomponentNameMap guide = factory_.build(transform);
 
     for (auto& [name, component] : guide) {
@@ -10,4 +11,6 @@ void ExternalLevel::build(Scene& scene, const glm::mat4& transform) {
     }
 
     // TODO: Link pipeliner scripts and add them to the scene
+
+    return guide;
 }

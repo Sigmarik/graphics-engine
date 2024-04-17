@@ -4,6 +4,12 @@
 
 StaticMesh::StaticMesh(const ComplexModel& model) : model_(model) {}
 
+StaticMesh::~StaticMesh() {
+    if (has_scene()) {
+        get_scene().get_renderer().untrack_object(model_);
+    }
+}
+
 void StaticMesh::set_transform(const glm::mat4& transform) {
     model_.set_object_matrix(transform);
 }

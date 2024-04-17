@@ -17,6 +17,7 @@
 
 struct PlayerBall : public PoolBall {
     PlayerBall(const glm::vec3& position);
+    ~PlayerBall();
 
     void phys_tick(double delta_time) override;
     void draw_tick(double delta_time, double subtick_time = 0.0) override;

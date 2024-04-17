@@ -26,8 +26,8 @@ static void log_prefix(const char* tag = "status",
  */
 static FILE* log_file(const unsigned int importance = ABSOLUTE_IMPORTANCE);
 
-void log_init(const char* filename, const unsigned int threshold,
-              int* const error_code) {
+static int log_init(const char* filename, const unsigned int threshold,
+                    int* const error_code) {
     log_threshold = threshold;
 
     if ((logfile = fopen(filename, "a"))) {
@@ -35,11 +35,15 @@ void log_init(const char* filename, const unsigned int threshold,
         fprintf(logfile, "<pre>");
         log_printf(ABSOLUTE_IMPORTANCE, "open", "Log file %s was opened.\n",
                    filename);
-        return;
+        return 0;
     }
 
     if (error_code) *error_code = ENOENT;
+
+    return 0;
 }
+
+static int __log_init_caller = log_init("log.html", 0, NULL);
 
 static void log_prefix(const char* tag, const unsigned int importance) {
     if (!log_file()) return;
@@ -77,4 +81,11 @@ void log_close(int* error_code) {
     log_printf(ABSOLUTE_IMPORTANCE, "close", "Closing log file.\n\n");
     fprintf(log_file(ABSOLUTE_IMPORTANCE), "</pre>\n");
     if (!fclose(logfile) && error_code) *error_code = ENOENT;
+}
+
+void set_logging_threshold(unsigned int threshold) {
+    log_printf(ABSOLUTE_IMPORTANCE, "threshold_change",
+               "Set logging threshold to %u\n", threshold);
+
+    log_threshold = threshold;
 }
