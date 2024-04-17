@@ -8,7 +8,7 @@ import bpy
 
 
 def print_matrix(name, matrix, file):
-    letters = "xyzw"
+    letters = "xzyw"
 
     file.write("<%s>\n" % name)
 
