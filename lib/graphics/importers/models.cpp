@@ -101,17 +101,17 @@ static Asset<ComplexModel>* load_complex(const char* path) {
         //* `_box_` objects define collision boxes and should not be imported
         if (strncmp(mesh_name, "_box_", 5) == 0) continue;
 
-        const char* material_name =
-            scene->mMaterials[mesh->mMaterialIndex]->GetName().C_Str();
+        aiString material_name =
+            scene->mMaterials[mesh->mMaterialIndex]->GetName();
 
         const Material* material =
-            AssetManager::request<Material>(material_name, "material");
+            AssetManager::request<Material>(material_name.C_Str(), "material");
 
         if (material == nullptr) {
             log_printf(WARNINGS, "warning",
                        "Failed to load material \"%s\" used by part \"%s\" of "
                        "the complex mesh \"%s\"\n",
-                       material_name, mesh_name, path);
+                       material_name.C_Str(), mesh_name, path);
         }
 
         Asset<Mesh>* part_mesh = new Asset<Mesh>(*mesh);
