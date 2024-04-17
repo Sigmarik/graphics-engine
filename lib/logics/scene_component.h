@@ -75,6 +75,8 @@ struct SceneComponent {
      */
     Scene& get_scene() const;
 
+    bool has_scene() const { return scene_ != nullptr; }
+
     /**
      * @brief Destroy the component and remove it from the scene
      *
@@ -165,7 +167,7 @@ struct SceneComponent {
 
     Scene* scene_ = nullptr;
 
-    bool alive_ = true;
+    bool alive_ = false;
     TickEvent::Listener phys_ticker_{};
     SubtickEvent::Listener draw_ticker_{};
 
