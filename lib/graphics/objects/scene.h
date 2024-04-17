@@ -73,8 +73,8 @@ struct RenderManager {
 
     void render(RenderBundle& bundle) const;
 
-    void track_object(const Renderable& object) { objects_.insert(&object); }
-    void untrack_object(const Renderable& object) { objects_.erase(&object); }
+    void track_object(const Renderable& object);
+    void untrack_object(const Renderable& object);
 
     void set_viewpoint(Camera* camera) { viewpoint_ = camera; }
     Camera* get_viewpoint() const { return viewpoint_; }

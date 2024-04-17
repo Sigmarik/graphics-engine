@@ -187,6 +187,7 @@ std::string extract<std::string>(const tinyxml2::XMLElement* element) {
 
     element->QueryStringAttribute("name", &line);
     element->QueryStringAttribute("path", &line);
+    element->QueryStringAttribute("value", &line);
     element->QueryStringAttribute("string", &line);
     element->QueryStringAttribute("str", &line);
     element->QueryStringAttribute("id", &line);

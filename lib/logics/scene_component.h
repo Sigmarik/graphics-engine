@@ -75,6 +75,8 @@ struct SceneComponent {
      */
     Scene& get_scene() const;
 
+    bool has_scene() const { return scene_ != nullptr; }
+
     /**
      * @brief Destroy the component and remove it from the scene
      *
@@ -84,6 +86,22 @@ struct SceneComponent {
 
     Channel* get_output(const std::string& name);
     Channel::Listener* get_input(const std::string& name);
+
+    /**
+     * @brief Capture component state for restoration
+     *
+     * @warning Implementation of this method is entirely optional, component
+     * may choose not to capture its current state
+     */
+    virtual void capture() {}
+
+    /**
+     * @brief Reset component to its previously captured state
+     *
+     * @warning Implementation of this method is entirely optional, component
+     * may choose not to reset itself
+     */
+    virtual void reset() {}
 
    protected:
     Event<Scene&>& get_spawned_event() { return spawned_event_; }
@@ -165,7 +183,7 @@ struct SceneComponent {
 
     Scene* scene_ = nullptr;
 
-    bool alive_ = true;
+    bool alive_ = false;
     TickEvent::Listener phys_ticker_{};
     SubtickEvent::Listener draw_ticker_{};
 

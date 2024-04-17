@@ -103,7 +103,7 @@ struct AssetManager final {
     static void dump(unsigned importance = STATUS_REPORTS);
 
    private:
-    AssetManager() = delete;
+    AssetManager() = default;
     AssetManager(const AssetManager& manager) = delete;
     AssetManager& operator=(const AssetManager& manager) = delete;
 

@@ -27,6 +27,7 @@ using SubcomponentNameMap = std::map<std::string, Subcomponent<SceneComponent>>;
 template <class... Ts>
 struct ComponentFactory final {
     ComponentFactory() = default;
+    ~ComponentFactory() { instructions_.clear(); }
 
     /**
      * @brief Run the factory
@@ -34,7 +35,7 @@ struct ComponentFactory final {
      * @param[in] args construction parameters
      * @return SubcomponentNameMap - a name map of constructed components
      */
-    SubcomponentNameMap build(Ts&&... args);
+    SubcomponentNameMap build(Ts&&... args) const;
 
     /**
      * @brief Component producer
@@ -55,7 +56,7 @@ struct ComponentFactory final {
 };
 
 template <class... Ts>
-inline SubcomponentNameMap ComponentFactory<Ts...>::build(Ts&&... args) {
+inline SubcomponentNameMap ComponentFactory<Ts...>::build(Ts&&... args) const {
     SubcomponentNameMap map{};
 
     for (auto& [name, producer] : instructions_) {

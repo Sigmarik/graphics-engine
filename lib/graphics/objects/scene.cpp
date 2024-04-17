@@ -56,6 +56,18 @@ void RenderManager::render(RenderBundle& bundle) const {
     FlatRenderer::render();
 }
 
+void RenderManager::track_object(const Renderable& object) {
+    assert(objects_.count(&object) == 0);
+
+    objects_.insert(&object);
+}
+
+void RenderManager::untrack_object(const Renderable& object) {
+    assert(objects_.count(&object) > 0);
+
+    objects_.erase(&object);
+}
+
 void RenderManager::render_everything(RenderBundle& bundle,
                                       const RenderInput& input,
                                       bool swap_buffers) const {

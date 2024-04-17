@@ -10,17 +10,13 @@ const float PlayerBall::POWER_LIMIT = 2.5f;
 
 PlayerBall::PlayerBall(const glm::vec3& position)
     : PoolBall(position, *AssetManager::request<Model>(
-                             "assets/models/main_ball.model.xml")),
-      arrow_(*AssetManager::request<Model>("assets/models/arrow.model.xml")) {
+                             "assets/models/main_ball.model.xml")) {
     camera_.set_position(glm::vec3(-1.0, 4.0, 0.0));
     camera_.set_fov((float)(30.0));
     camera_.direct(glm::vec3(0.25, -1.0, 0.0), glm::vec3(1.0, 0.0, 0.0));
-}
 
-void PlayerBall::begin_play(Scene& scene) {
-    PoolBall::begin_play(scene);
-
-    scene.get_renderer().track_object(arrow_);
+    arrow_ = new_child<StaticMesh>(
+        *AssetManager::request<Model>("assets/models/arrow.model.xml"));
 }
 
 void PlayerBall::phys_tick(double delta_time) {
@@ -31,11 +27,11 @@ void PlayerBall::phys_tick(double delta_time) {
 
 void PlayerBall::draw_tick(double delta_time, double subtick_time) {
     if (glm::length(charge_) > 1e-4f) {
-        arrow_.set_hidden(false);
+        arrow_->set_hidden(false);
 
-        arrow_.set_object_matrix(get_arrow_matrix());
+        arrow_->set_transform(get_arrow_matrix());
     } else {
-        arrow_.set_hidden(true);
+        arrow_->set_hidden(true);
     }
 
     PoolBall::draw_tick(delta_time, subtick_time);
