@@ -17,7 +17,6 @@
 
 struct PlayerBall : public PoolBall {
     PlayerBall(const glm::vec3& position);
-    ~PlayerBall();
 
     void phys_tick(double delta_time) override;
     void draw_tick(double delta_time, double subtick_time = 0.0) override;
@@ -27,14 +26,11 @@ struct PlayerBall : public PoolBall {
     void set_input_lock(bool lock) { input_locked_ = lock; }
     bool get_input_lock() const { return input_locked_; }
 
-   protected:
-    void begin_play(Scene& scene) override;
-
    private:
     void process_input();
     glm::mat4 get_arrow_matrix() const;
 
-    Model arrow_;
+    Subcomponent<StaticMesh> arrow_{SubcomponentNone};
 
     Camera camera_ = Camera(1.0);
 

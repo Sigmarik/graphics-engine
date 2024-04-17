@@ -13,6 +13,7 @@
 
 #include "graphics/objects/model.h"
 #include "logics/components/visual/point_light_cmp.h"
+#include "logics/components/visual/static_mesh.h"
 #include "logics/scene.h"
 #include "logics/scene_component.h"
 #include "physics/objects/bouncy_object.h"
@@ -21,7 +22,6 @@ static const double POOL_BALL_RADIUS = 0.025;
 
 struct PoolBall : public SceneComponent {
     PoolBall(const glm::vec3& position, const Model& model);
-    ~PoolBall();
 
     void phys_tick(double delta_time) override;
     void draw_tick(double delta_time, double subtick_time = 0.0) override;
@@ -37,14 +37,19 @@ struct PoolBall : public SceneComponent {
     bool is_moving() const;
     bool is_on_board() const;
 
+    void capture() override;
+    void reset() override;
+
    protected:
     void begin_play(Scene& scene) override;
 
    private:
     void resolve_positions(PoolBall& ball);
 
-    Model model_;
+    glm::vec3 captured_pos_{0.0};
+
     BouncyObject bouncer_;
 
     Subcomponent<PointLightComponent> shadow_{SubcomponentNone};
+    Subcomponent<StaticMesh> model_{SubcomponentNone};
 };

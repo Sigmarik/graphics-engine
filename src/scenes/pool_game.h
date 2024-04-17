@@ -27,13 +27,13 @@ struct PoolGame : public Scene {
 
     void reset();
 
-    void load();
-
    protected:
     bool has_moving_parts() const;
 
    private:
     void process_int_collisions();
+
+    void load();
 
     Postprocessor contrast_vignette_;
 

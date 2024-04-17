@@ -51,20 +51,11 @@ void PoolGame::phys_tick(double delta_time) {
 void PoolGame::reset() {
     for (WeakSubcomponent<SceneComponent>& component : loaded_components_) {
         if (component.expired()) continue;
-        component.lock()->destroy();
+        component.lock()->reset();
     }
-
-    loaded_components_.clear();
-    balls_.clear();
-    player_ = {};
-
-    load();
 }
 
 void PoolGame::load() {
-    log_printf(STATUS_REPORTS, "status", "Component count: %lu\n",
-               get_component_count());
-
     const ExternalLevel* level = AssetManager::request<ExternalLevel>(
         "assets/levels/pool_table.level.xml");
 
@@ -74,6 +65,7 @@ void PoolGame::load() {
 
     for (auto& [name, component] : map) {
         loaded_components_.push_back(component);
+        component->capture();
     }
 
     if (map.count("PlayerBall") == 0) {

@@ -87,6 +87,22 @@ struct SceneComponent {
     Channel* get_output(const std::string& name);
     Channel::Listener* get_input(const std::string& name);
 
+    /**
+     * @brief Capture component state for restoration
+     *
+     * @warning Implementation of this method is entirely optional, component
+     * may choose not to capture its current state
+     */
+    virtual void capture() {}
+
+    /**
+     * @brief Reset component to its previously captured state
+     *
+     * @warning Implementation of this method is entirely optional, component
+     * may choose not to reset itself
+     */
+    virtual void reset() {}
+
    protected:
     Event<Scene&>& get_spawned_event() { return spawned_event_; }
 

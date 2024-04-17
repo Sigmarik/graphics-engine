@@ -7,19 +7,12 @@
 #include "src/scenes/pool_game.h"
 
 PoolBall::PoolBall(const glm::vec3& position, const Model& model)
-    : model_(model), bouncer_(position, POOL_BALL_RADIUS) {
+    : bouncer_(position, POOL_BALL_RADIUS) {
     shadow_ = new_child<PointLightComponent>(position, glm::vec3(-1.0) * 0.4f);
+    model_ = new_child<StaticMesh>(model);
 
     shadow_->set_spread(0.0005f);
     shadow_->set_radius(0.028f);
-}
-
-PoolBall::~PoolBall() {
-    //! NOTE: Should have used StaticMesh subcomponent instead of reimplementing
-    //! it
-    if (has_scene()) {
-        get_scene().get_renderer().untrack_object(model_);
-    }
 }
 
 void PoolBall::phys_tick(double delta_time) {
@@ -50,9 +43,9 @@ void PoolBall::draw_tick(double delta_time, double subtick_time) {
                                     position.x, position.y, position.z, 1.0);
     // clang-format on
 
-    model_.set_object_matrix(transform);
+    model_->set_transform(transform);
 
-    model_.set_hidden(!is_on_board());
+    model_->set_hidden(!is_on_board());
 }
 
 void PoolBall::collide(PoolBall& ball) {
@@ -83,13 +76,20 @@ bool PoolBall::is_moving() const {
 
 bool PoolBall::is_on_board() const { return get_position().y > 0.0; }
 
+void PoolBall::capture() { captured_pos_ = bouncer_.get_position(); }
+
+void PoolBall::reset() {
+    bouncer_.set_position(captured_pos_);
+    bouncer_.set_velocity(glm::vec3(0.0));
+
+    model_->set_hidden(false);
+}
+
 void PoolBall::begin_play(Scene& scene) {
     SceneComponent::begin_play(scene);
 
     receive_phys_ticks();
     receive_draw_ticks();
-
-    scene.get_renderer().track_object(model_);
 }
 
 static float length2(const glm::vec3 vec) {

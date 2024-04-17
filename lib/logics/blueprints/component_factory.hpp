@@ -27,6 +27,7 @@ using SubcomponentNameMap = std::map<std::string, Subcomponent<SceneComponent>>;
 template <class... Ts>
 struct ComponentFactory final {
     ComponentFactory() = default;
+    ~ComponentFactory() { instructions_.clear(); }
 
     /**
      * @brief Run the factory
