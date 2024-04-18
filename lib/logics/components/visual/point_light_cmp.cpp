@@ -8,12 +8,6 @@ PointLightComponent::PointLightComponent(const glm::vec3& position,
     set_position(position_);
 }
 
-void PointLightComponent::spawn_self(Scene& scene) {
-    scene.get_renderer().track_object(light_);
-
-    SceneComponent::spawn_self(scene);
-}
-
 void PointLightComponent::set_position(const glm::vec3& position) {
     position_ = position;
 
@@ -25,4 +19,10 @@ void PointLightComponent::set_position(const glm::vec3& position) {
     // clang-format on
 
     light_.set_object_matrix(transform);
+}
+
+void PointLightComponent::begin_play(Scene& scene) {
+    SceneComponent::begin_play(scene);
+
+    get_scene().get_renderer().track_object(light_);
 }

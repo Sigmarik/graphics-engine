@@ -11,24 +11,24 @@
 
 #pragma once
 
-#include "graphics/objects/model.h"
+#include "graphics/objects/complex_model.h"
 #include "logics/scene_component.h"
 
 struct StaticMesh : public SceneComponent {
-    explicit StaticMesh(const Mesh& mesh, const Material& material);
-    explicit StaticMesh(const Model& model);
-
-    void spawn_self(Scene& scene) override;
+    explicit StaticMesh(const ComplexModel& model);
 
     void set_transform(const glm::mat4& transform);
     const glm::mat4& get_transform() const {
         return model_.get_object_matrix();
     }
 
-    Model& get_model() { return model_; }
-    const Model& get_model() const { return model_; }
+    ComplexModel& get_model() { return model_; }
+    const ComplexModel& get_model() const { return model_; }
     void set_model(const Model& model) { model_ = model; }
 
+   protected:
+    void begin_play(Scene& scene) override;
+
    private:
-    Model model_;
+    ComplexModel model_;
 };

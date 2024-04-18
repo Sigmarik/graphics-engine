@@ -32,7 +32,13 @@ struct Model : public Renderable {
     Material& get_material() { return material_; }
     void set_material(const Material& material) { material_ = material; }
 
+    friend struct ComplexModel;
+
    private:
+    int render_pure(const RenderInput& input, const RenderBundle& bundle,
+                    const glm::mat4& transform) const;
+
+    static const RenderPass PASS;
     const Mesh* mesh_;
     Material material_;
 };

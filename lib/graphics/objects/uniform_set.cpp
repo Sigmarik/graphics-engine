@@ -6,6 +6,30 @@ void UniformSet::upload(const Shader& shader) const {
     }
 }
 
+UniformSet::UniformValue& UniformSet::UniformValue::operator=(
+    const UniformValue& uniform) {
+    if (type_ != uniform.type_) {
+        type_ = uniform.type_;
+        value_ = uniform.value_;
+
+        return *this;
+    }
+
+    // Do not reassign texture slots when replacing textures
+
+    if (type_ == UniformType::Texture) {
+        value_.texture = TextureUniform<Texture>(uniform.value_.texture.texture,
+                                                 value_.texture.slot);
+    } else if (type_ == UniformType::Texture3D) {
+        value_.texture_3d = TextureUniform<Texture3D>(
+            uniform.value_.texture_3d.texture, value_.texture_3d.slot);
+    } else {
+        value_ = uniform.value_;
+    }
+
+    return *this;
+}
+
 void UniformSet::UniformValue::upload(const Shader& shader,
                                       const char* name) const {
     switch (type_) {
@@ -34,14 +58,14 @@ void UniformSet::UniformValue::upload(const Shader& shader,
             shader.set_uniform_mat4(name, value_.mat4);
         } break;
         case UniformSet::UniformType::Texture: {
-            assert(value_.texture);
-            value_.texture->bind();
-            shader.set_uniform_tex(name, *value_.texture);
+            assert(value_.texture.texture);
+            value_.texture.texture->bind(value_.texture.slot);
+            shader.set_uniform_tex_id(name, value_.texture.slot);
         } break;
         case UniformSet::UniformType::Texture3D: {
-            assert(value_.texture_3d);
-            value_.texture_3d->bind();
-            shader.set_uniform_tex3d(name, *value_.texture_3d);
+            assert(value_.texture_3d.texture);
+            value_.texture_3d.texture->bind(value_.texture_3d.slot);
+            shader.set_uniform_tex_id(name, value_.texture_3d.slot);
         } break;
         default:
             break;
@@ -72,9 +96,9 @@ UniformSet::UniformValue::UniformValue(const glm::mat3& value)
 UniformSet::UniformValue::UniformValue(const glm::mat4& value)
     : type_(UniformSet::UniformType::Mat4), value_({.mat4 = value}) {}
 
-UniformSet::UniformValue::UniformValue(const Texture& value)
-    : type_(UniformSet::UniformType::Texture), value_({.texture = &value}) {}
+UniformSet::UniformValue::UniformValue(TextureUniform<Texture> value)
+    : type_(UniformSet::UniformType::Texture), value_({.texture = value}) {}
 
-UniformSet::UniformValue::UniformValue(const Texture3D& value)
+UniformSet::UniformValue::UniformValue(TextureUniform<Texture3D> value)
     : type_(UniformSet::UniformType::Texture3D),
-      value_({.texture_3d = &value}) {}
+      value_({.texture_3d = value}) {}

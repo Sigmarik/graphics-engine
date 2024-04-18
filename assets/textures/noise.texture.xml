@@ -1,4 +1,5 @@
 <texture>
-    <path>assets/textures/noise.png</path>
-    <slot>2</slot>
+    <file path="assets/textures/noise.png"></file>
+    <interp mode="linear"></interp>
+    <wrap mode="mirrored_repeat"></wrap>
 </texture>

@@ -9,8 +9,7 @@
  *
  */
 
-#ifndef __LIB_LOGICS_COMPONENTS_PHYSICAL_PAWN_H
-#define __LIB_LOGICS_COMPONENTS_PHYSICAL_PAWN_H
+#pragma once
 
 #include <physics/objects/character_body.h>
 
@@ -23,6 +22,8 @@ struct Pawn : public SceneComponent {
     void phys_tick(double delta_time) override;
 
    protected:
+    void begin_play(Scene& scene) override;
+
     void move(const glm::vec3& input) { body_.move(input); }
 
     CharacterBody& get_body() { return body_; }
@@ -31,5 +32,3 @@ struct Pawn : public SceneComponent {
    private:
     CharacterBody body_;
 };
-
-#endif /* __LIB_LOGICS_COMPONENTS_PHYSICAL_PAWN_H */

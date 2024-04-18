@@ -7,25 +7,15 @@
 #include "src/scenes/pool_game.h"
 
 PoolBall::PoolBall(const glm::vec3& position, const Model& model)
-    : model_(model),
-      bouncer_(position, POOL_BALL_RADIUS),
-      shadow_(position, glm::vec3(-1.0) * 0.4f) {
-    shadow_.set_spread(0.0005f);
-    shadow_.set_radius(0.028f);
-}
+    : model_(model), bouncer_(position, POOL_BALL_RADIUS) {
+    shadow_ = new_child<PointLightComponent>(position, glm::vec3(-1.0) * 0.4f);
 
-void PoolBall::spawn_self(Scene& scene) {
-    scene.get_renderer().track_object(model_);
-
-    shadow_.spawn_self(scene);
-
-    SceneComponent::spawn_self(scene);
+    shadow_->set_spread(0.0005f);
+    shadow_->set_radius(0.028f);
 }
 
 void PoolBall::phys_tick(double delta_time) {
-    assert(get_scene() != nullptr);
-
-    bouncer_.tick(get_scene()->get_collision(), delta_time);
+    bouncer_.tick(get_scene().get_collision(), delta_time);
 
     static const double FRICTION = 1.0;
 
@@ -43,7 +33,7 @@ void PoolBall::draw_tick(double delta_time, double subtick_time) {
     glm::vec3 position = bouncer_.get_interp_pos(subtick_time);
     position.y = bouncer_.get_position().y;
 
-    shadow_.set_position(position);
+    shadow_->set_position(position);
 
     // clang-format off
     glm::mat4 transform = glm::mat4(1.0, 0.0, 0.0, 0.0,
@@ -68,9 +58,6 @@ void PoolBall::collide(PoolBall& ball) {
     glm::vec3 position_diff = get_position() - ball.get_position();
     glm::vec3 avg_velocity = (get_velocity() + ball.get_velocity()) / 2.0f;
 
-    // set_velocity(glm::vec3(0.0));
-    // ball.set_velocity(glm::vec3(0.0));
-
     set_velocity(avg_velocity +
                  reflect_plane(velocity_diff, position_diff) / 2.0f);
     ball.set_velocity(avg_velocity -
@@ -87,6 +74,15 @@ bool PoolBall::is_moving() const {
 }
 
 bool PoolBall::is_on_board() const { return get_position().y > 0.0; }
+
+void PoolBall::begin_play(Scene& scene) {
+    SceneComponent::begin_play(scene);
+
+    receive_phys_ticks();
+    receive_draw_ticks();
+
+    scene.get_renderer().track_object(model_);
+}
 
 static float length2(const glm::vec3 vec) {
     return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "logger/logger.h"
-#include "managers/asset_manager.h"
+#include "managers/importer.h"
 #include "physics/level_geometry.h"
 
 static const double CMP_EPS = 1e-4;
@@ -124,8 +124,7 @@ IMPORTER(CollisionGroup, "obj") {
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
         !scene->mRootNode) {
-        log_printf(ERROR_REPORTS, "error", "Failed to load collision for %s\n",
-                   path);
+        ERROR("Failed to load collision for %s\n", path.c_str());
         return nullptr;
     }
 
@@ -153,9 +152,8 @@ IMPORTER(CollisionGroup, "obj") {
         if (collider.has_value()) {
             group.push_back(collider.value());
         } else {
-            log_printf(WARNINGS, "warning",
-                       "Collision box \"%s\" (file %s) is invalid\n",
-                       mesh->mName.C_Str(), path);
+            WARNING("Collision box \"%s\" (file %s) is invalid\n",
+                    mesh->mName.C_Str(), path.c_str());
         }
     }
 

@@ -1,5 +1,5 @@
 <material>
     <shader path="assets/shaders/albedo_only.shader.xml"></shader>
 
-    <texture var="albedo" path="assets/textures/noisy_red.texture.xml"></texture>
+    <texture var="albedo" path="assets/textures/noisy_red.png"></texture>
 </material>

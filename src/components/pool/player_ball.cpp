@@ -17,8 +17,8 @@ PlayerBall::PlayerBall(const glm::vec3& position)
     camera_.direct(glm::vec3(0.25, -1.0, 0.0), glm::vec3(1.0, 0.0, 0.0));
 }
 
-void PlayerBall::spawn_self(Scene& scene) {
-    PoolBall::spawn_self(scene);
+void PlayerBall::begin_play(Scene& scene) {
+    PoolBall::begin_play(scene);
 
     scene.get_renderer().track_object(arrow_);
 }

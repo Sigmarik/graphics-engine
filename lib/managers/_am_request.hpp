@@ -1,65 +1,134 @@
 #include <string.h>
 
 template <typename T>
-const T* AssetManager::request(const char* path) {
-    AssetManager::AssetRequest identifier(path, typeid(T).hash_code());
+const T* AssetManager::request(const std::string& path,
+                               std::optional<std::string_view> sign_suggestion,
+                               RequestFlags flags) {
+    std::string signature = extract_signature(path);
 
-    auto asset = assets_.find(identifier);
-    if (asset != assets_.end()) {
-        return &((Asset<T>*)asset->second)->content;
+    std::string id_path = path;
+    if (sign_suggestion && signature != *sign_suggestion) {
+        id_path = path + "\t//." + std::string(*sign_suggestion) + ".//";
     }
 
-    log_printf(STATUS_REPORTS, "status", "Loading asset \"%s\" (type %0lX)\n",
-               identifier.path, identifier.type_id);
+    AssetManager::AssetRequest identifier(id_path, typeid(T).hash_code());
 
-    static char signature[128] = "";
-
-    signature[0] = '\0';
-
-    char* sign_ptr = signature;
-
-    unsigned section_count = 0;
-
-    for (const char* ptr = identifier.path; *ptr != '\0'; ++ptr) {
-        if (*ptr == '.')
-            section_count++;
-        else if (section_count == 1) {
-            *sign_ptr = *ptr;
-            ++sign_ptr;
+    if ((flags & RequestFlag::Reimport) == 0) {
+        auto asset = assets_.find(identifier);
+        if (asset != assets_.end()) {
+            return &((Asset<T>*)asset->second)->content;
         }
     }
 
-    *sign_ptr = '\0';
+    log_printf(STATUS_REPORTS, "status", "Loading asset \"%s\" (type %0lX)\n",
+               identifier.path.c_str(), identifier.type_id);
 
     ImporterId importer_id(typeid(T).hash_code(), signature);
-    auto importer_cell = importers_.find(importer_id);
-    if (importer_cell == importers_.end()) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Failed to find importer matching the signature \"%s\" "
-                   "(type %0lX)\n",
-                   signature, importer_id.type_id);
-        printf(
-            "ERROR: Failed to find importer for asset \"%s\", see logs for "
-            "more information.\n",
-            path);
+
+    AbstractImporter* importer = find_importer(importer_id);
+
+    if (importer == nullptr && sign_suggestion) {
+        signature = *sign_suggestion;
+        importer_id = ImporterId(typeid(T).hash_code(), signature);
+        importer = find_importer(importer_id);
+    }
+
+    if (importer == nullptr) {
+        if ((flags & RequestFlag::Silent) == 0) {
+            log_printf(ERROR_REPORTS, "error",
+                       "Failed to find importer matching the signature \"%s\" "
+                       "(type %0lX)\n",
+                       signature.c_str(), importer_id.type_id);
+            printf(
+                "ERROR: Failed to find importer for asset \"%s\", see logs for "
+                "more information.\n",
+                path.c_str());
+        }
+
         return nullptr;
     }
 
-    Asset<T>* imported = (Asset<T>*)importer_cell->second->import(path);
+    Asset<T>* imported = (Asset<T>*)importer->local_import(path, flags);
 
     if (imported == nullptr) {
-        log_printf(ERROR_REPORTS, "error",
-                   "Failed to import asset \"%s\" (type %0lX)\n", path,
-                   identifier.type_id);
-        printf(
-            "ERROR: Failed to import \"%s\", see logs for more information.\n",
-            path);
+        if ((flags & RequestFlag::Silent) == 0) {
+            log_printf(ERROR_REPORTS, "error",
+                       "Failed to import asset \"%s\" (type %0lX)\n",
+                       path.c_str(), identifier.type_id);
+            printf(
+                "ERROR: Failed to import \"%s\", see logs for more "
+                "information.\n",
+                path.c_str());
+        }
         return nullptr;
     }
 
-    assets_.insert(
-        {AssetManager::AssetRequest(strdup(path), typeid(T).hash_code()),
-         imported});
+    if (flags & RequestFlag::Rogue) {
+        register_rogue(imported);
+    } else {
+        assets_[identifier] = imported;
+    }
+
+    return &imported->content;
+}
+
+template <typename T>
+const T* AssetManager::request(const tinyxml2::XMLElement& element,
+                               std::optional<std::string_view> handle,
+                               RequestFlags flags) {
+    const char* tag = element.Name();
+
+    std::optional<AssetManager::AssetRequest> identifier{};
+
+    if (handle) {
+        identifier = AssetManager::AssetRequest(*handle, typeid(T).hash_code());
+    }
+
+    if (identifier && (flags & RequestFlag::Reimport) == 0) {
+        auto asset = assets_.find(*identifier);
+        if (asset != assets_.end()) {
+            return &((Asset<T>*)asset->second)->content;
+        }
+    }
+
+    ImporterId importer_id(typeid(T).hash_code(), tag);
+    AbstractXMLImporter* importer = find_xml_importer(importer_id);
+
+    if (importer == nullptr) {
+        if ((flags & RequestFlag::Silent) == 0) {
+            log_printf(ERROR_REPORTS, "error",
+                       "Failed to find importer matching the signature \"%s\" "
+                       "(type %0lX)\n",
+                       tag, importer_id.type_id);
+            printf(
+                "ERROR: Failed to find importer for xml asset with tag \"%s\", "
+                "see logs for more information.\n",
+                tag);
+        }
+
+        return nullptr;
+    }
+
+    Asset<T>* imported = (Asset<T>*)importer->local_import(element, flags);
+
+    if (imported == nullptr) {
+        if ((flags & RequestFlag::Silent) == 0) {
+            log_printf(ERROR_REPORTS, "error",
+                       "Failed to import XML asset (tag: \"%s\", type %0lX)\n",
+                       tag, identifier->type_id);
+            printf(
+                "ERROR: Failed to import XML asset with tag \"%s\", see logs "
+                "for more information.\n",
+                tag);
+        }
+        return nullptr;
+    }
+
+    if (!identifier || (flags & RequestFlag::Rogue)) {
+        register_rogue(imported);
+    } else {
+        assets_[*identifier] = imported;
+    }
 
     return &imported->content;
 }

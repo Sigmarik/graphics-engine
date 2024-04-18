@@ -9,8 +9,7 @@
  *
  */
 
-#ifndef __SRC_COMPONENTS_POOL_PLAYER_BALL_H
-#define __SRC_COMPONENTS_POOL_PLAYER_BALL_H
+#pragma once
 
 #include "ball.h"
 #include "graphics/objects/model.h"
@@ -19,8 +18,6 @@
 struct PlayerBall : public PoolBall {
     PlayerBall(const glm::vec3& position);
 
-    void spawn_self(Scene& scene) override;
-
     void phys_tick(double delta_time) override;
     void draw_tick(double delta_time, double subtick_time = 0.0) override;
 
@@ -28,6 +25,9 @@ struct PlayerBall : public PoolBall {
 
     void set_input_lock(bool lock) { input_locked_ = lock; }
     bool get_input_lock() const { return input_locked_; }
+
+   protected:
+    void begin_play(Scene& scene) override;
 
    private:
     void process_input();
@@ -47,5 +47,3 @@ struct PlayerBall : public PoolBall {
 
     static const float POWER_LIMIT;
 };
-
-#endif /* __SRC_COMPONENTS_POOL_PLAYER_BALL_H */
