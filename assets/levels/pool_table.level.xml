@@ -1,4 +1,4 @@
-<!-- Blender 4.1.0 www.blender.org -->
+<!-- Blender 4.1.1 www.blender.org -->
 
 <level>
 <static_mesh name="PoolTable">
@@ -10,6 +10,7 @@
 </transform>
 <type value="static_mesh"></type>
 <source value="assets/models/table.obj"></source>
+<collision value="True"></collision>
 <blender_type value="MESH"></blender_type>
 </static_mesh>
 
@@ -96,141 +97,6 @@
 <player value="False"></player>
 <blender_type value="MESH"></blender_type>
 </ball>
-
-<box_collider name="BoxCollider">
-<transform>
-<dx  x="0.691007" z="0.000000" y="0.000000" w="0.000000"></dx>
-<dz  x="0.000000" z="0.935493" y="0.000000" w="0.000000"></dz>
-<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
-<dw  x="0.870585" z="0.517592" y="-0.000224" w="1.000000"></dw>
-</transform>
-<type value="box_collider"></type>
-<b_physical value="True"></b_physical>
-<b_pawn value="True"></b_pawn>
-<b_projectile value="True"></b_projectile>
-<b_sight value="True"></b_sight>
-<blender_type value="MESH"></blender_type>
-</box_collider>
-
-<box_collider name="BoxCollider.001">
-<transform>
-<dx  x="0.691007" z="0.000000" y="0.000000" w="0.000000"></dx>
-<dz  x="0.000000" z="0.935493" y="0.000000" w="0.000000"></dz>
-<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
-<dw  x="-0.870585" z="0.517592" y="-0.000224" w="1.000000"></dw>
-</transform>
-<type value="box_collider"></type>
-<b_physical value="True"></b_physical>
-<b_pawn value="True"></b_pawn>
-<b_projectile value="True"></b_projectile>
-<b_sight value="True"></b_sight>
-<blender_type value="MESH"></blender_type>
-</box_collider>
-
-<box_collider name="BoxCollider.002">
-<transform>
-<dx  x="0.691007" z="0.000000" y="0.000000" w="0.000000"></dx>
-<dz  x="0.000000" z="0.935493" y="0.000000" w="0.000000"></dz>
-<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
-<dw  x="-0.870585" z="-0.517592" y="-0.000224" w="1.000000"></dw>
-</transform>
-<type value="box_collider"></type>
-<b_physical value="True"></b_physical>
-<b_pawn value="True"></b_pawn>
-<b_projectile value="True"></b_projectile>
-<b_sight value="True"></b_sight>
-<blender_type value="MESH"></blender_type>
-</box_collider>
-
-<box_collider name="BoxCollider.003">
-<transform>
-<dx  x="0.691007" z="0.000000" y="0.000000" w="0.000000"></dx>
-<dz  x="0.000000" z="0.935493" y="0.000000" w="0.000000"></dz>
-<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
-<dw  x="0.870585" z="-0.517592" y="-0.000224" w="1.000000"></dw>
-</transform>
-<type value="box_collider"></type>
-<b_physical value="True"></b_physical>
-<b_pawn value="True"></b_pawn>
-<b_projectile value="True"></b_projectile>
-<b_sight value="True"></b_sight>
-<blender_type value="MESH"></blender_type>
-</box_collider>
-
-<box_collider name="BoxCollider.004">
-<transform>
-<dx  x="0.409868" z="0.000000" y="0.000000" w="0.000000"></dx>
-<dz  x="0.000000" z="0.649073" y="0.000000" w="0.000000"></dz>
-<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
-<dw  x="-0.254958" z="1.374531" y="-0.000224" w="1.000000"></dw>
-</transform>
-<type value="box_collider"></type>
-<b_physical value="True"></b_physical>
-<b_pawn value="True"></b_pawn>
-<b_projectile value="True"></b_projectile>
-<b_sight value="True"></b_sight>
-<blender_type value="MESH"></blender_type>
-</box_collider>
-
-<box_collider name="BoxCollider.005">
-<transform>
-<dx  x="0.409868" z="0.000000" y="0.000000" w="0.000000"></dx>
-<dz  x="0.000000" z="0.649073" y="0.000000" w="0.000000"></dz>
-<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
-<dw  x="0.254958" z="1.374531" y="-0.000224" w="1.000000"></dw>
-</transform>
-<type value="box_collider"></type>
-<b_physical value="True"></b_physical>
-<b_pawn value="True"></b_pawn>
-<b_projectile value="True"></b_projectile>
-<b_sight value="True"></b_sight>
-<blender_type value="MESH"></blender_type>
-</box_collider>
-
-<box_collider name="BoxCollider.006">
-<transform>
-<dx  x="0.409868" z="0.000000" y="0.000000" w="0.000000"></dx>
-<dz  x="0.000000" z="0.649073" y="0.000000" w="0.000000"></dz>
-<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
-<dw  x="-0.254958" z="-1.374530" y="-0.000224" w="1.000000"></dw>
-</transform>
-<type value="box_collider"></type>
-<b_physical value="True"></b_physical>
-<b_pawn value="True"></b_pawn>
-<b_projectile value="True"></b_projectile>
-<b_sight value="True"></b_sight>
-<blender_type value="MESH"></blender_type>
-</box_collider>
-
-<box_collider name="BoxCollider.007">
-<transform>
-<dx  x="0.409868" z="0.000000" y="0.000000" w="0.000000"></dx>
-<dz  x="0.000000" z="0.649073" y="0.000000" w="0.000000"></dz>
-<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
-<dw  x="0.254958" z="-1.374530" y="-0.000224" w="1.000000"></dw>
-</transform>
-<type value="box_collider"></type>
-<b_physical value="True"></b_physical>
-<b_pawn value="True"></b_pawn>
-<b_projectile value="True"></b_projectile>
-<b_sight value="True"></b_sight>
-<blender_type value="MESH"></blender_type>
-</box_collider>
-
-<box_collider name="BoxCollider.008">
-<transform>
-<dx  x="1.050135" z="0.000000" y="0.000000" w="0.000000"></dx>
-<dz  x="0.000000" z="2.099884" y="0.000000" w="0.000000"></dz>
-<dy  x="0.000000" z="-0.000000" y="0.100000" w="0.000000"></dy>
-<dw  x="0.000000" z="0.000000" y="-0.050000" w="1.000000"></dw>
-</transform>
-<type value="box_collider"></type>
-<b_physical value="True"></b_physical>
-<b_pawn value="True"></b_pawn>
-<b_projectile value="True"></b_projectile>
-<b_sight value="True"></b_sight>
-<blender_type value="MESH"></blender_type>
-</box_collider>
 
 <ambient_light name="__WORLD_AMBIENT_LIGHT__">
 <color x="0.37625622749328613"y="0.3106955885887146"z="0.27561643719673157"></color>

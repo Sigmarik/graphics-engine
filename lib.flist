@@ -30,6 +30,7 @@ lib/logics/components/visual/ambient_light_importer.o
 lib/logics/components/physical/pawn.o
 lib/logics/components/physical/static_box_collider.o
 lib/logics/components/physical/box_collider_importer.o
+lib/logics/components/logical/component_pack.o
 
 lib/xml/data_extractors.o
 
