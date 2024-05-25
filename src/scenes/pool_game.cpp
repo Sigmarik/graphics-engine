@@ -15,10 +15,6 @@ PoolGame::PoolGame()
     CollisionGroup level_colliders =
         *AssetManager::request<CollisionGroup>("assets/models/table.obj");
 
-    for (const BoxCollider& collider : level_colliders) {
-        get_collision().add_collider(collider);
-    }
-
     get_renderer().track_object(contrast_vignette_);
 
     add_component(main_lamp_);

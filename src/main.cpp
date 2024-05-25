@@ -88,6 +88,10 @@ int main(const int argc, char** argv) {
 
     poll_gl_errors();
 
+    // NOTE: Should be called before closing the OpenGL context, since visual
+    // content destructors may want to free GPU buffers
+    AssetManager::unload_all();
+
     glfwTerminate();
 
     return errno == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

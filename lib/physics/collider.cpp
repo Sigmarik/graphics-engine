@@ -166,10 +166,11 @@ static float max(float alpha, float beta) {
 
 BoxCollider::BoxCollider(const Box& box, const glm::mat4& transform)
     : box_(box), transform_(transform) {
-    if (abs(glm::determinant(transform_)) < 1e-4f) {
-        log_printf(
-            WARNINGS, "warning",
-            "Trying to construct a box collider with singular transform\n");
+    if (abs(glm::determinant(transform_) - 1.0) > 1e-4f) {
+        log_printf(WARNINGS, "warning",
+                   "Trying to construct a box collider with transform "
+                   "determinant %g\n",
+                   glm::determinant(transform_));
     }
 }
 

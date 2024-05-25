@@ -148,7 +148,3 @@ bool ImporterId::operator==(const ImporterId& id) const {
 
     return id.signature == signature;
 }
-
-static struct AssetDeallocator {
-    ~AssetDeallocator() { AssetManager::unload_all(); }
-} __asset_deallocator;

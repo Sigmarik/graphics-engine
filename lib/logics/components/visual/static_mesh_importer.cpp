@@ -19,20 +19,20 @@
 static BoxCollider transform_collider(const BoxCollider& collider,
                                       const glm::mat4& transform) {
     glm::mat4 required_transform = transform * collider.get_transform();
+
     Box box = collider.get_box();
 
     glm::vec4 size_proto = required_transform * glm::vec4(1.0, 1.0, 1.0, 0.0);
-
-    glm::vec3 size(size_proto.x, size_proto.y, size_proto.z);
+    glm::vec3 size(abs(size_proto.x), abs(size_proto.y), abs(size_proto.z));
 
     // clang-format off
-            glm::mat4 descale(1.0 / size.x, 0.0, 0.0, 0.0,
-                              0.0, 1.0 / size.y, 0.0, 0.0,
-                              0.0, 0.0, 1.0 / size.z, 0.0,
-                              0.0, 0.0, 0.0, 1.0);
+    glm::mat4 descale(1.0 / size.x, 0.0, 0.0, 0.0,
+                      0.0, 1.0 / size.y, 0.0, 0.0,
+                      0.0, 0.0, 1.0 / size.z, 0.0,
+                      0.0, 0.0, 0.0, 1.0);
     // clang-format on
 
-    return BoxCollider(Box(glm::vec3(0.0), box.get_size() * size),
+    return BoxCollider(Box(box.get_center() * size, box.get_size() * size),
                        required_transform * descale);
 }
 
