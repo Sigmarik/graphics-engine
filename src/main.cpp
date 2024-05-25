@@ -18,6 +18,7 @@
 #include "logger/logger.h"
 #include "managers/asset_manager.h"
 #include "managers/tick_manager.h"
+#include "managers/window_manager.h"
 #include "scenes/pool_game.h"
 #include "utils/main_utils.h"
 
@@ -39,7 +40,7 @@ int main(const int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    WindowManager::window_init(WINDOW_WIDTH, WINDOW_HEIGHT, "Pool game", true);
+    WindowManager::init(WINDOW_WIDTH, WINDOW_HEIGHT, "Pool game", false);
 
     poll_gl_errors();
 
@@ -69,7 +70,7 @@ int main(const int argc, char** argv) {
         [](double delta_time) { world.phys_tick(delta_time); },
 
         // Graphics
-        [&gbuffers, window](double delta_time, double subtick_time) {
+        [&gbuffers](double delta_time, double subtick_time) {
             world.draw_tick(delta_time, subtick_time);
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -77,18 +78,20 @@ int main(const int argc, char** argv) {
 
             poll_gl_errors();
 
-            glfwSwapBuffers(window);
+            glfwSwapBuffers(WindowManager::get_active_window());
         });
-  
+
     // Synch physics and graphics ticks, disable TPS requirements
     ticker.set_tps_req(0);
 
     log_printf(STATUS_REPORTS, "status", "Entering the loop.\n");
-    GameLoop::run(ticker, [window]() { return glfwWindowShouldClose(window); });
+    GameLoop::run(ticker, []() {
+        return glfwWindowShouldClose(WindowManager::get_active_window());
+    });
 
     poll_gl_errors();
 
-    glfwTerminate();
+    WindowManager::terminate();
 
     return errno == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
