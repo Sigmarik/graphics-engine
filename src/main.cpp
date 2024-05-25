@@ -70,7 +70,7 @@ int main(const int argc, char** argv) {
         [](double delta_time) { world.phys_tick(delta_time); },
 
         // Graphics
-        [&gbuffers](double delta_time, double subtick_time) {
+        [&gbuffers, &ticker](double delta_time, double subtick_time) {
             world.draw_tick(delta_time, subtick_time);
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -79,6 +79,11 @@ int main(const int argc, char** argv) {
             poll_gl_errors();
 
             glfwSwapBuffers(WindowManager::get_active_window());
+
+            WindowManager::set_subtitle_entry(
+                "FPS", std::to_string(int(ticker.get_fps())), true);
+            WindowManager::set_subtitle_entry(
+                "TPS", std::to_string(int(ticker.get_real_tps())));
         });
 
     // Synch physics and graphics ticks, disable TPS requirements
