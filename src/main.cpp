@@ -62,6 +62,10 @@ int main(const int argc, char** argv) {
 
     poll_gl_errors();
 
+    auto& fps_subtitle = WindowManager::add_subtitle_param("FPS");
+    auto& tps_subtitle = WindowManager::add_subtitle_param("TPS");
+    WindowManager::set_title_update_frequency(60);
+
     TickManager ticker(
         // Input
         []() { InputController::poll_events(); },
@@ -70,7 +74,7 @@ int main(const int argc, char** argv) {
         [](double delta_time) { world.phys_tick(delta_time); },
 
         // Graphics
-        [&gbuffers, &ticker](double delta_time, double subtick_time) {
+        [&](double delta_time, double subtick_time) {
             world.draw_tick(delta_time, subtick_time);
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -79,11 +83,10 @@ int main(const int argc, char** argv) {
             poll_gl_errors();
 
             glfwSwapBuffers(WindowManager::get_active_window());
-
-            WindowManager::set_subtitle_entry(
-                "FPS", std::to_string(int(ticker.get_fps())), true);
-            WindowManager::set_subtitle_entry(
-                "TPS", std::to_string(int(ticker.get_real_tps())));
+            
+            fps_subtitle.set_value(static_cast<int>(ticker.get_fps()));
+            tps_subtitle.set_value(static_cast<int>(ticker.get_real_tps()));
+            WindowManager::update_title();
         });
 
     // Synch physics and graphics ticks, disable TPS requirements
