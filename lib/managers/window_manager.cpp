@@ -84,7 +84,7 @@ void WindowManager::set_title_update_frequency(size_t freq) {
 void WindowManager::update_title() {
     auto new_time = WorldTimer::get_time_sec();
     auto delta_time = new_time - last_update_time_in_sec_;
-    auto expected_delta_time = 1. / static_cast<double>(title_update_frequency_);
+    auto expected_delta_time = 1.0 / static_cast<double>(title_update_frequency_);
     last_update_time_in_sec_ = new_time;
     if (title_update_frequency_ > 0)
         if (delta_time < expected_delta_time) 
