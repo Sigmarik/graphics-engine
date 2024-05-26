@@ -5,8 +5,7 @@
 
 #include "graphics/libs.h"
 
-class WindowManager {
-   public:
+struct WindowManager {
     static void init(size_t width, size_t height, const char* title = "Unnamed",
                      bool fullscreen = false);
 
