@@ -59,7 +59,7 @@ template <class... Ts>
 inline SubcomponentNameMap ComponentFactory<Ts...>::build(Ts&&... args) const {
     SubcomponentNameMap map{};
 
-    for (auto& [name, producer] : instructions_) {
+    for (const auto& [name, producer] : instructions_) {
         map[name] = producer(std::forward<Ts>(args)...);
     }
 

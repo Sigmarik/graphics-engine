@@ -173,7 +173,7 @@ struct WeakSubcomponent final {
         return *this;
     }
 
-    operator bool() const { return static_cast<bool>(lock()); }
+    operator bool() const { return !expired() && static_cast<bool>(lock()); }
 
    private:
     std::weak_ptr<T> ptr_{};

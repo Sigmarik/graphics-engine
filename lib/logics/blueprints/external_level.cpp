@@ -6,7 +6,7 @@ SubcomponentNameMap ExternalLevel::build(Scene& scene,
                                          const glm::mat4& transform) const {
     SubcomponentNameMap guide = factory_.build(transform);
 
-    for (auto& [name, component] : guide) {
+    for (const auto& [name, component] : guide) {
         scene.add_component(component);
     }
 
