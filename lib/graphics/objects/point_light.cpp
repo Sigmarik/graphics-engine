@@ -13,8 +13,6 @@ int PointLight::render(const RenderInput& input,
 
     if (input.pass != RP_LIGHT) return 0;
 
-    // return;
-
     glm::mat4 inverse_camera = glm::inverse(input.camera->get_matrix());
     glm::mat4 inverse_object = glm::inverse(object_matrix_);
 

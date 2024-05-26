@@ -10,6 +10,8 @@ Scene::~Scene() {
     for (auto& [guid, component] : shared_components_) {
         component->destroy(SceneComponent::EndPlayReason::Quit);
     }
+
+    shared_components_.clear();
 }
 
 void Scene::for_each_component(

@@ -103,7 +103,7 @@ struct AssetManager final {
     static void dump(unsigned importance = STATUS_REPORTS);
 
    private:
-    AssetManager() = delete;
+    AssetManager() = default;
     AssetManager(const AssetManager& manager) = delete;
     AssetManager& operator=(const AssetManager& manager) = delete;
 
@@ -139,7 +139,7 @@ struct AbstractAsset {
 template <class T>
 struct Asset : public AbstractAsset {
     template <class... Ts>
-    Asset(Ts&&... args) : content(args...) {}
+    Asset(Ts&&... args) : content(std::forward<Ts>(args)...) {}
 
     T content;
 };

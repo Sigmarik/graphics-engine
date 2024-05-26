@@ -26,8 +26,12 @@ struct StaticMesh : public SceneComponent {
     const ComplexModel& get_model() const { return model_; }
     void set_model(const Model& model) { model_ = model; }
 
+    void set_hidden(bool hidden) { model_.set_hidden(hidden); }
+    bool get_hidden(bool hidden) const { return model_.is_hidden(); }
+
    protected:
     void begin_play(Scene& scene) override;
+    void end_play(EndPlayReason reason) override;
 
    private:
     ComplexModel model_;

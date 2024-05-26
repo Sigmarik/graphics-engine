@@ -77,17 +77,6 @@ enum IMPORTANCES {
     } while (0)
 
 /**
- * @brief Open log file or creates empty one.
- *
- * @param filename (optional) log file name
- * @param threshold (optional) value, below which program would print log lines
- * into dummy file.
- * @param error_code (optional) variable to put function execution code in
- */
-void log_init(const char* filename = "log", const unsigned int threshold = 0,
-              int* const error_code = NULL);
-
-/**
  * @brief Print line to logs with automatic prefix.
  *
  * @param importance importance of the message
@@ -104,5 +93,12 @@ void _log_printf(const unsigned int importance, const char* tag,
  * @param error_code (optional) variable to put function execution code in
  */
 void log_close(int* error_code = NULL);
+
+/**
+ * @brief Set logging threshold
+ *
+ * @param[in] threshold
+ */
+void set_logging_threshold(unsigned int threshold);
 
 #endif

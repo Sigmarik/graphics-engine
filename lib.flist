@@ -19,10 +19,20 @@ lib/input/action.o
 
 lib/logics/scene.o
 lib/logics/scene_component.o
+lib/logics/blueprints/external_level.o
+lib/logics/blueprints/scene_importer.o
 lib/logics/components/visual/static_mesh.o
+lib/logics/components/visual/static_mesh_importer.o
 lib/logics/components/visual/point_light_cmp.o
+lib/logics/components/visual/point_light_importer.o
 lib/logics/components/visual/ambient_light_cmp.o
+lib/logics/components/visual/ambient_light_importer.o
 lib/logics/components/physical/pawn.o
+lib/logics/components/physical/static_box_collider.o
+lib/logics/components/physical/box_collider_importer.o
+lib/logics/components/logical/component_pack.o
+
+lib/xml/data_extractors.o
 
 lib/physics/level_geometry.o
 lib/physics/objects/bouncy_object.o

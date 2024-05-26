@@ -17,6 +17,6 @@
 static const float GRAVITY = 9.8f;
 static const float BOUNCINESS = 0.5f;
 
-static const glm::vec3 DIRECTIONAL_BOUNCINESS = glm::vec3(1.0, 0.5, 1.0);
+static const glm::vec3 DIRECTIONAL_BOUNCINESS = glm::vec3(1.0, 0.0, 1.0);
 
 #endif

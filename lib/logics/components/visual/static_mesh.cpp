@@ -13,3 +13,9 @@ void StaticMesh::begin_play(Scene& scene) {
 
     get_scene().get_renderer().track_object(model_);
 }
+
+void StaticMesh::end_play(EndPlayReason reason) {
+    if (has_scene()) {
+        get_scene().get_renderer().untrack_object(model_);
+    }
+}

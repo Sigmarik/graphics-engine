@@ -1,5 +1,6 @@
 #include "point_light_cmp.h"
 
+#include "logger/logger.h"
 #include "logics/scene.h"
 
 PointLightComponent::PointLightComponent(const glm::vec3& position,
@@ -25,4 +26,10 @@ void PointLightComponent::begin_play(Scene& scene) {
     SceneComponent::begin_play(scene);
 
     get_scene().get_renderer().track_object(light_);
+}
+
+void PointLightComponent::end_play(EndPlayReason reason) {
+    if (has_scene()) {
+        get_scene().get_renderer().untrack_object(light_);
+    }
 }
