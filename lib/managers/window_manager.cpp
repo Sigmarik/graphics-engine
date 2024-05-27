@@ -12,7 +12,7 @@ std::vector<std::weak_ptr<WindowManager::SubtitleDataBlock>>
 std::string WindowManager::window_title_ = "[UNDEFINED TITLE]";
 double WindowManager::last_title_update_ = 0.0;
 double WindowManager::subtitle_update_dt_ = 0.0;
-bool WindowManager::requires_title_update_ = 0.0;
+bool WindowManager::requires_title_update_ = false;
 
 void WindowManager::init(size_t width, size_t height, const char* title,
                          bool fullscreen) {
@@ -101,11 +101,12 @@ void WindowManager::refresh() {
 
 WindowManager::SubtitleEntry WindowManager::add_subtitle_entry(
     const std::string& key, double frequency) {
-    SubtitleEntry entry(key, 1.0 / frequency);
+    double delta_time = frequency == 0.0 ? 0.0 : 1.0 / frequency;
+    SubtitleEntry entry(key, delta_time);
 
     subtitle_info_.push_back(entry.get_data());
 
-    notify_subtitle_stat_change();
+    subtitle_update_dt_ = std::min(subtitle_update_dt_, delta_time);
 
     return entry;
 }
