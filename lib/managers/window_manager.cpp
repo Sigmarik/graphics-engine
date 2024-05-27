@@ -50,7 +50,10 @@ void WindowManager::init(size_t width, size_t height, const char* title,
     set_title(title, true);
 }
 
-void WindowManager::terminate() { glfwTerminate(); }
+void WindowManager::terminate() {
+    glfwTerminate();
+    window_ = nullptr;
+}
 
 GLFWwindow* WindowManager::get_active_window() { return window_; }
 
@@ -63,6 +66,9 @@ void WindowManager::set_title(const char* title, bool halt_update) {
 }
 
 void WindowManager::update_title() {
+    if (!valid()) return;
+    if (!requires_title_update_) return;
+
     last_title_update_ = WorldTimer::get_time_sec();
     requires_title_update_ = false;
 
@@ -90,6 +96,8 @@ void WindowManager::update_title() {
 }
 
 void WindowManager::refresh() {
+    if (!valid()) return;
+
     double time = WorldTimer::get_time_sec();
 
     if (last_title_update_ + subtitle_update_dt_ < time) {
