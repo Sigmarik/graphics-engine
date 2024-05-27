@@ -66,11 +66,17 @@ struct WindowManager::SubtitleEntry {
     template <class T>
     requires requires(T&& t) { std::to_string(t); }
     void set_value(T&& value) {
+        if (!*this) return;
+
         data_->value = std::to_string(value);
         WindowManager::request_title_update();
     }
 
     friend WindowManager;
+
+    void hide();
+
+    operator bool() const { return static_cast<bool>(data_); }
 
     ~SubtitleEntry();
 

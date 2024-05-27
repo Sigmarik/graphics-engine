@@ -134,11 +134,14 @@ void WindowManager::notify_subtitle_stat_change() {
     }
 }
 
-WindowManager::SubtitleEntry::~SubtitleEntry() {
-    data_.reset();
+void WindowManager::SubtitleEntry::hide() {
+    if (!*this) return;
 
+    data_.reset();
     WindowManager::notify_subtitle_stat_change();
 }
+
+WindowManager::SubtitleEntry::~SubtitleEntry() { hide(); }
 
 WindowManager::SubtitleEntry::SubtitleEntry(const std::string& key,
                                             double refresh_dt)
