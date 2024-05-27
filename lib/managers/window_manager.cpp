@@ -6,6 +6,10 @@
 #include "logger/logger.h"
 #include "managers/world_timer.h"
 
+static void handle_glfw_errors(int code, const char* description) {
+    log_printf(ERROR_REPORTS, "GLFW error", "%s\n", description);
+}
+
 GLFWwindow* WindowManager::window_ = nullptr;
 std::vector<std::weak_ptr<WindowManager::SubtitleDataBlock>>
     WindowManager::subtitle_info_{};
@@ -17,11 +21,12 @@ bool WindowManager::requires_title_update_ = false;
 void WindowManager::init(size_t width, size_t height, const char* title,
                          bool fullscreen) {
     glfwInit();
+
+    glfwSetErrorCallback(handle_glfw_errors);
+
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    glfwWindowHint(GLFW_SAMPLES, 4);
 
     GLFWwindow* window =
         glfwCreateWindow(int(width), int(height), title,
