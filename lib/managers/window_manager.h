@@ -79,13 +79,12 @@ struct WindowManager {
      * value, key: value)`.
      *
      * @param[in] key entry key
-     * @param[in] frequency subtitle update frequency requirement (zero causes
-     * the title to update as frequently as possible) (10 times per second by
-     * default)
+     * @param[in] expiration_time time requirement between title updates for a
+     * parameter (0.1 by default)
      * @return SubtitleEntry
      */
     static SubtitleEntry add_subtitle_entry(const std::string& key,
-                                            double frequency = 10.0);
+                                            double expiration_time = 0.1);
 
    private:
     static void notify_subtitle_stat_change();

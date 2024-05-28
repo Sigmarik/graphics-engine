@@ -1,5 +1,7 @@
 #include "window_manager.h"
 
+#include <assert.h>
+
 #include <sstream>
 
 #include "graphics/gl_debug.h"
@@ -86,6 +88,8 @@ void WindowManager::update_title() {
 
         size_t index = 0;
         for (const auto& entry : subtitle_info_) {
+            assert(!entry.expired());
+
             SubtitleDataBlock& data = *entry.lock();
             stream << data.key << ": " << data.value;
 
@@ -113,13 +117,12 @@ void WindowManager::refresh() {
 }
 
 WindowManager::SubtitleEntry WindowManager::add_subtitle_entry(
-    const std::string& key, double frequency) {
-    double delta_time = frequency == 0.0 ? 0.0 : 1.0 / frequency;
-    SubtitleEntry entry(key, delta_time);
+    const std::string& key, double expiration_time) {
+    SubtitleEntry entry(key, expiration_time);
 
     subtitle_info_.push_back(entry.get_data());
 
-    subtitle_update_dt_ = std::min(subtitle_update_dt_, delta_time);
+    notify_subtitle_stat_change();
 
     return entry;
 }
@@ -133,6 +136,8 @@ void WindowManager::notify_subtitle_stat_change() {
         if (!subtitle_info_[right_id].expired()) {
             subtitle_info_[left_id] = subtitle_info_[right_id];
             ++left_id;
+        } else {
+            request_title_update();
         }
     }
 

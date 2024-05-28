@@ -73,8 +73,7 @@ int main(const int argc, char** argv) {
         [](double delta_time) { world.phys_tick(delta_time); },
 
         // Graphics
-        [&gbuffers, &ticker, &fps_display, &tps_display](double delta_time,
-                                                         double subtick_time) {
+        [&](double delta_time, double subtick_time) {
             world.draw_tick(delta_time, subtick_time);
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
