@@ -14,9 +14,6 @@ double WorldTimer::get_time_sec() {
     uint64_t time = get_time();
     uint64_t frequency = glfwGetTimerFrequency();
 
-    if (frequency == 0)
-        return 0;
-
     uint64_t whole = time / frequency;
     uint64_t remainder = time % frequency;
 

@@ -4,14 +4,10 @@
 
 #include "graphics/gl_debug.h"
 #include "logger/logger.h"
-#include "managers/world_timer.h"
 
 GLFWwindow* WindowManager::window_ = nullptr;
-std::unordered_map<std::string, WindowManager::SubtitleEntry>
-    WindowManager::subtitle_info_ = {};
+std::unordered_map<std::string, std::string> WindowManager::subtitle_info_ = {};
 std::string WindowManager::window_title_ = "[UNDEFINED TITLE]";
-size_t WindowManager::title_update_frequency_ = 60;
-double WindowManager::last_update_time_in_sec_ = WorldTimer::get_time_sec();
 
 void WindowManager::init(size_t width, size_t height, const char* title,
                          bool fullscreen) {
@@ -53,9 +49,12 @@ void WindowManager::terminate() { glfwTerminate(); }
 
 GLFWwindow* WindowManager::get_active_window() { return window_; }
 
-WindowManager::SubtitleEntry& WindowManager::add_subtitle_param(
-    const std::string& name) {
-    return subtitle_info_[name] = SubtitleEntry();
+void WindowManager::set_subtitle_entry(const std::string& key,
+                                       const std::string& value,
+                                       bool halt_update) {
+    subtitle_info_[key] = value;
+
+    if (!halt_update) update_title();
 }
 
 void WindowManager::clear_subtitle(bool halt_update) {
@@ -77,19 +76,7 @@ void WindowManager::set_title(const char* title, bool halt_update) {
     if (!halt_update) update_title();
 }
 
-void WindowManager::set_title_update_frequency(size_t freq) {
-    title_update_frequency_ = freq;
-}
-
 void WindowManager::update_title() {
-    auto new_time = WorldTimer::get_time_sec();
-    auto delta_time = new_time - last_update_time_in_sec_;
-    auto expected_delta_time = 1.0 / static_cast<double>(title_update_frequency_);
-    last_update_time_in_sec_ = new_time;
-    if (title_update_frequency_ > 0)
-        if (delta_time < expected_delta_time) 
-            return;
-
     std::stringstream stream;
 
     stream << window_title_;
@@ -99,7 +86,7 @@ void WindowManager::update_title() {
 
         size_t index = 0;
         for (const auto& [key, value] : subtitle_info_) {
-            stream << key << ": " << value.get_value();
+            stream << key << ": " << value;
 
             if (index + 1 != subtitle_info_.size()) stream << ", ";
 
