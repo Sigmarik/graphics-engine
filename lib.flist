@@ -5,6 +5,7 @@ include/glad/src/glad.o
 include/tinyxml2.o
 
 lib/managers/asset_manager.o
+lib/managers/window_manager.o
 lib/managers/world_timer.o
 lib/managers/tick_manager.o
 

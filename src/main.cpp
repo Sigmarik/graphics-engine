@@ -18,6 +18,7 @@
 #include "logger/logger.h"
 #include "managers/asset_manager.h"
 #include "managers/tick_manager.h"
+#include "managers/window_manager.h"
 #include "scenes/pool_game.h"
 #include "utils/main_utils.h"
 
@@ -39,11 +40,11 @@ int main(const int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    GLFWwindow* window = create_window();
+    WindowManager::init(WINDOW_WIDTH, WINDOW_HEIGHT, "Pool game", false);
 
     poll_gl_errors();
 
-    InputController::init(window);
+    InputController::init(WindowManager::get_active_window());
 
     static PoolGame world;
 
@@ -61,6 +62,9 @@ int main(const int argc, char** argv) {
 
     poll_gl_errors();
 
+    auto fps_display = WindowManager::add_subtitle_entry("FPS");
+    auto tps_display = WindowManager::add_subtitle_entry("TPS");
+
     TickManager ticker(
         // Input
         []() { InputController::poll_events(); },
@@ -69,7 +73,7 @@ int main(const int argc, char** argv) {
         [](double delta_time) { world.phys_tick(delta_time); },
 
         // Graphics
-        [&gbuffers, window](double delta_time, double subtick_time) {
+        [&](double delta_time, double subtick_time) {
             world.draw_tick(delta_time, subtick_time);
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -77,14 +81,19 @@ int main(const int argc, char** argv) {
 
             poll_gl_errors();
 
-            glfwSwapBuffers(window);
+            WindowManager::refresh();
+
+            fps_display.set_value(int(ticker.get_fps()));
+            tps_display.set_value(int(ticker.get_real_tps()));
         });
 
     // Synch physics and graphics ticks, disable TPS requirements
     ticker.set_tps_req(0);
 
     log_printf(STATUS_REPORTS, "status", "Entering the loop.\n");
-    GameLoop::run(ticker, [window]() { return glfwWindowShouldClose(window); });
+    GameLoop::run(ticker, []() {
+        return glfwWindowShouldClose(WindowManager::get_active_window());
+    });
 
     poll_gl_errors();
 
@@ -92,7 +101,7 @@ int main(const int argc, char** argv) {
     // content destructors may want to free GPU buffers
     AssetManager::unload_all();
 
-    glfwTerminate();
+    WindowManager::terminate();
 
     return errno == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

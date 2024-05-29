@@ -97,7 +97,7 @@ void InputController::mouse_button_callback(GLFWwindow* window, int button,
 void InputController::set_cursor_mode(GLFWwindow* window, CursorMode mode) {
     switch (mode) {
         case CursorMode::Camera: {
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         } break;
         case CursorMode::Desktop: {
@@ -124,6 +124,8 @@ void InputController::poll_events() {
     for (size_t id = 0; id < MOUSE_CODE_COUNT; ++id) {
         mouse_actions_[id].reset_states();
     }
+
+    mouse_delta_x = mouse_delta_y = 0;
 
     glfwPollEvents();
 }
