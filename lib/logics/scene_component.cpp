@@ -44,6 +44,11 @@ SceneComponent::Channel::Listener* SceneComponent::get_input(
 }
 
 void SceneComponent::begin_play(Scene& scene) {
+    // Double begin_play call
+    assert(!alive_);
+
+    alive_ = true;
+
     scene_ = &scene;
     spawned_event_.trigger(scene);
 }
@@ -74,13 +79,20 @@ void SceneComponent::register_input(const std::string& name,
 }
 
 void SceneComponent::attach(Subcomponent<SceneComponent> child) {
+    WeakSubcomponent<SceneComponent> weak_child = child;
+
     child->parent_destroyed_listener_ = Event<EndPlayReason>::Listener(
-        [this](EndPlayReason reason) { destroy(reason); });
+        [self = weak_child](EndPlayReason reason) {
+            if (self.expired()) return;
+
+            self.lock()->destroy(reason);
+        });
 
     child->parent_spawned_listener_ =
-        Event<Scene&>::Listener([self = child](Scene& scene) {
-            scene.add_component(self);
-            self->begin_play(scene);
+        Event<Scene&>::Listener([self = weak_child](Scene& scene) {
+            if (self.expired()) return;
+
+            scene.add_component(self.lock());
         });
 
     get_destroyed_event().subscribe(child->parent_destroyed_listener_);

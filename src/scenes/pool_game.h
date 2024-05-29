@@ -9,15 +9,12 @@
  *
  */
 
-#ifndef __SRC_SCENES_POOL_GAME_H
-#define __SRC_SCENES_POOL_GAME_H
+#pragma once
 
 #include <array>
 
 #include "graphics/objects/postprocessor.h"
-#include "logics/components/visual/ambient_light_cmp.h"
 #include "logics/components/visual/point_light_cmp.h"
-#include "logics/components/visual/static_mesh.h"
 #include "logics/scene.h"
 #include "physics/collider.h"
 #include "src/components/pool/generic_ball.h"
@@ -36,16 +33,15 @@ struct PoolGame : public Scene {
    private:
     void process_int_collisions();
 
-    Subcomponent<StaticMesh> table_;
+    void load();
 
     Postprocessor contrast_vignette_;
 
     Subcomponent<PointLightComponent> main_lamp_;
     Subcomponent<PointLightComponent> sun_;
-    Subcomponent<AmbientLightComponent> ambient_;
 
-    Subcomponent<GenericBall> balls_[6];
-    Subcomponent<PlayerBall> player_;
+    std::vector<WeakSubcomponent<SceneComponent>> loaded_components_{};
+
+    std::vector<WeakSubcomponent<GenericBall>> balls_{};
+    WeakSubcomponent<PlayerBall> player_{};
 };
-
-#endif /* __SRC_SCENES_POOL_GAME_H */

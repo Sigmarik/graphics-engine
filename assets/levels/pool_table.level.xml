@@ -1,0 +1,104 @@
+<!-- Blender 4.1.1 www.blender.org -->
+
+<level>
+<static_mesh name="PoolTable">
+<transform>
+<dx  x="1.000000" z="0.000000" y="0.000000" w="0.000000"></dx>
+<dz  x="0.000000" z="1.000000" y="0.000000" w="0.000000"></dz>
+<dy  x="0.000000" z="0.000000" y="1.000000" w="0.000000"></dy>
+<dw  x="0.000000" z="0.000000" y="0.000000" w="1.000000"></dw>
+</transform>
+<type value="static_mesh"></type>
+<source value="assets/models/table.obj"></source>
+<collision value="True"></collision>
+<blender_type value="MESH"></blender_type>
+</static_mesh>
+
+<ball name="PlayerBall">
+<transform>
+<dx  x="1.000000" z="0.000000" y="0.000000" w="0.000000"></dx>
+<dz  x="0.000000" z="1.000000" y="0.000000" w="0.000000"></dz>
+<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
+<dw  x="0.000000" z="0.500000" y="0.028003" w="1.000000"></dw>
+</transform>
+<type value="ball"></type>
+<player value="True"></player>
+<blender_type value="MESH"></blender_type>
+</ball>
+
+<ball name="PoolBall">
+<transform>
+<dx  x="1.000000" z="0.000000" y="0.000000" w="0.000000"></dx>
+<dz  x="0.000000" z="1.000000" y="0.000000" w="0.000000"></dz>
+<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
+<dw  x="0.000000" z="-0.353455" y="0.028003" w="1.000000"></dw>
+</transform>
+<type value="ball"></type>
+<player value="False"></player>
+<blender_type value="MESH"></blender_type>
+</ball>
+
+<ball name="PoolBall.001">
+<transform>
+<dx  x="1.000000" z="0.000000" y="0.000000" w="0.000000"></dx>
+<dz  x="0.000000" z="1.000000" y="0.000000" w="0.000000"></dz>
+<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
+<dw  x="0.028847" z="-0.401929" y="0.028003" w="1.000000"></dw>
+</transform>
+<type value="ball"></type>
+<player value="False"></player>
+<blender_type value="MESH"></blender_type>
+</ball>
+
+<ball name="PoolBall.002">
+<transform>
+<dx  x="1.000000" z="0.000000" y="0.000000" w="0.000000"></dx>
+<dz  x="0.000000" z="1.000000" y="0.000000" w="0.000000"></dz>
+<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
+<dw  x="-0.028847" z="-0.401929" y="0.028003" w="1.000000"></dw>
+</transform>
+<type value="ball"></type>
+<player value="False"></player>
+<blender_type value="MESH"></blender_type>
+</ball>
+
+<ball name="PoolBall.003">
+<transform>
+<dx  x="1.000000" z="0.000000" y="0.000000" w="0.000000"></dx>
+<dz  x="0.000000" z="1.000000" y="0.000000" w="0.000000"></dz>
+<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
+<dw  x="0.000000" z="-0.450884" y="0.028003" w="1.000000"></dw>
+</transform>
+<type value="ball"></type>
+<player value="False"></player>
+<blender_type value="MESH"></blender_type>
+</ball>
+
+<ball name="PoolBall.004">
+<transform>
+<dx  x="1.000000" z="0.000000" y="0.000000" w="0.000000"></dx>
+<dz  x="0.000000" z="1.000000" y="0.000000" w="0.000000"></dz>
+<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
+<dw  x="0.057909" z="-0.450884" y="0.028003" w="1.000000"></dw>
+</transform>
+<type value="ball"></type>
+<player value="False"></player>
+<blender_type value="MESH"></blender_type>
+</ball>
+
+<ball name="PoolBall.005">
+<transform>
+<dx  x="1.000000" z="0.000000" y="0.000000" w="0.000000"></dx>
+<dz  x="0.000000" z="1.000000" y="0.000000" w="0.000000"></dz>
+<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"></dy>
+<dw  x="-0.057909" z="-0.450884" y="0.028003" w="1.000000"></dw>
+</transform>
+<type value="ball"></type>
+<player value="False"></player>
+<blender_type value="MESH"></blender_type>
+</ball>
+
+<ambient_light name="__WORLD_AMBIENT_LIGHT__">
+<color x="0.37625622749328613"y="0.3106955885887146"z="0.27561643719673157"></color>
+</ambient_light>
+</level>

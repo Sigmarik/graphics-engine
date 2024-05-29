@@ -22,6 +22,7 @@ struct AmbientLightComponent : public SceneComponent {
 
    protected:
     void begin_play(Scene& scene) override;
+    void end_play(EndPlayReason reason) override;
 
    private:
     AmbientLight light_;

@@ -31,7 +31,7 @@ int main(const int argc, char** argv) {
 
     Options options;
 
-    log_init("program_log.html", LOG_THRESHOLD, &errno);
+    set_logging_threshold(LOG_THRESHOLD);
     print_label();
 
     log_printf(STATUS_REPORTS, "status", "Initializing\n");
@@ -96,6 +96,10 @@ int main(const int argc, char** argv) {
     });
 
     poll_gl_errors();
+
+    // NOTE: Should be called before closing the OpenGL context, since visual
+    // content destructors may want to free GPU buffers
+    AssetManager::unload_all();
 
     WindowManager::terminate();
 

@@ -8,8 +8,7 @@
  * @copyright Copyright (c) 2024
  *
  */
-#ifndef __LIB_LOGICS_COMPONENTS_VISUAL_POINT_LIGHT_CMP_H
-#define __LIB_LOGICS_COMPONENTS_VISUAL_POINT_LIGHT_CMP_H
+#pragma once
 
 #include "graphics/objects/point_light.h"
 #include "logics/scene_component.h"
@@ -31,11 +30,10 @@ struct PointLightComponent : public SceneComponent {
 
    protected:
     void begin_play(Scene& scene) override;
+    void end_play(EndPlayReason reason) override;
 
    private:
     glm::vec3 position_;
 
     PointLight light_;
 };
-
-#endif /* __LIB_LOGICS_COMPONENTS_VISUAL_POINT_LIGHT_CMP_H */

@@ -2,6 +2,8 @@ src/utils/main_utils.o
 src/utils/common_utils.o
 src/io/main_io.o
 
+src/components/pool/ball_importer.o
+
 src/components/pool/ball.o
 src/components/pool/player_ball.o
 src/components/pool/generic_ball.o

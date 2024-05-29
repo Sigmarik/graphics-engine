@@ -53,6 +53,8 @@ struct Scene {
 
     SceneComponent* get_component(GUID guid);
 
+    size_t get_component_count() const { return shared_components_.size(); }
+
    private:
     /**
      * @brief Delete component from the scene in the next tick
