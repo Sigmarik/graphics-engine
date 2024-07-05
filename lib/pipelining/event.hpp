@@ -182,6 +182,8 @@ inline void Event<Ts...>::subscribe(
     typename Event<Ts...>::Listener& subscriber) {
     if (subscribers_.count(&subscriber) > 0) return;
 
+    if (subscriber.event_) subscriber.event_->unsubscribe(subscriber);
+
     subscribers_.insert(&subscriber);
     subscriber.event_ = this;
 }
@@ -193,7 +195,7 @@ inline void Event<Ts...>::unsubscribe(
 
     if (find == subscribers_.end()) {
         throw std::runtime_error(
-            "Trying to unsubscribe non-existant subscriber");
+            "Trying to unsubscribe a non-existant subscriber");
     }
 
     subscribers_.erase(find);

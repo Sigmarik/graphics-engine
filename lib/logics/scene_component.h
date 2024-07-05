@@ -28,6 +28,7 @@ struct Scene;
 struct SceneComponent {
     friend struct Scene;
 
+    //! TODO: Replace with multievents to allow for multiple senders.
     using Channel = Event<const std::string&>;
 
     enum class EndPlayReason {
