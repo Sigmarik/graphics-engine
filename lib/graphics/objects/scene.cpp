@@ -8,7 +8,7 @@
 
 void RenderManager::render(RenderBundle& bundle) const {
     if (viewpoint_ == nullptr) {
-        log_printf(WARNINGS, "warning", "Render to undefined viewpoint\n");
+        log_printf(WARNINGS, "warning", "Render to an undefined viewpoint\n");
         return;
     }
 
@@ -43,7 +43,7 @@ void RenderManager::render(RenderBundle& bundle) const {
     stage_input = (RenderInput){.camera = viewpoint_, .pass = pass};
     render_everything(bundle, stage_input);
 
-    //* Copy rendered image to the screen
+    //* Copy the rendered image to the screen
 
     static const Shader& identity_shader =
         *AssetManager::request<Shader>("assets/shaders/RB2SCR.shader.xml");

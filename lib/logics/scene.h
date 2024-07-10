@@ -1,7 +1,7 @@
 /**
  * @file scene.h
  * @author Kudryashov Ilya (kudriashov.it@phystech.edu)
- * @brief Complete scene, be that editor view, game level or menu
+ * @brief Scene manager
  * @version 0.1
  * @date 2023-12-30
  *
