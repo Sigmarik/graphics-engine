@@ -18,18 +18,19 @@ namespace nodes {
 struct DetectChange : public Script::Node {
     DetectChange(ChildReference value);
 
-    virtual bool refresh(Node*) override;
+    virtual bool update(Node&) override;
 
    private:
     ChildReference value_;
 
-    std::optional<std::string> previous_value_;
+    std::optional<std::string> previous_value_ =
+        "__ABSOLUTELY_QUACKING_IMPOSSIBLE_STRING__";
 };
 
 struct RequireValidity : public Script::Node {
     RequireValidity(ChildReference value);
 
-    virtual bool refresh(Node*) override;
+    virtual bool update(Node&) override;
 
    private:
     ChildReference value_;

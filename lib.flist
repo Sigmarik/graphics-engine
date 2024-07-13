@@ -18,6 +18,14 @@ lib/input/keybind_importer.o
 lib/input/text_listener.o
 lib/input/action.o
 
+lib/logics/blueprints/scripts/node.o
+lib/logics/blueprints/scripts/nodes/booleans.o
+lib/logics/blueprints/scripts/nodes/arithmetic.o
+lib/logics/blueprints/scripts/nodes/component_io.o
+lib/logics/blueprints/scripts/nodes/logical.o
+lib/logics/blueprints/scripts/nodes/node_types.o
+lib/logics/blueprints/scripts/nodes/update_suppression.o
+
 lib/logics/scene.o
 lib/logics/scene_component.o
 lib/logics/blueprints/external_level.o

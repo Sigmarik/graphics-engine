@@ -20,7 +20,7 @@ namespace nodes {
 struct OutputMethod : public Script::Node {
     OutputMethod(ChildReference object, ChildReference method);
 
-    virtual bool refresh(Node*) override;
+    virtual bool update(Node&) override;
 
    private:
     ChildReference object_;
@@ -33,14 +33,14 @@ struct InputMethod : public Script::Node {
     InputMethod(ChildReference object, ChildReference method,
                 ChildReference value);
 
-    virtual bool refresh(Node* initiator) override;
+    virtual bool update(Node& initiator) override;
 
    private:
     ChildReference object_;
     ChildReference method_;
     ChildReference value_;
 
-    SceneComponent::Channel output_;
-}
+    SceneComponent::Channel output_{};
+};
 
 };  // namespace nodes

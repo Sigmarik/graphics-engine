@@ -4,8 +4,8 @@ nodes::DetectChange::DetectChange(ChildReference value) : value_(value) {
     subscribe_to(value_);
 }
 
-bool nodes::DetectChange::refresh(Node *) {
-    auto current = value_.lock()->get_value();
+bool nodes::DetectChange::update(Node &) {
+    auto current = value_->get_value();
 
     if (previous_value_ == current) return false;
 
@@ -18,8 +18,8 @@ bool nodes::DetectChange::refresh(Node *) {
 
 nodes::RequireValidity::RequireValidity(ChildReference value) : value_(value) {}
 
-bool nodes::RequireValidity::refresh(Node *) {
-    auto current = value_.lock()->get_value();
+bool nodes::RequireValidity::update(Node &) {
+    auto current = value_->get_value();
 
     if (!current) return false;
 

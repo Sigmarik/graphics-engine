@@ -2,11 +2,7 @@
 
 static SceneComponent* node_to_component(
     const Script::Node::ChildReference& node, Scene& scene) {
-    Script::Node* pure_node = node.lock().get();
-
-    if (!pure_node) return nullptr;
-
-    std::optional<std::string> string = pure_node->get_value();
+    std::optional<std::string> string = node->get_value();
 
     if (!string) return nullptr;
 
@@ -17,27 +13,15 @@ static SceneComponent* node_to_component(
     return scene.get_component(object_guid.value());
 }
 
-static std::optional<std::string> node_to_string(
-    const Script::Node::ChildReference& node) {
-    Script::Node* pure_node = node.lock().get();
-
-    if (!pure_node) return {};
-
-    return pure_node->get_value();
-}
-
 nodes::OutputMethod::OutputMethod(ChildReference object, ChildReference method)
     : object_(object), method_(method) {}
 
-bool nodes::OutputMethod::refresh(Node*) {
+bool nodes::OutputMethod::update(Node&) {
     Scene* scene = get_scene();
 
     assert(scene);
 
-    Node* method_node = method_.lock().get();
-    if (method_node == nullptr) return false;
-
-    std::optional<std::string> method_string = method_node->get_value();
+    std::optional<std::string> method_string = method_->get_value();
     if (method_string) return false;
 
     SceneComponent* component = node_to_component(object_, *scene);
@@ -54,6 +38,8 @@ bool nodes::OutputMethod::refresh(Node*) {
         });
 
     channel->subscribe(update_listener_);
+
+    return false;
 }
 
 nodes::InputMethod::InputMethod(ChildReference object, ChildReference method,
@@ -62,10 +48,10 @@ nodes::InputMethod::InputMethod(ChildReference object, ChildReference method,
     subscribe_to(value_);
 }
 
-bool nodes::InputMethod::refresh(Node* initiator) {
+bool nodes::InputMethod::update(Node& initiator) {
     // Send the update event if only the value has changed.
-    if (initiator == value_.lock().get()) {
-        std::optional<std::string> string = value_.lock()->get_value();
+    if (&initiator == value_.get()) {
+        std::optional<std::string> string = value_->get_value();
 
         if (string.has_value()) output_.trigger(string.value());
 
@@ -79,7 +65,7 @@ bool nodes::InputMethod::refresh(Node* initiator) {
 
     output_ = SceneComponent::Channel();
 
-    std::optional<std::string> method_string = node_to_string(method_);
+    std::optional<std::string> method_string = method_->get_value();
     if (!method_string) return false;
 
     SceneComponent* component = node_to_component(object_, *scene);
@@ -90,4 +76,6 @@ bool nodes::InputMethod::refresh(Node* initiator) {
     if (!listener) return false;
 
     output_.subscribe(*listener);
+
+    return false;
 }

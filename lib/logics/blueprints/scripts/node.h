@@ -18,7 +18,7 @@
 #include "script.h"
 
 struct Script::Node {
-    using ChildReference = std::weak_ptr<Node>;
+    using ChildReference = std::shared_ptr<Node>;
 
     Node() {}
 
@@ -33,12 +33,11 @@ struct Script::Node {
     /**
      * @brief Update the value of the node.
      *
-     * @param[in] initiator the node which update initiated the refresh of other
-     * nodes
+     * @param[in] initiator the node which initiated the update
      * @return true
      * @return false
      */
-    virtual bool refresh(Node* initiator) {}
+    virtual bool update(Node& initiator) { return true; }
 
     /**
      * @brief Get the value of the node
