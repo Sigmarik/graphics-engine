@@ -13,14 +13,13 @@
 
 #include <inttypes.h>
 
-#include <optional>
 #include <string>
 
 #define GUID_ES "%08lX%08lX"
 #define GUID_OUT(guid) (guid).left, (guid).right
 
 struct GUID {
-    static std::optional<GUID> from_string(const std::string& string);
+    static GUID from_string(const std::string& string);
     std::string to_string() const;
 
     static GUID gen();

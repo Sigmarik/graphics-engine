@@ -6,11 +6,9 @@ static SceneComponent* node_to_component(
 
     if (!string) return nullptr;
 
-    std::optional<GUID> object_guid = GUID::from_string(string.value());
+    GUID object_guid = GUID::from_string(string.value());
 
-    if (!object_guid) return nullptr;
-
-    return scene.get_component(object_guid.value());
+    return scene.get_component(object_guid);
 }
 
 nodes::OutputMethod::OutputMethod(ChildReference object, ChildReference method)

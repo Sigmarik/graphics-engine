@@ -87,13 +87,13 @@ struct Script::Node {
      */
     Scene* get_scene() const { return scene_; }
 
-    virtual void on_assignment(Scene& scene);
+    virtual void on_assignment(Scene& scene) { scene_ = &scene; }
 
     /**
      * @brief Trigger the update event of the node
      *
      */
-    void trigger();
+    void trigger() { update_event_.trigger(*this); }
 
     void set_value(const std::optional<std::string>& value) { value_ = value; }
 
