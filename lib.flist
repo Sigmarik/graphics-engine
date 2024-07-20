@@ -25,6 +25,7 @@ lib/logics/blueprints/scripts/nodes/component_io.o
 lib/logics/blueprints/scripts/nodes/logical.o
 lib/logics/blueprints/scripts/nodes/node_types.o
 lib/logics/blueprints/scripts/nodes/update_suppression.o
+lib/logics/blueprints/scripts/parser/lexemes.o
 
 lib/logics/scene.o
 lib/logics/scene_component.o
