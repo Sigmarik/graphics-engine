@@ -29,6 +29,17 @@ struct Lexeme {
     static std::optional<LexemePtr> try_construct(std::string_view&) {
         return {};
     }
+
+    void assign_coords(size_t line, size_t column) {
+        line_ = line, column_ = column;
+    }
+
+    size_t get_line() const { return line_; }
+    size_t get_column() const { return column_; }
+
+   private:
+    size_t line_ = 0;
+    size_t column_ = 0;
 };
 
 template <StringLiteral... Values>
