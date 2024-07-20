@@ -17,7 +17,7 @@
 namespace lexemes {
 
 struct String : public Lexeme {
-    String(std::string_view& view) : value_(view.begin(), view.end()) {}
+    String(const std::string& value) : value_(value) {}
 
     static std::optional<LexemePtr> try_construct(std::string_view& view);
 
@@ -28,7 +28,7 @@ struct String : public Lexeme {
 };
 
 struct NamedComponent : public Lexeme {
-    NamedComponent(std::string_view& view) : name_(view.begin(), view.end()) {}
+    NamedComponent(const std::string& name) : name_(name) {}
 
     static std::optional<LexemePtr> try_construct(std::string_view& view);
 
