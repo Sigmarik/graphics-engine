@@ -15,6 +15,8 @@
 #include <vector>
 
 #include "lexeme.h"
+#include "lexemes/brackets.h"
 #include "lexemes/operators.h"
+#include "lexemes/strings.h"
 
 extern const std::vector<Lexeme::Constructor> LEXEME_CONSTRUCTORS;
