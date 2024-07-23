@@ -43,4 +43,12 @@ struct InputMethod : public Script::Node {
     SceneComponent::Channel output_{};
 };
 
+struct StringConstant : public Script::Node {
+    StringConstant(const std::string& value);
+
+    virtual const bool update_on_creation() const override { return true; }
+
+    virtual bool update(Node& initiator) override;
+}
+
 };  // namespace nodes

@@ -77,3 +77,9 @@ bool nodes::InputMethod::update(Node& initiator) {
 
     return false;
 }
+
+nodes::StringConstant::StringConstant(const std::string& value) {
+    set_value(value);
+}
+
+bool nodes::StringConstant::update(Node& initiator) { trigger(); }
