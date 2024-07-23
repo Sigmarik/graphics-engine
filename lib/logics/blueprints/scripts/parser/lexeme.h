@@ -16,12 +16,16 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <sstream>
 #include <string>
 
+#include "memory/abstract_holder.hpp"
 #include "templates/strings.h"
 
 struct Lexeme {
-    using LexemePtr = std::shared_ptr<Lexeme>;
+    virtual ~Lexeme() = default;
+
+    using LexemePtr = Abstract<Lexeme>;
 
     using Constructor =
         std::function<std::optional<LexemePtr>(std::string_view&)>;
@@ -37,6 +41,8 @@ struct Lexeme {
     size_t get_line() const { return line_; }
     size_t get_column() const { return column_; }
 
+    virtual std::string dump() const = 0;
+
    private:
     size_t line_ = 0;
     size_t column_ = 0;
@@ -46,9 +52,11 @@ template <StringLiteral... Values>
 struct StrictLexeme : public Lexeme {
     static std::optional<LexemePtr> try_construct(std::string_view& view) {
         return (compare_and_shift(view, Values.value) || ...)
-                   ? std::make_shared<StrictLexeme<Values...>>()
+                   ? LexemePtr(new StrictLexeme<Values...>())
                    : std::optional<LexemePtr>();
     }
+
+    virtual std::string dump() const override;
 
    private:
     static bool compare_and_shift(std::string_view& view,
@@ -60,3 +68,10 @@ struct StrictLexeme : public Lexeme {
         return true;
     }
 };
+
+template <StringLiteral... Values>
+inline std::string StrictLexeme<Values...>::dump() const {
+    std::stringstream stream;
+    (stream << ... << Values.value);
+    return stream.str();
+}

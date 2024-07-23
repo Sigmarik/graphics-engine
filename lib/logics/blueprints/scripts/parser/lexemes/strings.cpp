@@ -1,5 +1,7 @@
 #include "strings.h"
 
+#include <iostream>
+
 static size_t get_length(const std::string_view& view, bool inclusive) {
     size_t end_index = 0;
 
@@ -55,9 +57,15 @@ std::optional<Lexeme::LexemePtr> lexemes::String::try_construct(
 
     std::string result = view_to_string(view, end_index);
 
-    view.remove_prefix(inclusive ? end_index : end_index - 1);
+    view.remove_prefix(inclusive ? end_index + 1 : end_index);
 
-    return std::make_shared<String>(result);
+    return LexemePtr(new String(result));
+}
+
+std::string lexemes::String::dump() const {
+    std::stringstream stream;
+    stream << "STRING " << value_;
+    return stream.str();
 }
 
 static const char COMPONENT_NAME_IDENTIFIER = '@';
@@ -72,7 +80,14 @@ std::optional<Lexeme::LexemePtr> lexemes::NamedComponent::try_construct(
 
     std::string result = view_to_string(view, end_index);
 
-    view.remove_prefix(end_index - 1);
+    view.remove_prefix(end_index);
 
-    return std::make_shared<NamedComponent>(result);
+    return LexemePtr(new NamedComponent(result));
+}
+
+std::string lexemes::NamedComponent::dump() const {
+    std::stringstream stream;
+    stream << "NAMED_COMPONENT " << name_ << ' ' << guid_.left << ' '
+           << guid_.right;
+    return stream.str();
 }

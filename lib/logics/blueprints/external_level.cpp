@@ -10,7 +10,10 @@ SubcomponentNameMap ExternalLevel::build(Scene& scene,
         scene.add_component(component);
     }
 
-    // TODO: Link pipeliner scripts and add them to the scene
+    for (const Script& script : scripts_) {
+        std::shared_ptr<Script> registered_script = scene.add_script(script);
+        registered_script->assemble(scene, guide);
+    }
 
     return guide;
 }

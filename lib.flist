@@ -18,7 +18,8 @@ lib/input/keybind_importer.o
 lib/input/text_listener.o
 lib/input/action.o
 
-lib/logics/blueprints/scripts/node.o
+lib/logics/blueprints/scripts/script.o
+lib/logics/blueprints/scripts/parser/lexemizer.o
 lib/logics/blueprints/scripts/nodes/booleans.o
 lib/logics/blueprints/scripts/nodes/arithmetic.o
 lib/logics/blueprints/scripts/nodes/component_io.o
@@ -27,6 +28,7 @@ lib/logics/blueprints/scripts/nodes/node_types.o
 lib/logics/blueprints/scripts/nodes/update_suppression.o
 lib/logics/blueprints/scripts/parser/lexemes.o
 lib/logics/blueprints/scripts/parser/lexemes/strings.o
+lib/logics/blueprints/scripts/script_importer.o
 
 lib/logics/scene.o
 lib/logics/scene_component.o

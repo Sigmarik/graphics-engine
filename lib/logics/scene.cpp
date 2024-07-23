@@ -30,6 +30,11 @@ SceneComponent* Scene::get_component(GUID guid) {
     return nullptr;
 }
 
+std::shared_ptr<Script> Scene::add_script(const Script& script) {
+    scripts_.push_back(std::make_shared<Script>(script));
+    return scripts_.back();
+}
+
 void Scene::delete_component(SceneComponent& component) {
     deletion_queue_.push_back(component.get_guid());
 }

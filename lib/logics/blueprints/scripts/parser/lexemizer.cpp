@@ -50,7 +50,6 @@ std::vector<Lexeme::LexemePtr> lexify(const std::string& text) {
     std::string_view view(text);
 
     size_t current_line = 0, current_column = 0, current_index = 0;
-
     remove_whitespace(view);
 
     while (!view.empty()) {
@@ -69,6 +68,8 @@ std::vector<Lexeme::LexemePtr> lexify(const std::string& text) {
         lexeme.value()->assign_coords(current_line, current_column);
 
         result.push_back(lexeme.value());
+
+        remove_whitespace(view);
     }
 
     return result;

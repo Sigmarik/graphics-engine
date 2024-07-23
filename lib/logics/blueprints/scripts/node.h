@@ -15,18 +15,16 @@
 
 #include "logics/scene.h"
 #include "pipelining/event.hpp"
-#include "script.h"
 
 struct Script::Node {
     using ChildReference = std::shared_ptr<Node>;
 
     Node() {}
 
-    Node(const Node&) = delete;
-    Node(Node&&) = delete;
-
-    Node& operator=(const Node&) = delete;
-    Node& operator=(Node&&) = delete;
+    Node(const Node&) = default;
+    Node& operator=(const Node&) = default;
+    Node(Node&&) = default;
+    Node& operator=(Node&&) = default;
 
     virtual ~Node() = default;
 

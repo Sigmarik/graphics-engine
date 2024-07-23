@@ -23,6 +23,8 @@ struct String : public Lexeme {
 
     std::string get_value() const { return value_; }
 
+    virtual std::string dump() const override;
+
    private:
     std::string value_;
 };
@@ -36,6 +38,8 @@ struct NamedComponent : public Lexeme {
     std::string get_guid() const { return guid_.to_string(); }
 
     void set_guid(const GUID& guid) { guid_ = guid; }
+
+    virtual std::string dump() const override;
 
    private:
     std::string name_;
