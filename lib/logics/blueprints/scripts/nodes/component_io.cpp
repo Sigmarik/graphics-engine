@@ -1,7 +1,8 @@
 #include "component_io.h"
 
-static SceneComponent* node_to_component(
-    const Script::Node::ChildReference& node, Scene& scene) {
+static SceneComponent* node_to_component(const Script::Node::
+                                             ChildReference& node,
+                                         Scene& scene) {
     std::optional<std::string> string = node->get_value();
 
     if (!string) return nullptr;
@@ -25,12 +26,12 @@ bool nodes::OutputMethod::update(Node&) {
     SceneComponent* component = node_to_component(object_, *scene);
     if (!component) return false;
 
-    SceneComponent::Channel* channel =
-        component->get_output(method_string.value());
+    SceneComponent::
+        Channel* channel = component->get_output(method_string.value());
     if (!channel) return false;
 
-    update_listener_ =
-        SceneComponent::Channel::Listener([this](const std::string& string) {
+    update_listener_ = SceneComponent::Channel::
+        Listener([this](const std::string& string) {
             set_value(string);
             trigger();
         });
@@ -69,8 +70,8 @@ bool nodes::InputMethod::update(Node& initiator) {
     SceneComponent* component = node_to_component(object_, *scene);
     if (!component) return false;
 
-    SceneComponent::Channel::Listener* listener =
-        component->get_input(method_string.value());
+    SceneComponent::Channel::
+        Listener* listener = component->get_input(method_string.value());
     if (!listener) return false;
 
     output_.subscribe(*listener);
@@ -82,4 +83,7 @@ nodes::StringConstant::StringConstant(const std::string& value) {
     set_value(value);
 }
 
-bool nodes::StringConstant::update(Node& initiator) { trigger(); }
+bool nodes::StringConstant::update(Node& initiator) {
+    trigger();
+    return true;
+}

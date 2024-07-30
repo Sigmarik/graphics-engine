@@ -35,7 +35,7 @@ struct NamedComponent : public Lexeme {
     static std::optional<LexemePtr> try_construct(std::string_view& view);
 
     std::string get_name() const { return name_; }
-    std::string get_guid() const { return guid_.to_string(); }
+    GUID        get_guid() const { return guid_; }
 
     void set_guid(const GUID& guid) { guid_ = guid; }
 

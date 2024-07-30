@@ -35,7 +35,7 @@ struct Script {
    private:
     std::vector<Lexeme::LexemePtr> lexemes_{};
 
-    std::vector<Node> nodes_{};
+    std::vector<Abstract<Node>> nodes_{};
 };
 
 #include "node.h"

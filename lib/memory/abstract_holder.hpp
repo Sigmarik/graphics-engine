@@ -63,7 +63,7 @@ struct Abstract {
 
     template <class U>
     const U* as() const {
-        return dynamic_cast<U*>(data_);
+        return dynamic_cast<const U*>(data_);
     }
 
    private:

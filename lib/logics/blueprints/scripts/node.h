@@ -61,14 +61,6 @@ struct Script::Node {
      */
     void assign_scene(Scene& scene) { scene_ = &scene; }
 
-    /**
-     * @brief Defines should the node be updated on creation
-     *
-     * @return true if it should
-     * @return false otherwise
-     */
-    virtual const bool update_on_creation() const { return false; }
-
    protected:
     using Update = Event<Node&>;
 
