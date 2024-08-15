@@ -24,11 +24,23 @@ struct BinaryNode : public Script::Node {
 
     virtual bool update(Node&) override;
 
+    virtual std::string debug() const override {
+        return "{" + left_->debug() + " " + symbol() + " " + right_->debug() +
+               "}";
+    }
+
    protected:
     virtual std::optional<std::string> binary_update(const std::string& left,
                                                      const std::string& right) {
         return "";
     }
+
+    /**
+     * @brief Symbol used for debug string representation
+     *
+     * @return const std::string
+     */
+    virtual const std::string symbol() const = 0;
 
     ChildReference left_;
     ChildReference right_;
@@ -37,9 +49,20 @@ struct BinaryNode : public Script::Node {
 struct UnaryNode : public Script::Node {
     UnaryNode(ChildReference value) : value_(value) { subscribe_to(value_); }
 
+    virtual std::string debug() const override {
+        return "{" + symbol() + " " + value_->debug() + "}";
+    }
+
     virtual bool update(Node&) override;
 
    protected:
+    /**
+     * @brief Symbol used for debug string representation
+     *
+     * @return const std::string
+     */
+    virtual const std::string symbol() const = 0;
+
     virtual std::optional<std::string> unary_update(const std::string& input) {
         return "";
     }

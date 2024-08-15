@@ -17,7 +17,7 @@
 <script content='
 // This is a sample script.
 
-alpha::beta <- gamma + delta - "hehe, sneaky + string".@PoolTable
+alpha::beta <- gamma + beta - @PoolTable
 '/>
 
 <ball name="PlayerBall">

@@ -22,6 +22,10 @@ struct OutputMethod : public Script::Node {
 
     virtual bool update(Node&) override;
 
+    virtual std::string debug() const override {
+        return "{" + object_->debug() + " . " + method_->debug() + "}";
+    }
+
    private:
     ChildReference object_;
     ChildReference method_;
@@ -35,6 +39,11 @@ struct InputMethod : public Script::Node {
 
     virtual bool update(Node& initiator) override;
 
+    virtual std::string debug() const override {
+        return "{" + object_->debug() + " :: " + method_->debug() + " <- " +
+               value_->debug() + "}";
+    }
+
    private:
     ChildReference object_;
     ChildReference method_;
@@ -45,6 +54,10 @@ struct InputMethod : public Script::Node {
 
 struct StringConstant : public Script::Node {
     StringConstant(const std::string& value);
+
+    virtual std::string debug() const override {
+        return "{\"" + get_value().value_or("NOTHING") + "\"}";
+    }
 
     virtual bool update(Node& initiator) override;
 };

@@ -9,11 +9,21 @@ static SceneComponent* node_to_component(const Script::Node::
 
     GUID object_guid = GUID::from_string(string.value());
 
-    return scene.get_component(object_guid);
+    auto result = scene.get_component(object_guid);
+    if (!result) {
+        log_printf(WARNINGS, "warning",
+                   "Could not find a component with the guid\"%s\".\n",
+                   string.value().c_str());
+    }
+
+    return result;
 }
 
 nodes::OutputMethod::OutputMethod(ChildReference object, ChildReference method)
-    : object_(object), method_(method) {}
+    : object_(object), method_(method) {
+    subscribe_to(object_);
+    subscribe_to(method_);
+}
 
 bool nodes::OutputMethod::update(Node&) {
     Scene* scene = get_scene();

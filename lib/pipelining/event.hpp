@@ -29,50 +29,47 @@ struct Event final {
      */
     struct Listener {
         explicit Listener(const std::function<void(Ts...)>& action)
-            : action_(action){};
+            : action_(action) {};
 
         Listener() : Listener([](Ts...) {}) {}
 
-        Listener(const Listener& other)
-            : action_(other.action_), event_(other.event_) {
-            if (event_) event_->subscribe(*this);
+        Listener(const Listener& other) : action_(other.action_) {
+            if (other.event_) other.event_->subscribe(*this);
         }
 
         Listener& operator=(const Listener& other) {
             if (&other == this) return *this;
 
-            if (event_) event_->unsubscribe(*this);
+            unsubscribe();
 
             action_ = other.action_;
-            event_ = other.event_;
 
-            if (event_) event_->subscribe(*this);
+            if (other.event_) other.event_->subscribe(*this);
 
             return *this;
         }
 
-        Listener(Listener&& other)
-            : action_(other.action_), event_(other.event_) {
-            if (event_) event_->subscribe(*this);
-            if (other.event_) other.event_->unsubscribe(other);
+        Listener(Listener&& other) : action_(other.action_) {
+            if (other.event_) {
+                other.event_->subscribe(*this);
+                other.unsubscribe();
+            }
         }
 
         Listener& operator=(Listener&& other) {
-            if (event_) event_->unsubscribe(*this);
+            unsubscribe();
 
             action_ = other.action_;
-            event_ = other.event_;
 
-            if (event_) event_->subscribe(*this);
-
-            if (other.event_) other.event_->unsubscribe(other);
+            if (other.event_) {
+                other.event_->subscribe(*this);
+                other.unsubscribe();
+            }
 
             return *this;
         }
 
-        ~Listener() {
-            if (event_) event_->unsubscribe(*this);
-        }
+        ~Listener() { unsubscribe(); }
 
         typename Event<Ts...>::Listener& operator=(Listener& other);
 
@@ -85,6 +82,10 @@ struct Event final {
          * @return false otherwise
          */
         bool is_subscribed() const { return event_ != nullptr; }
+
+        void unsubscribe() {
+            if (event_) event_->unsubscribe(*this);
+        }
 
         friend Event;
 
@@ -132,12 +133,11 @@ struct Event final {
 using SimpleEvent = Event<>;
 
 template <class... Ts>
-inline typename Event<Ts...>::Listener& Event<Ts...>::Listener::operator=(
-    Listener& other) {
+inline typename Event<Ts...>::Listener& Event<Ts...>::Listener::
+operator=(Listener& other) {
     if (event_) event_->unsubscribe(*this);
     action_ = other.action_;
-    event_ = other.event_;
-    if (event_) event_->subscribe(*this);
+    if (other.event_) other.event_->subscribe(*this);
 
     return *this;
 }
@@ -178,8 +178,8 @@ inline Event<Ts...>::~Event() {
 }
 
 template <class... Ts>
-inline void Event<Ts...>::subscribe(
-    typename Event<Ts...>::Listener& subscriber) {
+inline void Event<Ts...>::
+    subscribe(typename Event<Ts...>::Listener& subscriber) {
     if (subscribers_.count(&subscriber) > 0) return;
 
     if (subscriber.event_) subscriber.event_->unsubscribe(subscriber);
@@ -189,13 +189,13 @@ inline void Event<Ts...>::subscribe(
 }
 
 template <class... Ts>
-inline void Event<Ts...>::unsubscribe(
-    typename Event<Ts...>::Listener& subscriber) {
+inline void Event<Ts...>::
+    unsubscribe(typename Event<Ts...>::Listener& subscriber) {
     auto find = subscribers_.find(&subscriber);
 
     if (find == subscribers_.end()) {
-        throw std::runtime_error(
-            "Trying to unsubscribe a non-existant subscriber");
+        throw std::
+            runtime_error("Trying to unsubscribe a non-existant subscriber");
     }
 
     subscribers_.erase(find);

@@ -19,6 +19,11 @@ struct Conditional : public Script::Node {
     Conditional(ChildReference condition, ChildReference true_child,
                 ChildReference false_child);
 
+    virtual std::string debug() const override {
+        return "{" + condition_->debug() + " ? " + true_child_->debug() +
+               " : " + false_child_->debug() + "}";
+    }
+
     virtual bool update(Node&) override;
 
    private:
@@ -30,8 +35,11 @@ struct Conditional : public Script::Node {
 struct LogicalNot : public UnaryNode {
     using UnaryNode::UnaryNode;
 
-    virtual std::optional<std::string> unary_update(
-        const std::string& input) override;
+    virtual std::optional<std::string> unary_update(const std::
+                                                        string& input) override;
+
+   protected:
+    virtual const std::string symbol() const override { return "!"; }
 };
 
 struct LogicalOr : public BinaryNode {
@@ -39,6 +47,9 @@ struct LogicalOr : public BinaryNode {
 
     virtual std::optional<std::string> binary_update(
         const std::string& left, const std::string& right) override;
+
+   protected:
+    virtual const std::string symbol() const override { return "or"; }
 };
 
 struct LogicalAnd : public BinaryNode {
@@ -46,6 +57,9 @@ struct LogicalAnd : public BinaryNode {
 
     virtual std::optional<std::string> binary_update(
         const std::string& left, const std::string& right) override;
+
+   protected:
+    virtual const std::string symbol() const override { return "and"; }
 };
 
 struct LogicalXor : public BinaryNode {
@@ -53,6 +67,9 @@ struct LogicalXor : public BinaryNode {
 
     virtual std::optional<std::string> binary_update(
         const std::string& left, const std::string& right) override;
+
+   protected:
+    virtual const std::string symbol() const override { return "xor"; }
 };
 
 }  // namespace nodes

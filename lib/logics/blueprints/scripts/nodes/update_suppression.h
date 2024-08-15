@@ -20,17 +20,25 @@ struct DetectChange : public Script::Node {
 
     virtual bool update(Node&) override;
 
+    virtual std::string debug() const override {
+        return "{CHANGE " + value_->debug() + "}";
+    }
+
    private:
     ChildReference value_;
 
     std::optional<std::string> previous_value_ =
-        "__ABSOLUTELY_QUACKING_IMPOSSIBLE_STRING__";
+        "__QUACKING_ABSOLUTELY_IMPOSSIBLE_STRING__";
 };
 
 struct RequireValidity : public Script::Node {
     RequireValidity(ChildReference value);
 
     virtual bool update(Node&) override;
+
+    virtual std::string debug() const override {
+        return "{VALIDITY " + value_->debug() + "}";
+    }
 
    private:
     ChildReference value_;

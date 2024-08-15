@@ -11,18 +11,29 @@
 
 #pragma once
 
+#include <set>
 #include <vector>
 
 #include "logics/blueprints/scripts/script.h"
+
+struct ParsedTree {
+    // Root nodes of a script
+    std::vector<std::shared_ptr<Script::Node>> roots{};
+
+    // All nodes of a script
+    std::vector<std::weak_ptr<Script::Node>> nodes{};
+
+    // Initial update queue
+    std::vector<std::weak_ptr<Script::Node>> queue{};
+
+    // Script variables
+    std::unordered_map<std::string, std::shared_ptr<Script::Node>> variables{};
+};
 
 /**
  * @brief Build an execution tree by a sequence of lexemes
  *
  * @param[in] lexemes lexeme sequence
- * @param[out] update_queue nodes which require an update after tree
- * construction
- * @return std::vector<Abstract<Script::Node>> roots of a tree
+ * @return ParsedTree
  */
-std::vector<Abstract<Script::Node>> build_exec_ast(
-    const std::vector<Lexeme::LexemePtr>& lexemes,
-    std::vector<Script::Node*>& update_queue);
+ParsedTree build_exec_ast(const std::vector<Lexeme::LexemePtr>& lexemes);

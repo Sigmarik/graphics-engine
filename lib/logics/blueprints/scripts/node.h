@@ -61,6 +61,15 @@ struct Script::Node {
      */
     void assign_scene(Scene& scene) { scene_ = &scene; }
 
+    /**
+     * @brief Return a string representation of the node
+     *
+     * @warning Intended for debug use only
+     *
+     * @return std::string
+     */
+    virtual std::string debug() const = 0;
+
    protected:
     using Update = Event<Node&>;
 

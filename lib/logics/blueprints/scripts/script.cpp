@@ -1,6 +1,7 @@
 #include "script.h"
 
 #include "parser/lexemizer.h"
+#include "parser/tree_builder.h"
 
 Script::Script(const std::string& string) : lexemes_(lexify(string)) {}
 
@@ -30,12 +31,17 @@ static void insert_guids(std::vector<Lexeme::LexemePtr>& lexemes,
 void Script::assemble(Scene& scene, const SubcomponentNameMap& name_map) {
     insert_guids(lexemes_, name_map);
 
-    for (auto lexeme : lexemes_) {
-        log_printf(STATUS_REPORTS, "status", "Lexeme %s\n",
-                   lexeme->dump().c_str());
+    ParsedTree tree = build_exec_ast(lexemes_);
+
+    nodes_ = tree.roots;
+
+    for (auto node : tree.nodes) {
+        node.lock()->assign_scene(scene);
     }
 
-    // TODO: Assemble and send initialization signals
+    for (auto node : tree.queue) {
+        node.lock()->update(*node.lock());
+    }
 }
 
 void Script::Node::subscribe_to(ChildReference other_node) {

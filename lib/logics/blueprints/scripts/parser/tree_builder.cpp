@@ -31,14 +31,18 @@ Constant: String or NamedComponent
 clang-format on
 */
 
-struct ParserData {
-    std::vector<std::weak_ptr<Script::Node>> queue{};
-    std::unordered_map<std::string, NodePtr> variables{};
-};
-
 #define PARSER(name)                                                        \
-    std::optional<NodePtr> name(ParserData& data, LexemeIterator& iterator, \
+    std::optional<NodePtr> name(ParsedTree& data, LexemeIterator& iterator, \
                                 LexemeIterator end)
+
+static NodePtr new_node(Script::Node* node,
+                        std::vector<std::weak_ptr<Script::Node>>& nodes) {
+    NodePtr result(node);
+
+    nodes.push_back(result);
+
+    return result;
+}
 
 using Parser = PARSER();
 
@@ -54,12 +58,30 @@ static Parser parse_value;
 static Parser parse_function;
 static Parser parse_constant;
 
-std::vector<Abstract<Script::Node>> build_exec_ast(
-    const std::vector<Lexeme::LexemePtr>& lexemes,
-    std::vector<Script::Node*>& update_queue) {
-    // TODO: Implement
+ParsedTree build_exec_ast(const std::vector<Lexeme::LexemePtr>& lexemes) {
+    ParsedTree tree;
 
-    return std::vector<Abstract<Script::Node>>();
+    auto iterator = lexemes.begin();
+    auto end = lexemes.end();
+
+    while (iterator != end) {
+        auto current = iterator;
+
+        auto variable = parse_variable_decl(tree, iterator, end);
+        if (variable) continue;
+
+        auto pipe = parse_pipe(tree, iterator, end);
+        if (!pipe) {
+            log_printf(ERROR_REPORTS, "error",
+                       "Failed to parse statement at line %lu, column %lu.\n",
+                       (*current)->get_line(), (*current)->get_column());
+            return {};
+        }
+
+        tree.roots.push_back(*pipe);
+    }
+
+    return tree;
 }
 
 #define EXPECT(type, message)                                           \
@@ -93,8 +115,11 @@ static PARSER(parse_pipe) {
 }
 
 static PARSER(parse_variable_decl) {
-    EXPECT(lexemes::String, "a variable name");
-    --iterator;
+    if (iterator == end && iterator + 1 == end) return {};
+
+    if (!iterator->as<lexemes::String>() ||
+        !(iterator + 1)->as<lexemes::MacroAssignment>())
+        return {};
 
     std::string name = iterator->as<lexemes::String>()->get_value();
 
@@ -104,6 +129,8 @@ static PARSER(parse_variable_decl) {
                    name.c_str());
         return {};
     }
+
+    iterator += 2;
 
     auto value = parse_statement(data, iterator, end);
     if (!value) return {};
@@ -116,6 +143,8 @@ static PARSER(parse_variable_decl) {
 static PARSER(parse_statement) {
     auto first = parse_logical(data, iterator, end);
     if (!first) return {};
+
+    if (iterator == end) return first;
 
     if (iterator->as<lexemes::ConditionalLeft>()) {
         ++iterator;
@@ -156,7 +185,8 @@ static PARSER(parse_logical) {
         auto secondary = parse_comparator(data, iterator, end);
         if (!secondary) return {};
 
-        initial = NodePtr(constructor->operator()(*initial, *secondary));
+        initial =
+            new_node(constructor->operator()(*initial, *secondary), data.nodes);
     }
 
     return initial;
@@ -182,7 +212,7 @@ static PARSER(parse_comparator) {
     auto secondary = parse_addition(data, iterator, end);
     if (!secondary) return {};
 
-    return NodePtr(constructor->operator()(*initial, *secondary));
+    return new_node(constructor->operator()(*initial, *secondary), data.nodes);
 }
 
 static PARSER(parse_addition) {
@@ -207,7 +237,8 @@ static PARSER(parse_addition) {
         auto secondary = parse_multiplication(data, iterator, end);
         if (!secondary) return {};
 
-        initial = NodePtr(constructor->operator()(*initial, *secondary));
+        initial =
+            new_node(constructor->operator()(*initial, *secondary), data.nodes);
     }
 
     return initial;
@@ -235,7 +266,8 @@ static PARSER(parse_multiplication) {
         auto secondary = parse_request(data, iterator, end);
         if (!secondary) return {};
 
-        initial = NodePtr(constructor->operator()(*initial, *secondary));
+        initial =
+            new_node(constructor->operator()(*initial, *secondary), data.nodes);
     }
 
     return initial;
@@ -259,11 +291,12 @@ static PARSER(parse_request) {
         auto secondary = parse_value(data, iterator, end);
         if (!secondary) return {};
 
-        initial = NodePtr(new nodes::OutputMethod(*initial, *secondary));
+        initial =
+            new_node(new nodes::OutputMethod(*initial, *secondary), data.nodes);
     }
 
     if (unary_minus) {
-        return NodePtr(new nodes::Negative(*initial));
+        return new_node(new nodes::Negative(*initial), data.nodes);
     }
 
     return initial;
@@ -286,7 +319,8 @@ static PARSER(parse_value) {
         if (!statement) return {};
 
         if (wrapper_constructor) {
-            return NodePtr(wrapper_constructor->operator()(*statement));
+            return new_node(wrapper_constructor->operator()(*statement),
+                            data.nodes);
         }
 
         return statement;
@@ -329,7 +363,7 @@ static PARSER(parse_function) {
     auto value = parse_value(data, iterator, end);
     if (!value) return {};
 
-    return NodePtr(constructor->operator()(*value));
+    return new_node(constructor->operator()(*value), data.nodes);
 }
 
 static PARSER(parse_constant) {
@@ -338,7 +372,8 @@ static PARSER(parse_constant) {
     NodePtr result;
 
     if (auto lexeme = iterator->as<lexemes::String>()) {
-        result = NodePtr(new nodes::StringConstant(lexeme->get_value()));
+        result = new_node(new nodes::StringConstant(lexeme->get_value()),
+                          data.nodes);
 
         // In case it is a name of a variable
         auto variable_find = data.variables.find(lexeme->get_value());
@@ -346,13 +381,16 @@ static PARSER(parse_constant) {
             return variable_find->second;
         }
     }
-
     if (auto lexeme = iterator->as<lexemes::NamedComponent>()) {
         std::string value = lexeme->get_guid().to_string();
-        result = NodePtr(new nodes::StringConstant(value));
+        result = new_node(new nodes::StringConstant(value), data.nodes);
     }
 
     if (!result) return {};
 
     data.queue.push_back(result);
+
+    ++iterator;
+
+    return result;
 }

@@ -13,7 +13,7 @@ GUID GUID::from_string(const std::string& string) {
 }
 
 std::string GUID::to_string() const {
-    static char output[17] = {};
+    static char output[64] = "";
     std::sprintf(output, GUID_ES, GUID_OUT(*this));
     return output;
 }
