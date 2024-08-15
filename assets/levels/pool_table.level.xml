@@ -17,7 +17,7 @@
 <script content='
 // This is a sample script.
 
-alpha::beta <- gamma + beta - @PoolTable
+alpha::beta <- gamma + beta - skip_invalid[@PoolTable + delta - xi] * lambda
 '/>
 
 <ball name="PlayerBall">

@@ -40,14 +40,15 @@ using Divide   = StrictLexeme<"/">;
 using Multiply = StrictLexeme<"*">;
 using Power    = StrictLexeme<"^">;
 
-using Sine     = StrictLexeme<"sin">;
-using Cosine   = StrictLexeme<"cos">;
-using Ln       = StrictLexeme<"ln", "loge">;
-using Log2     = StrictLexeme<"log2">;
-using Log10    = StrictLexeme<"log10">;
-using Absolute = StrictLexeme<"abs">;
-using Sign     = StrictLexeme<"sign">;
-using Length   = StrictLexeme<"len">;
+using Sine        = StrictLexeme<"sin">;
+using Cosine      = StrictLexeme<"cos">;
+using Ln          = StrictLexeme<"ln", "loge">;
+using Log2        = StrictLexeme<"log2">;
+using Log10       = StrictLexeme<"log10">;
+using Absolute    = StrictLexeme<"abs">;
+using Sign        = StrictLexeme<"sign">;
+using Length      = StrictLexeme<"len">;
+using SkipInvalid = StrictLexeme<"skip_invalid">;
 
 using Valid = StrictLexeme<"valid">;
 

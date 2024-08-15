@@ -111,7 +111,8 @@ static PARSER(parse_pipe) {
     auto value = parse_statement(data, iterator, end);
     if (!value) return {};
 
-    return std::make_shared<nodes::InputMethod>(*object, *channel, *value);
+    return new_node(new nodes::InputMethod(*object, *channel, *value),
+                    data.nodes);
 }
 
 static PARSER(parse_variable_decl) {
@@ -307,7 +308,7 @@ static PARSER(parse_value) {
 
     auto wrapper_constructor =
         Match<lexemes::BracketCurlyOp, lexemes::BracketSquareOp>::
-            To<Script::Node, nodes::DetectChange, nodes::RequireValidity>::
+            To<Script::Node, nodes::DetectChange, nodes::DetectSource>::
                 From<NodePtr>::constructor(&**iterator);
 
     bool just_separation = iterator->as<lexemes::BracketRoundOp>();
@@ -317,6 +318,25 @@ static PARSER(parse_value) {
 
         auto statement = parse_statement(data, iterator, end);
         if (!statement) return {};
+
+        if (iterator == end) {
+            log_printf(
+                ERROR_REPORTS, "error",
+                "Expected a closing bracket at the end of the script.\n");
+            return {};
+        }
+
+        // TODO: Check for the exact type of bracket.
+        if (!iterator->as<lexemes::BracketCurlyCl>() &&
+            !iterator->as<lexemes::BracketSquareCl>() &&
+            !iterator->as<lexemes::BracketRoundCl>()) {
+            log_printf(ERROR_REPORTS, "error",
+                       "Expected a closing bracket at line %lu, column %lu.\n",
+                       (*iterator)->get_line(), (*iterator)->get_column());
+            return {};
+        }
+
+        ++iterator;
 
         if (wrapper_constructor) {
             return new_node(wrapper_constructor->operator()(*statement),
@@ -343,18 +363,19 @@ static PARSER(parse_value) {
                    (*iterator)->get_line(), (*iterator)->get_column());
     }
 
-    return *constant;
+    return constant;
 }
 
 static PARSER(parse_function) {
     if (iterator == end) return {};
 
-    auto constructor = Match<lexemes::Sine, lexemes::Cosine, lexemes::Ln,
-                             lexemes::Log2, lexemes::Log10, lexemes::Absolute,
-                             lexemes::Sign, lexemes::Length>::
-        To<Script::Node, nodes::Sin, nodes::Cos, nodes::LogE, nodes::Log2,
-           nodes::Log10, nodes::Absolute, nodes::Sign, nodes::Length>::
-            From<NodePtr>::constructor(&**iterator);
+    auto constructor =
+        Match<lexemes::Sine, lexemes::Cosine, lexemes::Ln, lexemes::Log2,
+              lexemes::Log10, lexemes::Absolute, lexemes::Sign, lexemes::Length,
+              lexemes::SkipInvalid>::
+            To<Script::Node, nodes::Sin, nodes::Cos, nodes::LogE, nodes::Log2,
+               nodes::Log10, nodes::Absolute, nodes::Sign, nodes::Length,
+               nodes::RequireValidity>::From<NodePtr>::constructor(&**iterator);
 
     if (!constructor) return {};
 

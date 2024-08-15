@@ -44,4 +44,17 @@ struct RequireValidity : public Script::Node {
     ChildReference value_;
 };
 
+struct DetectSource : public Script::Node {
+    DetectSource(ChildReference value);
+
+    virtual bool update(Node&) override;
+
+    virtual std::string debug() const override {
+        return "{SOURCE " + value_->debug() + "}";
+    }
+
+   private:
+    ChildReference value_;
+};
+
 }  // namespace nodes

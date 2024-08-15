@@ -42,6 +42,11 @@ void Script::assemble(Scene& scene, const SubcomponentNameMap& name_map) {
     for (auto node : tree.queue) {
         node.lock()->update(*node.lock());
     }
+
+    for (auto pipe : nodes_) {
+        log_printf(STATUS_REPORTS, "status", "Pipe: %s.\n",
+                   pipe->debug().c_str());
+    }
 }
 
 void Script::Node::subscribe_to(ChildReference other_node) {

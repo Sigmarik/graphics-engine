@@ -12,7 +12,7 @@ static SceneComponent* node_to_component(const Script::Node::
     auto result = scene.get_component(object_guid);
     if (!result) {
         log_printf(WARNINGS, "warning",
-                   "Could not find a component with the guid\"%s\".\n",
+                   "Could not find a component with the guid \"%s\".\n",
                    string.value().c_str());
     }
 
@@ -31,14 +31,21 @@ bool nodes::OutputMethod::update(Node&) {
     assert(scene);
 
     std::optional<std::string> method_string = method_->get_value();
-    if (method_string) return false;
+    if (!method_string) return false;
 
     SceneComponent* component = node_to_component(object_, *scene);
     if (!component) return false;
 
     SceneComponent::
         Channel* channel = component->get_output(method_string.value());
-    if (!channel) return false;
+    if (!channel) {
+        log_printf(
+            WARNINGS, "warning",
+            "Component %s does not have an output channel named \"%s\".\n",
+            object_->get_value().value_or("NONE").c_str(),
+            method_string->c_str());
+        return false;
+    }
 
     update_listener_ = SceneComponent::Channel::
         Listener([this](const std::string& string) {
@@ -54,6 +61,8 @@ bool nodes::OutputMethod::update(Node&) {
 nodes::InputMethod::InputMethod(ChildReference object, ChildReference method,
                                 ChildReference value)
     : object_(object), method_(method), value_(value) {
+    subscribe_to(object_);
+    subscribe_to(method_);
     subscribe_to(value_);
 }
 
@@ -82,7 +91,14 @@ bool nodes::InputMethod::update(Node& initiator) {
 
     SceneComponent::Channel::
         Listener* listener = component->get_input(method_string.value());
-    if (!listener) return false;
+    if (!listener) {
+        log_printf(
+            WARNINGS, "warning",
+            "Component %s does not have an input channel named \"%s\".\n",
+            object_->get_value().value_or("NONE").c_str(),
+            method_string->c_str());
+        return false;
+    }
 
     output_.subscribe(*listener);
 

@@ -22,6 +22,7 @@ const std::vector<Lexeme::Constructor> LEXEME_CONSTRUCTORS = {
     lexemes::Multiply::try_construct,
     lexemes::Plus::try_construct,
     lexemes::Power::try_construct,
+
     lexemes::Absolute::try_construct,
     lexemes::Cosine::try_construct,
     lexemes::Length::try_construct,
@@ -30,6 +31,7 @@ const std::vector<Lexeme::Constructor> LEXEME_CONSTRUCTORS = {
     lexemes::Log2::try_construct,
     lexemes::Sign::try_construct,
     lexemes::Sine::try_construct,
+    lexemes::SkipInvalid::try_construct,
 
     lexemes::BracketRoundOp::try_construct,
     lexemes::BracketRoundCl::try_construct,

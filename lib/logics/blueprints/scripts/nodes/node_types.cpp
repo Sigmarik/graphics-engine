@@ -1,7 +1,7 @@
 #include "node_types.h"
 
 bool nodes::BinaryNode::update(Node &) {
-    if (!left_->get_value() || !right_->get_value()) {
+    if (!left_->has_value() || !right_->has_value()) {
         set_value({});
         return true;
     }
