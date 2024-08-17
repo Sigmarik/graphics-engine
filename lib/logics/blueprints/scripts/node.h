@@ -21,10 +21,10 @@ struct Script::Node {
 
     Node() {}
 
-    Node(const Node&) = default;
-    Node& operator=(const Node&) = default;
-    Node(Node&&) = default;
-    Node& operator=(Node&&) = default;
+    Node(const Node&) = delete;
+    Node& operator=(const Node&) = delete;
+    Node(Node&&) = delete;
+    Node& operator=(Node&&) = delete;
 
     virtual ~Node() = default;
 

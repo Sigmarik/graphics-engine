@@ -69,25 +69,31 @@ nodes::InputMethod::InputMethod(ChildReference object, ChildReference method,
 bool nodes::InputMethod::update(Node& initiator) {
     // Send the update event if only the value has changed.
     if (&initiator == value_.get()) {
+        if (!connected_) connect();
+
         std::optional<std::string> string = value_->get_value();
 
         if (string.has_value()) output_.trigger(string.value());
 
         return true;
+    } else {
+        connect();
     }
 
-    // Rewire the event otherwise.
+    return false;
+}
 
+void nodes::InputMethod::connect() {
     Scene* scene = get_scene();
     assert(scene);
 
     output_ = SceneComponent::Channel();
 
     std::optional<std::string> method_string = method_->get_value();
-    if (!method_string) return false;
+    if (!method_string) return;
 
     SceneComponent* component = node_to_component(object_, *scene);
-    if (!component) return false;
+    if (!component) return;
 
     SceneComponent::Channel::
         Listener* listener = component->get_input(method_string.value());
@@ -97,12 +103,12 @@ bool nodes::InputMethod::update(Node& initiator) {
             "Component %s does not have an input channel named \"%s\".\n",
             object_->get_value().value_or("NONE").c_str(),
             method_string->c_str());
-        return false;
+        return;
     }
 
     output_.subscribe(*listener);
 
-    return false;
+    connected_ = true;
 }
 
 nodes::StringConstant::StringConstant(const std::string& value) {

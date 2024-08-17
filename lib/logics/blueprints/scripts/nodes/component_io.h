@@ -45,9 +45,13 @@ struct InputMethod : public Script::Node {
     }
 
    private:
+    void connect();
+
     ChildReference object_;
     ChildReference method_;
     ChildReference value_;
+
+    bool connected_ = false;
 
     SceneComponent::Channel output_{};
 };

@@ -4,6 +4,7 @@ const std::vector<Lexeme::Constructor> LEXEME_CONSTRUCTORS = {
     lexemes::AssignmentLeft::try_construct,
     lexemes::Access::try_construct,
     lexemes::AssignmentRight::try_construct,
+
     lexemes::And::try_construct,
     lexemes::ConditionalLeft::try_construct,
     lexemes::ConditionalRight::try_construct,
@@ -42,4 +43,6 @@ const std::vector<Lexeme::Constructor> LEXEME_CONSTRUCTORS = {
 
     lexemes::NamedComponent::try_construct,
     lexemes::String::try_construct,
+
+    lexemes::MacroAssignment::try_construct,
 };

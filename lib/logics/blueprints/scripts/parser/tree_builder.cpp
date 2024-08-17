@@ -58,6 +58,19 @@ static Parser parse_value;
 static Parser parse_function;
 static Parser parse_constant;
 
+template <class T>
+static void remove_expired(std::vector<std::weak_ptr<T>>& vector) {
+    size_t left = 0;
+    for (size_t id = 0; id < vector.size(); ++id) {
+        if (vector[id].expired()) continue;
+
+        vector[left] = std::move(vector[id]);
+        ++left;
+    }
+
+    vector.resize(left);
+}
+
 ParsedTree build_exec_ast(const std::vector<Lexeme::LexemePtr>& lexemes) {
     ParsedTree tree;
 
@@ -80,6 +93,9 @@ ParsedTree build_exec_ast(const std::vector<Lexeme::LexemePtr>& lexemes) {
 
         tree.roots.push_back(*pipe);
     }
+
+    remove_expired(tree.nodes);
+    remove_expired(tree.queue);
 
     return tree;
 }
@@ -116,7 +132,7 @@ static PARSER(parse_pipe) {
 }
 
 static PARSER(parse_variable_decl) {
-    if (iterator == end && iterator + 1 == end) return {};
+    if (iterator == end || iterator + 1 == end) return {};
 
     if (!iterator->as<lexemes::String>() ||
         !(iterator + 1)->as<lexemes::MacroAssignment>())
@@ -124,14 +140,15 @@ static PARSER(parse_variable_decl) {
 
     std::string name = iterator->as<lexemes::String>()->get_value();
 
-    if (data.variables.find(name) == data.variables.end()) {
+    if (data.variables.find(name) != data.variables.end()) {
         log_printf(ERROR_REPORTS, "error",
                    "Variable with the name \"%s\" has already been declared.\n",
                    name.c_str());
         return {};
     }
 
-    iterator += 2;
+    ++iterator;
+    ++iterator;
 
     auto value = parse_statement(data, iterator, end);
     if (!value) return {};
@@ -283,7 +300,7 @@ static PARSER(parse_request) {
     if (!initial) return {};
 
     for (;;) {
-        if (iterator == end || iterator->as<lexemes::Access>() == nullptr) {
+        if (iterator == end || !iterator->as<lexemes::Access>()) {
             break;
         }
 
@@ -349,21 +366,20 @@ static PARSER(parse_value) {
     auto function_call = parse_function(data, iterator, end);
     if (function_call) return function_call;
 
+    auto constant = parse_constant(data, iterator, end);
+    if (constant) return constant;
+
     if (iterator == end) {
         log_printf(
             ERROR_REPORTS, "error",
             "Expected a value in the end of the script, got EOF instead.\n");
-        return {};
-    }
-
-    auto constant = parse_constant(data, iterator, end);
-    if (!constant) {
+    } else {
         log_printf(ERROR_REPORTS, "error",
                    "Expected a value at line %lu, column %lu.\n",
                    (*iterator)->get_line(), (*iterator)->get_column());
     }
 
-    return constant;
+    return {};
 }
 
 static PARSER(parse_function) {
@@ -399,6 +415,7 @@ static PARSER(parse_constant) {
         // In case it is a name of a variable
         auto variable_find = data.variables.find(lexeme->get_value());
         if (variable_find != data.variables.end()) {
+            ++iterator;
             return variable_find->second;
         }
     }

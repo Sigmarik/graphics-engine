@@ -14,10 +14,14 @@
 <blender_type value="MESH"></blender_type>
 </static_mesh>
 
+<shouter name="HelloWorldShouter"/>
+
 <script content='
 // This is a sample script.
 
-alpha::beta <- gamma + beta - skip_invalid[@PoolTable + delta - xi] * lambda
+message = "Hello from the scripting world! See the level script to learn where this message came from!"
+
+@HelloWorldShouter::shout <- message
 '/>
 
 <ball name="PlayerBall">

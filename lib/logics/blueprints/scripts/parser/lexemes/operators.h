@@ -27,6 +27,8 @@ using Not              = StrictLexeme<"!", "not">;
 using ConditionalLeft  = StrictLexeme<"?">;
 using ConditionalRight = StrictLexeme<":">;
 
+using MacroAssignment = StrictLexeme<"=">;
+
 using Less         = StrictLexeme<"<">;
 using Greater      = StrictLexeme<">">;
 using LessEq       = StrictLexeme<"<=">;
@@ -51,7 +53,5 @@ using Length      = StrictLexeme<"len">;
 using SkipInvalid = StrictLexeme<"skip_invalid">;
 
 using Valid = StrictLexeme<"valid">;
-
-using MacroAssignment = StrictLexeme<"=">;
 
 };  // namespace lexemes
