@@ -414,7 +414,7 @@ static PARSER(parse_constant) {
 
         // In case it is a name of a variable
         auto variable_find = data.variables.find(lexeme->get_value());
-        if (variable_find != data.variables.end()) {
+        if (!lexeme->is_exact() && variable_find != data.variables.end()) {
             ++iterator;
             return variable_find->second;
         }

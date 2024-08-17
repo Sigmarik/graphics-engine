@@ -40,8 +40,8 @@ static std::string view_to_string(const std::string_view& view,
     return result;
 }
 
-std::optional<Lexeme::LexemePtr> lexemes::String::try_construct(
-    std::string_view& view) {
+std::optional<Lexeme::LexemePtr> lexemes::String::
+    try_construct(std::string_view& view) {
     if (view.size() == 0) return {};
 
     bool inclusive = false;
@@ -59,7 +59,7 @@ std::optional<Lexeme::LexemePtr> lexemes::String::try_construct(
 
     view.remove_prefix(inclusive ? end_index + 1 : end_index);
 
-    return LexemePtr(new String(result));
+    return LexemePtr(new String(result, inclusive));
 }
 
 std::string lexemes::String::dump() const {
@@ -70,8 +70,8 @@ std::string lexemes::String::dump() const {
 
 static const char COMPONENT_NAME_IDENTIFIER = '@';
 
-std::optional<Lexeme::LexemePtr> lexemes::NamedComponent::try_construct(
-    std::string_view& view) {
+std::optional<Lexeme::LexemePtr> lexemes::NamedComponent::
+    try_construct(std::string_view& view) {
     if (view.length() == 0 || view[0] != COMPONENT_NAME_IDENTIFIER) return {};
 
     view.remove_prefix(1);

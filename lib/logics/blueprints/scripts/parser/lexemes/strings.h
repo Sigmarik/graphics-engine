@@ -17,16 +17,20 @@
 namespace lexemes {
 
 struct String : public Lexeme {
-    String(const std::string& value) : value_(value) {}
+    String(const std::string& value, bool exact)
+        : value_(value), exact_(exact) {}
 
     static std::optional<LexemePtr> try_construct(std::string_view& view);
 
     std::string get_value() const { return value_; }
+    bool        is_exact() const { return exact_; }
 
     virtual std::string dump() const override;
 
    private:
     std::string value_;
+
+    bool exact_;
 };
 
 struct NamedComponent : public Lexeme {
