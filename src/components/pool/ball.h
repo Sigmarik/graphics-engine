@@ -52,4 +52,8 @@ struct PoolBall : public SceneComponent {
 
     Subcomponent<PointLightComponent> shadow_{SubcomponentNone};
     Subcomponent<StaticMesh> model_{SubcomponentNone};
+
+    Channel knocked_down_{};
+
+    bool is_overboard_ = false;
 };

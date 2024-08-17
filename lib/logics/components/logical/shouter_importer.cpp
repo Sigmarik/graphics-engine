@@ -9,6 +9,8 @@
  *
  */
 
+#include <string>
+
 #include "logics/blueprints/component_importer.h"
 #include "shouter.h"
 #include "xml/data_extractors.h"
@@ -17,7 +19,9 @@ XML_BASED_IMPORTER(Producer, "shouter") {
     const char* name = nullptr;
     data.QueryStringAttribute("name", &name);
 
+    std::string name_str = name;
+
     return new Asset<Producer>([=](const glm::mat4& parent_tform) {
-        return Subcomponent<ShouterComponent>(name);
+        return Subcomponent<ShouterComponent>(name_str);
     });
 }

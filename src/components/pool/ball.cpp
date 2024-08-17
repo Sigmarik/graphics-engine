@@ -8,6 +8,8 @@
 
 PoolBall::PoolBall(const glm::vec3& position, const Model& model)
     : bouncer_(position, POOL_BALL_RADIUS) {
+    register_output("knocked_down", knocked_down_);
+
     shadow_ = new_child<PointLightComponent>(position, glm::vec3(-1.0) * 0.4f);
     model_ = new_child<StaticMesh>(model);
 
@@ -28,6 +30,12 @@ void PoolBall::phys_tick(double delta_time) {
         set_velocity(velocity -
                      glm::normalize(velocity) * (float)(FRICTION * delta_time));
     }
+
+    bool new_ob = !is_on_board();
+    if (!is_overboard_ && new_ob) {
+        knocked_down_.trigger("1");
+    }
+    is_overboard_ = new_ob;
 }
 
 void PoolBall::draw_tick(double delta_time, double subtick_time) {

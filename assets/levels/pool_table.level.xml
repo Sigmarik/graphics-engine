@@ -15,6 +15,7 @@
 </static_mesh>
 
 <shouter name="HelloWorldShouter"/>
+<shouter name="ResetShouter"/>
 
 <script content='
 // This is a sample script.
@@ -22,6 +23,7 @@
 message = "Hello from the scripting world! See the level script to learn where this message came from!"
 
 @HelloWorldShouter::shout <- message
+@ResetShouter::shout <- @PlayerBall.knocked_down ? "RESET!" : IMPOSSIBLE
 '/>
 
 <ball name="PlayerBall">

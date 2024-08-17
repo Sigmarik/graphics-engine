@@ -14,7 +14,7 @@ static size_t get_length(const std::string_view& view, bool inclusive) {
                 ++end_index;
             }
         } else {
-            if (!std::isalnum(current)) break;
+            if (!std::isalnum(current) && current != '_') break;
         }
 
         ++end_index;
