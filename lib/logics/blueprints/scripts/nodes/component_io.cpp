@@ -95,8 +95,8 @@ void nodes::InputMethod::connect() {
     SceneComponent* component = node_to_component(object_, *scene);
     if (!component) return;
 
-    SceneComponent::Channel::
-        Listener* listener = component->get_input(method_string.value());
+    SceneComponent::
+        InputChannel* listener = component->get_input(method_string.value());
     if (!listener) {
         log_printf(
             WARNINGS, "warning",

@@ -12,8 +12,10 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 #include <set>
 #include <stdexcept>
+#include <vector>
 
 /**
  * @brief Event class. Can be triggered to notify its subscribers and deliver a
@@ -23,6 +25,8 @@
  */
 template <class... Ts>
 struct Event final {
+    struct Multilistener;
+
     /**
      * @brief Event listener
      *
@@ -83,15 +87,48 @@ struct Event final {
          */
         bool is_subscribed() const { return event_ != nullptr; }
 
+        void subscribe_to(Event& event) { event.subscribe(*this); }
+
         void unsubscribe() {
             if (event_) event_->unsubscribe(*this);
         }
 
         friend Event;
+        friend Multilistener;
 
        private:
         std::function<void(Ts...)> action_;
         Event<Ts...>* event_ = nullptr;
+    };
+
+    struct Multilistener {
+        using Action = std::function<void(Ts...)>;
+
+        Multilistener(const Action& action)
+            : action_(std::make_shared<Action>(action)) {}
+
+        Multilistener(const Multilistener& other)
+            : action_(std::make_shared<Action>(*other.action_)),
+              listeners_(other.listeners_) {};
+
+        Multilistener& operator=(const Multilistener& other) {
+            action_ = std::make_shared<Action>(*other.action_);
+            listeners_ = other.listeners_;
+            return *this;
+        }
+
+        Multilistener(Multilistener&& other) = default;
+        Multilistener& operator=(Multilistener&& other) = default;
+
+        void subscribe_to(Event& event);
+
+        void unsubscribe_from(Event& event);
+
+        void unsubscribe() { listeners_.clear(); }
+
+       private:
+        std::shared_ptr<std::function<void(Ts...)>> action_;
+        std::vector<Event::Listener> listeners_{};
     };
 
     Event() = default;
@@ -119,6 +156,14 @@ struct Event final {
      * @param[in] subscriber
      */
     void unsubscribe(typename Event<Ts...>::Listener& subscriber);
+
+    void subscribe(typename Event<Ts...>::Multilistener& subscriber) {
+        subscriber.subscribe_to(*this);
+    }
+
+    void unsubscribe(typename Event<Ts...>::Multilistener& subscriber) {
+        subscriber.unsubscribe_from(*this);
+    }
 
     /**
      * @brief Trigger the event and send the payload to its subscribers
@@ -206,5 +251,24 @@ template <class... Ts>
 inline void Event<Ts...>::trigger(Ts... payload) {
     for (auto& subscriber : subscribers_) {
         subscriber->operator()(payload...);
+    }
+}
+
+template <class... Ts>
+inline void Event<Ts...>::Multilistener::subscribe_to(Event& event) {
+    unsubscribe_from(event);
+    listeners_.push_back(Listener([action = action_](Ts... args) {
+        action->operator()(std::forward<Ts...>(args)...);
+    }));
+    listeners_.back().subscribe_to(event);
+}
+
+template <class... Ts>
+inline void Event<Ts...>::Multilistener::unsubscribe_from(Event& event) {
+    for (auto& listener : listeners_) {
+        if (listener.event_ && listener.event_ != &event) continue;
+
+        std::swap(listener, listeners_.back());
+        listeners_.pop_back();
     }
 }

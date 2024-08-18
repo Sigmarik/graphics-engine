@@ -18,5 +18,5 @@ struct ShouterComponent : public SceneComponent {
 
    private:
     std::string name_;
-    Channel::Listener input_;
+    InputChannel input_;
 };

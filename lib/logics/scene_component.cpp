@@ -30,14 +30,15 @@ void SceneComponent::destroy(EndPlayReason reason) {
     if (scene_) scene_->delete_component(*this);
 }
 
-SceneComponent::Channel* SceneComponent::get_output(const std::string& name) {
+SceneComponent::OutputChannel* SceneComponent::
+    get_output(const std::string& name) {
     auto found = outputs_.find(name);
     if (found == outputs_.end()) return nullptr;
     return &found->second.of(this);
 }
 
-SceneComponent::Channel::Listener* SceneComponent::get_input(
-    const std::string& name) {
+SceneComponent::InputChannel* SceneComponent::
+    get_input(const std::string& name) {
     auto found = inputs_.find(name);
     if (found == inputs_.end()) return nullptr;
     return &found->second.of(this);
@@ -54,15 +55,15 @@ void SceneComponent::begin_play(Scene& scene) {
 }
 
 void SceneComponent::receive_phys_ticks() {
-    phys_ticker_ = TickEvent::Listener(
-        [this](double delta_time) { phys_tick(delta_time); });
+    phys_ticker_ = TickEvent::
+        Listener([this](double delta_time) { phys_tick(delta_time); });
 
     get_scene().get_phys_tick_event().subscribe(phys_ticker_);
 }
 
 void SceneComponent::receive_draw_ticks() {
-    draw_ticker_ =
-        SubtickEvent::Listener([this](double delta_time, double subtick_time) {
+    draw_ticker_ = SubtickEvent::
+        Listener([this](double delta_time, double subtick_time) {
             draw_tick(delta_time, subtick_time);
         });
 
@@ -73,23 +74,23 @@ void SceneComponent::register_output(const std::string& name, Channel& output) {
     outputs_.insert({name, RelativePtr<Channel>(&output, this)});
 }
 
-void SceneComponent::register_input(const std::string& name,
-                                    Channel::Listener& input) {
-    inputs_.insert({name, RelativePtr<Channel::Listener>(&input, this)});
+void SceneComponent::
+    register_input(const std::string& name, InputChannel& input) {
+    inputs_.insert({name, RelativePtr<InputChannel>(&input, this)});
 }
 
 void SceneComponent::attach(Subcomponent<SceneComponent> child) {
     WeakSubcomponent<SceneComponent> weak_child = child;
 
-    child->parent_destroyed_listener_ = Event<EndPlayReason>::Listener(
-        [self = weak_child](EndPlayReason reason) {
+    child->parent_destroyed_listener_ = Event<EndPlayReason>::
+        Listener([self = weak_child](EndPlayReason reason) {
             if (self.expired()) return;
 
             self.lock()->destroy(reason);
         });
 
-    child->parent_spawned_listener_ =
-        Event<Scene&>::Listener([self = weak_child](Scene& scene) {
+    child->parent_spawned_listener_ = Event<Scene&>::
+        Listener([self = weak_child](Scene& scene) {
             if (self.expired()) return;
 
             scene.add_component(self.lock());
