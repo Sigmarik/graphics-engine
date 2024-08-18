@@ -7,6 +7,11 @@ bl_info = {
 import bpy
 
 
+def print_script(script, object, file):
+    file.write("<script content='\n")
+    file.write("'/>\n")
+
+
 def print_matrix(name, matrix, file):
     letters = "xzyw"
 

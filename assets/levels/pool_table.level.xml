@@ -14,17 +14,6 @@
 <blender_type value="MESH"/>
 </static_mesh>
 
-<shouter name="SomeShouterComponent"/>
-
-<script content='
-// This is a sample script.
-
-message = "Hello from the scripting world! See the level script to learn where this message came from!"
-
-@SomeShouterComponent::shout <- message
-@SomeShouterComponent::shout <- @PlayerBall.knocked_down ? "RESET!" : IMPOSSIBLE
-'/>
-
 <ball name="PlayerBall">
 <transform>
 <dx  x="1.000000" z="0.000000" y="0.000000" w="0.000000"/>
@@ -108,6 +97,25 @@ message = "Hello from the scripting world! See the level script to learn where t
 <player value="False"/>
 <blender_type value="MESH"/>
 </ball>
+
+<shouter name="SomeShouterComponent">
+<transform>
+<dx  x="1.000000" z="0.000000" y="0.000000" w="0.000000"/>
+<dz  x="0.000000" z="1.000000" y="0.000000" w="0.000000"/>
+<dy  x="0.000000" z="-0.000000" y="1.000000" w="0.000000"/>
+<dw  x="-0.279144" z="-0.165206" y="0.549055" w="1.000000"/>
+</transform>
+<type value="shouter"/>
+<blender_type value="EMPTY"/>
+</shouter>
+
+<script content='# This is a sample script.
+
+message = "Hello from the scripting world! See the level script to learn where this message came from!"
+
+@SomeShouterComponent::shout <- message
+@SomeShouterComponent::shout <- @PlayerBall.knocked_down ? "RESET!" : IMPOSSIBLE
+'/>
 
 <ambient_light name="__WORLD_AMBIENT_LIGHT__">
 <color x="0.37625622749328613"y="0.3106955885887146"z="0.27561643719673157"/>
