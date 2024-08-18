@@ -6,10 +6,20 @@ bl_info = {
 
 import bpy
 
+from bpy_extras.io_utils import ExportHelper
+from bpy.props import StringProperty, BoolProperty, FloatVectorProperty
+from bpy.types import Operator, Text, Object
 
-def print_script(script, object, file):
-    file.write("<script content='\n")
-    file.write("'/>\n")
+def process_script(script, object):
+    string = script.as_string()
+    
+    for key, value in object.items():
+        if type(value) == Object:
+            string = string.replace("$" + key + "$", "@" + value.name)
+    
+    string = string.replace("$THIS$", "@" + object.name)
+    
+    return string
 
 
 def print_matrix(name, matrix, file):
@@ -27,6 +37,13 @@ def print_matrix(name, matrix, file):
 
 def write_option(key, value, file):
     tp = type(value)
+
+    if tp in [Text]:
+        return
+    
+    if tp == Object:
+        file.write('<%s value="%s"/>\n' % (key, value.name))
+        return
 
     if tp in [int, float, bool, str]:
         file.write('<%s value="%s"/>\n' % (key, str(value)))
@@ -47,8 +64,12 @@ def export_object(object, file):
 
     print_matrix("transform", object.matrix_world, file)
 
+    scripts = []
+
     for key, value in object.items():
         write_option(key, value, file)
+        if type(value) == Text and key.count("script") > 0:
+            scripts.append(process_script(value, object))
 
     if object.name[0] == "[":
         source = object.name[1 : object.name.rfind("]")]
@@ -65,6 +86,9 @@ def export_object(object, file):
     file.write('<blender_type value="%s"/>\n' % object.type)
 
     file.write("</%s>\n\n" % object["type"])
+    
+    for script in scripts:
+        file.write("<script content='%s'/>\n\n" % script)
 
 
 def write_some_data(context, filepath, settings):
@@ -90,11 +114,6 @@ def write_some_data(context, filepath, settings):
     f.close()
 
     return {"FINISHED"}
-
-
-from bpy_extras.io_utils import ExportHelper
-from bpy.props import StringProperty, BoolProperty, FloatVectorProperty
-from bpy.types import Operator
 
 
 class ExportSomeData(Operator, ExportHelper):

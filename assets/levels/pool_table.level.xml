@@ -106,6 +106,8 @@
 <dw  x="-0.279144" z="-0.165206" y="0.549055" w="1.000000"/>
 </transform>
 <type value="shouter"/>
+<PLAYER value="PlayerBall"/>
+<HW_SHOUTER value="SomeShouterComponent"/>
 <blender_type value="EMPTY"/>
 </shouter>
 
