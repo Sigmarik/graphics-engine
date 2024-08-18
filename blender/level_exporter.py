@@ -16,7 +16,7 @@ def print_matrix(name, matrix, file):
         file.write("<d%s " % letters[x])
         for y in range(4):
             file.write(' %s="%f"' % (letters[y], matrix[y][x]))
-        file.write("></d%s>\n" % letters[x])
+        file.write("/>\n")
     file.write("</" + str(name) + ">\n")
 
 
@@ -24,14 +24,14 @@ def write_option(key, value, file):
     tp = type(value)
 
     if tp in [int, float, bool, str]:
-        file.write('<%s value="%s"></%s>\n' % (key, str(value), key))
+        file.write('<%s value="%s"/>\n' % (key, str(value)))
         return
 
     letters = "xyzw"
     file.write("<%s " % key)
     for id in range(len(value)):
         file.write('%s="%s"' % (letters[id], str(value[id])))
-    file.write("></%s>\n" % key)
+    file.write("/>\n")
 
 
 def export_object(object, file):
@@ -53,11 +53,11 @@ def export_object(object, file):
         power = object.data.energy / 10.0
         color = object.data.color
         file.write(
-            """<color x="%f" y="%f" z="%f"></color>\n"""
+            """<color x="%f" y="%f" z="%f"/>\n"""
             % (color.r * power, color.g * power, color.b * power)
         )
 
-    file.write('<blender_type value="%s"></blender_type>\n' % object.type)
+    file.write('<blender_type value="%s"/>\n' % object.type)
 
     file.write("</%s>\n\n" % object["type"])
 
