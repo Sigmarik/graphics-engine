@@ -13,7 +13,7 @@ static void remove_whitespace(std::string_view& view) {
             view.remove_prefix(1);
         }
 
-        if (view.starts_with("//")) {
+        if (view.starts_with("//") || view.starts_with("#")) {
             has_changes = true;
             while (!view.empty() && view[0] != '\n') view.remove_prefix(1);
         }
