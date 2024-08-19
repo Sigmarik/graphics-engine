@@ -49,7 +49,7 @@ void DoorOnLevel16::update(double delta_time) {
 ```
 *The same high-level logics, but now defined appropriately with the high-level event routing system. Low-level `DoorComponent` now only needs to define its basic functionality and not to worry about its potential use cases.*
 
-## General structure
+## The general structure
 
 A typical script consists of a set of pipes - links between component's input and output channels.
 
@@ -75,7 +75,7 @@ Event payload gets transmitted through pipes and can be modified with operators.
 ```python
 @Shouter::shout <- @Player.name
 ```
-*If the "Player" component sends an event with some payload through the "name" channel, the souter will receive the same payload to its "shout" channel and, consequently, print it to the console.*
+*If the "Player" component sends an event with some payload through the "name" channel, the shouter will receive the same payload to its "shout" channel and, consequently, print it to the console.*
 
 ```python
 @Boss::damage <- @Player.hit_strength + @Environment.danger
@@ -174,6 +174,7 @@ An operator enclosed in curly brackets (`{}`) will not emit an event if the upda
  some_expression :  "Hello" -> "Hello" -> "World"
 {some_expression}:  "Hello"      ->       "World"
 ```
+*If `some_expression` sent three events, the first two of which had "Hello" for payload, then the expression `{some_expression}` would have emitted an update event only twice, when the payload of the underlying expression (e.g. `some_expression`) changed.*
 
 An operator enclosed in a pair of square brackets (`[]`) will erase its value after each update. Is is useful for tracking the origin of the event in operators with multiple inputs.
 
@@ -199,7 +200,7 @@ The pipe operator has the same requirements for its two left parts as the `.` op
 
 Before the pipe has an existing value on both of its left inputs, it holds the last event received from the right input. After that any event received from the right input without a valid channel binding to an input channel of a component will be ignored.
 
-## Conditional operator
+## The conditional operator
 
 The conditional operator `? :` only requires the existence of its leftmost value to be updated.
 
@@ -220,7 +221,7 @@ boss = @BossSpawner.last_spawned
 # Equivalent* of the `@NameShouter::shout <- @BossSpawner.last_spawned.name` pipe.
 # * - The order of constant initialization is different, as if the variable is defined, "@BossSpawner" and "last_spawned" constants are mentioned (and thus, updated earlier) than the "@NameShouter" and "shout" constants.
 
-# Pure strings (string constants not in quotation marks) are not ecognised as variable names
+# Pure strings (string constants not in quotation marks) are not recognized as variable names
 @SomeOtherShouter::shout <- "boss"
 ```
 
@@ -234,7 +235,7 @@ Here is a summary of all operators there are:
 - `A != B` - an inverted equality comparison (interprets inputs as strings),
 - `A || B` or `A or B` - an `or` logic gate (interprets inputs as booleans),
 - `A && B` or `A and B` - an `and` logic gate (interprets inputs as booleans),
-- `A ? B : C` - the conditional operator (see the [Conditional Operator](#conditional-operator) paragraph),
+- `A ? B : C` - the conditional operator (see the [Conditional Operator](#the-conditional-operator) paragraph),
 - `A > B`, `A < B`, `A >= B`, `A <= B` - comparison operators (interpret inputs as numbers),
 - `A + B`, `A - B`, `A / B`, `A * B` - arithmetic operators (interpret inputs as numbers),
 - `sin(X)`, `cos(X)` - trigonometric functions (interpret the input as a number),
