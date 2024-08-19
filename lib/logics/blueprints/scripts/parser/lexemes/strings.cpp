@@ -5,6 +5,8 @@
 static size_t get_length(const std::string_view& view, bool inclusive) {
     size_t end_index = 0;
 
+    bool only_numeric = true;
+
     while (end_index < view.size()) {
         char current = view[end_index];
 
@@ -14,7 +16,10 @@ static size_t get_length(const std::string_view& view, bool inclusive) {
                 ++end_index;
             }
         } else {
-            if (!std::isalnum(current) && current != '_') break;
+            if (!std::isalnum(current) && current != '_' &&
+                !(only_numeric && current == '.'))
+                break;
+            if (!std::isdigit(current)) only_numeric = false;
         }
 
         ++end_index;

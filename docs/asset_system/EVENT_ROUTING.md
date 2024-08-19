@@ -103,14 +103,13 @@ Not only events can be present in the right part of the pipes. Any string that i
 ```
 *In this example the string "10" is a constant. "@Boss", "@Player" and "strength" are constants as well, but we do not need to think about this for now.*
 
-Only alphanumeric characters and `_` can be present in bare, not enclosed in quotation mark string constants. If more complex expressions need to be present, quotation marks (`"..."`) should be used. Note that numbers with a decimal point need to be enclosed in quotation, as the `.` character will not be recognized as a part of a string.
+Only alphanumeric characters and `_` can be present in bare, not enclosed in quotation mark string constants. If more complex expressions need to be present, quotation marks (`"..."`) should be used.
+
+The decimal dot `.` can be a part of a string if all the prior characters of it were numeric.
 
 ```python
-# Incorrect, the '.' symbol will be recognized as a channel reference operator ".".
-@Boss::damage <- @Player.strength - 0.5
-
-# Correct
-@Boss::damage <- @Player.strength - "0.5"
+@Shouter::shout <- 715.0123  # <- "715.0123" is a single string
+@Shouter::shout <- 7u5.0123  # <- "7u5" and "0123" are two separate string constants separated by a channel reference operator `.`
 ```
 
 Special characters like line brakes and tabulation can be used directly in strings. Characters like `\` or `"` need a `\` character placed in front of them.
@@ -118,13 +117,13 @@ Special characters like line brakes and tabulation can be used directly in strin
 ```python
 @Shouter::shout <- "This is a very special string. It contains line breaks ->
     <- indentation
-and illegal characters like \" or \\"
+and illegal characters like \" and \\"
 
 # Standard output (console):
 #
 # Shouter: This is a very special string. It contains line breaks ->
 #     <- indentation
-# and illegal characters like " or \
+# and illegal characters like " and \
 #
 ```
 
