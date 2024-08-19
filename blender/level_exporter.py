@@ -10,15 +10,19 @@ from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, FloatVectorProperty
 from bpy.types import Operator, Text, Object
 
+
 def process_script(script, object):
     string = script.as_string()
-    
+
     for key, value in object.items():
         if type(value) == Object:
             string = string.replace("$" + key + "$", "@" + value.name)
-    
-    string = string.replace("$THIS$", "@" + object.name)
-    
+
+    try:
+        string = string.replace("$THIS$", "@" + object.name)
+    except:
+        pass
+
     return string
 
 
@@ -40,7 +44,7 @@ def write_option(key, value, file):
 
     if tp in [Text]:
         return
-    
+
     if tp == Object:
         file.write('<%s value="%s"/>\n' % (key, value.name))
         return
@@ -54,6 +58,29 @@ def write_option(key, value, file):
     for id in range(len(value)):
         file.write('%s="%s"' % (letters[id], str(value[id])))
     file.write("/>\n")
+
+
+def write_script(script, file):
+    file.write("<script content='%s'/>\n\n" % script)
+
+
+def export_world(world, file):
+    scripts = []
+    for key, value in world.items():
+        if type(value) == Text and key.count("script") > 0:
+            scripts.append(process_script(value, world))
+    for script in scripts:
+        write_script(script, file)
+    
+    if "type" not in world.keys():
+        return
+
+    file.write('<%s name="%s">\n' % (world["type"], world.name))
+    
+    for key, value in world.items():
+        write_option(key, value, file)    
+
+    file.write("</%s>\n\n" % world["type"])
 
 
 def export_object(object, file):
@@ -86,9 +113,9 @@ def export_object(object, file):
     file.write('<blender_type value="%s"/>\n' % object.type)
 
     file.write("</%s>\n\n" % object["type"])
-    
+
     for script in scripts:
-        file.write("<script content='%s'/>\n\n" % script)
+        write_script(script, file)
 
 
 def write_some_data(context, filepath, settings):
@@ -103,6 +130,8 @@ def write_some_data(context, filepath, settings):
 
     for obj in scene.objects:
         export_object(obj, f)
+
+    export_world(scene.world, f)
 
     if settings["al"]:
         f.write('<ambient_light name="__WORLD_AMBIENT_LIGHT__">\n')
