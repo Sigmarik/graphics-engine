@@ -28,13 +28,20 @@ XML_IMPORTER(Script, "script") {
     data.QueryStringAttribute("path", &path);
     data.QueryStringAttribute("file", &path);
 
-    if (path) return AssetImporter<Script, "script">::import(std::string(path));
-
     const char* content = nullptr;
 
     data.QueryStringAttribute("content", &content);
     data.QueryStringAttribute("script", &content);
     data.QueryStringAttribute("code", &content);
+
+    if (path && content) {
+        log_printf(WARNINGS, "warning",
+                   "Ambiguity while attempting to parse a script, both file "
+                   "linkage and direct content were specified. The linked file "
+                   "will be used.\n");
+    }
+
+    if (path) return AssetImporter<Script, "script">::import(std::string(path));
 
     if (!content) {
         log_printf(ERROR_REPORTS, "error",

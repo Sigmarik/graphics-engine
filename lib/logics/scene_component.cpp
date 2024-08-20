@@ -9,11 +9,10 @@ bool SceneComponent::is_valid() const { return alive_ && scene_ != nullptr; }
 
 Scene& SceneComponent::get_scene() const {
     if (scene_ == nullptr) {
-        log_printf(
-            ERROR_REPORTS, "error",
-            "Requesting a scene reference from an unbound object (GUID " GUID_ES
-            ")\n",
-            GUID_OUT(guid_));
+        log_printf(ERROR_REPORTS, "error",
+                   "Requesting a scene reference from an unbound object "
+                   "(GUID " GUID_FORMAT ")\n",
+                   GUID_OUT(guid_));
     }
 
     return *scene_;

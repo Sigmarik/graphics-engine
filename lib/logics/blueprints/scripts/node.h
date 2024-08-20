@@ -94,8 +94,6 @@ struct Script::Node {
      */
     Scene* get_scene() const { return scene_; }
 
-    virtual void on_assignment(Scene& scene) { scene_ = &scene; }
-
     /**
      * @brief Trigger the update event of the node
      *

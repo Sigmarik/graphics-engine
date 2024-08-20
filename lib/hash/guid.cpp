@@ -15,7 +15,7 @@ GUID GUID::from_string(const std::string& string) {
 
 std::string GUID::to_string() const {
     char output[33] = "";
-    std::sprintf(output, GUID_ES, GUID_OUT(*this));
+    std::sprintf(output, GUID_FORMAT, GUID_OUT(*this));
     return output;
 }
 
