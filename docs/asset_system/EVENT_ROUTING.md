@@ -226,7 +226,7 @@ boss = @BossSpawner.last_spawned
 
 ## List of operators and functions
 
-Here is a summary of all operators there are:
+These are the operators recognized by the script assembler:
 
 - `A :: B <- C` or `A -> B <- C` - a pipe from the expression `C` to the input channel `B` of the component `A`,
 - `A.B` - a reference to the channel `B` of the component `A`,
