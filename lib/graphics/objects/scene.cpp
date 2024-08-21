@@ -6,7 +6,7 @@
 #include "logger/logger.h"
 #include "managers/asset_manager.h"
 
-void RenderManager::render(RenderBundle& bundle) const {
+void RenderManager::render(RenderBundle& bundle) {
     if (viewpoint_ == nullptr) {
         log_printf(WARNINGS, "warning", "Render to an undefined viewpoint\n");
         return;
@@ -56,31 +56,31 @@ void RenderManager::render(RenderBundle& bundle) const {
     FlatRenderer::render();
 }
 
-void RenderManager::track_object(const Renderable& object) {
-    assert(objects_.count(&object) == 0);
-
-    objects_.insert(&object);
+void RenderManager::track_object(const Visual<Renderable>& object) {
+    objects_.push_back(object);
 }
 
-void RenderManager::untrack_object(const Renderable& object) {
-    assert(objects_.count(&object) > 0);
+void RenderManager::
+    render_everything(RenderBundle& bundle, const RenderInput& input,
+                      bool swap_buffers) {
+    size_t border = 0;
 
-    objects_.erase(&object);
-}
+    for (size_t id = 0; id < objects_.size(); ++id) {
+        if (objects_[id].expired()) continue;
 
-void RenderManager::render_everything(RenderBundle& bundle,
-                                      const RenderInput& input,
-                                      bool swap_buffers) const {
-    for (const Renderable* object : objects_) {
-        assert(object);
+        std::swap(objects_[id], objects_[border]);
+        const Renderable& object = *objects_[border].lock();
+        ++border;
 
-        if (object->is_hidden()) continue;
+        if (object.is_hidden()) continue;
 
-        int rendered = object->render(input, bundle);
+        int rendered = object.render(input, bundle);
 
         if (rendered && swap_buffers) {
             bundle.swap_frames();
             bundle.use();
         }
     }
+
+    objects_.resize(border);
 }

@@ -35,7 +35,7 @@ struct PoolGame : public Scene {
 
     void load();
 
-    Postprocessor contrast_vignette_;
+    Visual<Postprocessor> contrast_vignette_;
 
     Subcomponent<PointLightComponent> main_lamp_;
     Subcomponent<PointLightComponent> sun_;
