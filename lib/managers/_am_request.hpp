@@ -35,12 +35,14 @@ const T* AssetManager::request(const std::string& path,
 
     if (importer == nullptr) {
         if ((flags & RequestFlag::Silent) == 0) {
-            log_printf(ERROR_REPORTS, "error",
-                       "Failed to find importer matching the signature \"%s\" "
-                       "(type %0lX)\n",
-                       signature.c_str(), importer_id.type_id);
+            log_printf(
+                ERROR_REPORTS, "error",
+                "Failed to find an importer matching the signature \"%s\" "
+                "(type %0lX)\n",
+                signature.c_str(), importer_id.type_id);
             printf(
-                "ERROR: Failed to find importer for asset \"%s\", see logs for "
+                "ERROR: Failed to find an importer for asset \"%s\", see logs "
+                "for "
                 "more information.\n",
                 path.c_str());
         }
@@ -66,6 +68,10 @@ const T* AssetManager::request(const std::string& path,
     if (flags & RequestFlag::Rogue) {
         register_rogue(imported);
     } else {
+        if (assets_.count(identifier) > 0) {
+            delete assets_[identifier];
+        }
+
         assets_[identifier] = imported;
     }
 
@@ -128,6 +134,10 @@ const T* AssetManager::request(const tinyxml2::XMLElement& element,
     if (!identifier || (flags & RequestFlag::Rogue)) {
         register_rogue(imported);
     } else {
+        if (assets_.count(*identifier) > 0) {
+            delete assets_[*identifier];
+        }
+
         assets_[*identifier] = imported;
     }
 
