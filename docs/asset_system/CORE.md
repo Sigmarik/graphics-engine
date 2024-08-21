@@ -12,7 +12,7 @@ To request as asset of type `T` from the file `file`, the function `AssetManager
 const Model* model = AssetManager::request<Model>("path/to/the/model.model.xml");
 
 if (!model) {
-    //! Do something if the model could not be loaded.
+    //! Do something if the model can not be loaded.
 }
 ```
 
