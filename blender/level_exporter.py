@@ -6,6 +6,25 @@ bl_info = {
 
 import bpy
 
+from bpy_extras.io_utils import ExportHelper
+from bpy.props import StringProperty, BoolProperty, FloatVectorProperty
+from bpy.types import Operator, Text, Object
+
+
+def process_script(script, object):
+    string = script.as_string()
+
+    for key, value in object.items():
+        if type(value) == Object:
+            string = string.replace("$" + key + "$", "@" + value.name)
+
+    try:
+        string = string.replace("$THIS$", "@" + object.name)
+    except:
+        pass
+
+    return string
+
 
 def print_matrix(name, matrix, file):
     letters = "xzyw"
@@ -16,22 +35,52 @@ def print_matrix(name, matrix, file):
         file.write("<d%s " % letters[x])
         for y in range(4):
             file.write(' %s="%f"' % (letters[y], matrix[y][x]))
-        file.write("></d%s>\n" % letters[x])
+        file.write("/>\n")
     file.write("</" + str(name) + ">\n")
 
 
 def write_option(key, value, file):
     tp = type(value)
 
+    if tp in [Text]:
+        return
+
+    if tp == Object:
+        file.write('<%s value="%s"/>\n' % (key, value.name))
+        return
+
     if tp in [int, float, bool, str]:
-        file.write('<%s value="%s"></%s>\n' % (key, str(value), key))
+        file.write('<%s value="%s"/>\n' % (key, str(value)))
         return
 
     letters = "xyzw"
     file.write("<%s " % key)
     for id in range(len(value)):
         file.write('%s="%s"' % (letters[id], str(value[id])))
-    file.write("></%s>\n" % key)
+    file.write("/>\n")
+
+
+def write_script(script, file):
+    file.write("<script content='%s'/>\n\n" % script)
+
+
+def export_world(world, file):
+    scripts = []
+    for key, value in world.items():
+        if type(value) == Text and key.count("script") > 0:
+            scripts.append(process_script(value, world))
+    for script in scripts:
+        write_script(script, file)
+    
+    if "type" not in world.keys():
+        return
+
+    file.write('<%s name="%s">\n' % (world["type"], world.name))
+    
+    for key, value in world.items():
+        write_option(key, value, file)    
+
+    file.write("</%s>\n\n" % world["type"])
 
 
 def export_object(object, file):
@@ -42,8 +91,12 @@ def export_object(object, file):
 
     print_matrix("transform", object.matrix_world, file)
 
+    scripts = []
+
     for key, value in object.items():
         write_option(key, value, file)
+        if type(value) == Text and key.count("script") > 0:
+            scripts.append(process_script(value, object))
 
     if object.name[0] == "[":
         source = object.name[1 : object.name.rfind("]")]
@@ -53,13 +106,16 @@ def export_object(object, file):
         power = object.data.energy / 10.0
         color = object.data.color
         file.write(
-            """<color x="%f" y="%f" z="%f"></color>\n"""
+            """<color x="%f" y="%f" z="%f"/>\n"""
             % (color.r * power, color.g * power, color.b * power)
         )
 
-    file.write('<blender_type value="%s"></blender_type>\n' % object.type)
+    file.write('<blender_type value="%s"/>\n' % object.type)
 
     file.write("</%s>\n\n" % object["type"])
+
+    for script in scripts:
+        write_script(script, file)
 
 
 def write_some_data(context, filepath, settings):
@@ -75,6 +131,8 @@ def write_some_data(context, filepath, settings):
     for obj in scene.objects:
         export_object(obj, f)
 
+    export_world(scene.world, f)
+
     if settings["al"]:
         f.write('<ambient_light name="__WORLD_AMBIENT_LIGHT__">\n')
         write_option("color", scene.world.color, f)
@@ -85,11 +143,6 @@ def write_some_data(context, filepath, settings):
     f.close()
 
     return {"FINISHED"}
-
-
-from bpy_extras.io_utils import ExportHelper
-from bpy.props import StringProperty, BoolProperty, FloatVectorProperty
-from bpy.types import Operator
 
 
 class ExportSomeData(Operator, ExportHelper):

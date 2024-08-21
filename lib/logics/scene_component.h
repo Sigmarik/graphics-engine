@@ -28,7 +28,10 @@ struct Scene;
 struct SceneComponent {
     friend struct Scene;
 
+    //! TODO: Replace with multievents to allow for multiple senders.
     using Channel = Event<const std::string&>;
+    using OutputChannel = Channel;
+    using InputChannel = Channel::Multilistener;
 
     enum class EndPlayReason {
         Destroyed,
@@ -84,8 +87,8 @@ struct SceneComponent {
      */
     void destroy(EndPlayReason reason = EndPlayReason::Destroyed);
 
-    Channel* get_output(const std::string& name);
-    Channel::Listener* get_input(const std::string& name);
+    OutputChannel* get_output(const std::string& name);
+    InputChannel* get_input(const std::string& name);
 
     /**
      * @brief Capture component state for restoration
@@ -147,7 +150,7 @@ struct SceneComponent {
      * @param[in] name name of the channel
      * @param[in] output output channel member
      */
-    void register_output(const std::string& name, Channel& output);
+    void register_output(const std::string& name, OutputChannel& output);
 
     /**
      * @brief Register abstract input channel listener of the component
@@ -157,7 +160,7 @@ struct SceneComponent {
      * @param[in] name name of the channel
      * @param[in] input channel listener member
      */
-    void register_input(const std::string& name, Channel::Listener& input);
+    void register_input(const std::string& name, InputChannel& input);
 
     /**
      * @brief Construct a child object
@@ -168,8 +171,8 @@ struct SceneComponent {
      * @return Subcomponent<T> child
      */
     template <class T, class... Ts>
-    requires std::derived_from<T, SceneComponent> Subcomponent<T> new_child(
-        Ts&&... args);
+        requires std::derived_from<T, SceneComponent>
+    Subcomponent<T> new_child(Ts&&... args);
 
     /**
      * @brief Attach a child to the component
@@ -193,12 +196,12 @@ struct SceneComponent {
     Event<Scene&>::Listener parent_spawned_listener_{};
     Event<EndPlayReason>::Listener parent_destroyed_listener_{};
 
-    std::unordered_map<std::string, RelativePtr<Channel>> outputs_{};
-    std::unordered_map<std::string, RelativePtr<Channel::Listener>> inputs_{};
+    std::unordered_map<std::string, RelativePtr<OutputChannel>> outputs_{};
+    std::unordered_map<std::string, RelativePtr<InputChannel>> inputs_{};
 };
 
 template <class T, class... Ts>
-requires std::derived_from<T, SceneComponent>
+    requires std::derived_from<T, SceneComponent>
 inline Subcomponent<T> SceneComponent::new_child(Ts&&... args) {
     Subcomponent<T> child(args...);
 

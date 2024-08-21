@@ -15,6 +15,7 @@
 #include <map>
 #include <memory>
 
+#include "blueprints/scripts/script.h"
 #include "events.h"
 #include "graphics/objects/scene.h"
 #include "physics/level_geometry.h"
@@ -55,6 +56,8 @@ struct Scene {
 
     size_t get_component_count() const { return shared_components_.size(); }
 
+    std::shared_ptr<Script> add_script(const Script& script);
+
    private:
     /**
      * @brief Delete component from the scene in the next tick
@@ -74,6 +77,8 @@ struct Scene {
 
     LevelGeometry collision_;
     RenderManager renderer_ = RenderManager();
+
+    std::vector<std::shared_ptr<Script>> scripts_{};
 
     TickEvent phys_tick_{};
     SubtickEvent draw_tick_{};

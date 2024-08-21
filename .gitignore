@@ -7,7 +7,6 @@ logs/*
 run/*
 .vscode/*
 dev_docs/*
-scripts
 doxygen
 dev_log.md
 roadmap.md

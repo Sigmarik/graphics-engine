@@ -24,6 +24,7 @@
 
 #include "hash/murmur.h"
 #include "logger/logger.h"
+#include "templates/strings.h"
 
 struct ImporterId;
 struct AbstractAsset;
@@ -184,15 +185,6 @@ struct AbstractXMLImporter {
 
    private:
     const ImporterId id_;
-};
-
-template <size_t N>
-struct StringLiteral final {
-    constexpr StringLiteral(const char (&str)[N]) {
-        std::copy_n(str, N, value);
-    }
-
-    char value[N];
 };
 
 template <class ASSET_T, StringLiteral SIGNATURE>
