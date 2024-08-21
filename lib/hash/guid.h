@@ -15,7 +15,8 @@
 
 #include <string>
 
-#define GUID_FORMAT "%08lX%08lX"
+#define GUID_FMT_PRINTF "%08lX%08lX"
+#define GUID_FMT_SCANF "%016lX%016lX"
 #define GUID_OUT(guid) (guid).left, (guid).right
 
 struct GUID {

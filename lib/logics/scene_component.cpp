@@ -11,7 +11,7 @@ Scene& SceneComponent::get_scene() const {
     if (scene_ == nullptr) {
         log_printf(ERROR_REPORTS, "error",
                    "Requesting a scene reference from an unbound object "
-                   "(GUID " GUID_FORMAT ")\n",
+                   "(GUID " GUID_FMT_PRINTF ")\n",
                    GUID_OUT(guid_));
     }
 

@@ -8,14 +8,14 @@
 GUID GUID::from_string(const std::string& string) {
     GUID guid;
 
-    std::sscanf(string.c_str(), "%016lX%016lX", &guid.left, &guid.right);
+    std::sscanf(string.c_str(), GUID_FMT_SCANF, &guid.left, &guid.right);
 
     return guid;
 }
 
 std::string GUID::to_string() const {
     char output[33] = "";
-    std::sprintf(output, GUID_FORMAT, GUID_OUT(*this));
+    std::sprintf(output, GUID_FMT_PRINTF, GUID_OUT(*this));
     return output;
 }
 

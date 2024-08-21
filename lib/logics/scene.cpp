@@ -52,7 +52,7 @@ void Scene::process_deletions() {
 
         log_printf(ERROR_REPORTS, "error",
                    "Deleting a scene component not bound to the scene "
-                   "(GUID: " GUID_FORMAT ")\n",
+                   "(GUID: " GUID_FMT_PRINTF ")\n",
                    GUID_OUT(deleted));
     }
 }
