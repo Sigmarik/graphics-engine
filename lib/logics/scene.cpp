@@ -14,8 +14,8 @@ Scene::~Scene() {
     shared_components_.clear();
 }
 
-void Scene::for_each_component(
-    std::function<void(SceneComponent&)> function) const {
+void Scene::
+    for_each_component(std::function<void(SceneComponent&)> function) const {
     for (auto& [guid, component] : shared_components_) {
         function(*component);
     }
@@ -28,6 +28,11 @@ SceneComponent* Scene::get_component(GUID guid) {
     }
 
     return nullptr;
+}
+
+std::shared_ptr<Script> Scene::add_script(const Script& script) {
+    scripts_.push_back(std::make_shared<Script>(script));
+    return scripts_.back();
 }
 
 void Scene::delete_component(SceneComponent& component) {
@@ -45,11 +50,10 @@ void Scene::process_deletions() {
             continue;
         }
 
-        log_printf(
-            ERROR_REPORTS, "error",
-            "Deleting a scene component not bound to the scene (GUID: " GUID_ES
-            ")\n",
-            GUID_OUT(deleted));
+        log_printf(ERROR_REPORTS, "error",
+                   "Deleting a scene component not bound to the scene "
+                   "(GUID: " GUID_FMT_PRINTF ")\n",
+                   GUID_OUT(deleted));
     }
 }
 

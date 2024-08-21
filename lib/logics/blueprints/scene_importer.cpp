@@ -13,12 +13,21 @@
 #include "managers/importer.h"
 
 XML_BASED_IMPORTER(ExternalLevel, "level") {
-    ExternalLevel::Factory factory{};
+    ExternalLevel::Factory factory;
+    std::vector<Script> scripts;
 
     for (const tinyxml2::XMLElement* child = data.FirstChildElement();
          child != nullptr; child = child->NextSiblingElement()) {
         if (strcmp(child->Name(), "script") == 0) {
-            // TODO: Import and register a pipeliner script
+            const Script* script = AssetManager::request<Script>(*child);
+
+            if (!script) {
+                log_printf(ERROR_REPORTS, "error",
+                           "Failed to load an underlying script.\n");
+                continue;
+            }
+
+            scripts.push_back(*script);
 
             continue;
         }
@@ -46,5 +55,5 @@ XML_BASED_IMPORTER(ExternalLevel, "level") {
         factory.register_producer(name, *producer);
     }
 
-    return new Asset<ExternalLevel>(factory);
+    return new Asset<ExternalLevel>(factory, scripts);
 }

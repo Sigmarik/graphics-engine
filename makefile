@@ -151,3 +151,6 @@ doxy:
 
 cloc:
 	@cloc src lib gtest assets
+
+files:
+	@tree -I include -I doxygen
