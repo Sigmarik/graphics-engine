@@ -19,20 +19,19 @@ struct StaticMesh : public SceneComponent {
 
     void set_transform(const glm::mat4& transform);
     const glm::mat4& get_transform() const {
-        return model_.get_object_matrix();
+        return model_->get_object_matrix();
     }
 
-    ComplexModel& get_model() { return model_; }
-    const ComplexModel& get_model() const { return model_; }
+    ComplexModel& get_model() { return *model_; }
+    const ComplexModel& get_model() const { return *model_; }
     void set_model(const Model& model) { model_ = model; }
 
-    void set_hidden(bool hidden) { model_.set_hidden(hidden); }
-    bool get_hidden(bool hidden) const { return model_.is_hidden(); }
+    void set_hidden(bool hidden) { model_->set_hidden(hidden); }
+    bool get_hidden(bool hidden) const { return model_->is_hidden(); }
 
    protected:
     void begin_play(Scene& scene) override;
-    void end_play(EndPlayReason reason) override;
 
    private:
-    ComplexModel model_;
+    Visual<ComplexModel> model_;
 };
