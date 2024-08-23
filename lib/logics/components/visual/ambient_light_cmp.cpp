@@ -10,9 +10,3 @@ void AmbientLightComponent::begin_play(Scene& scene) {
 
     get_scene().get_renderer().track_object(light_);
 }
-
-void AmbientLightComponent::end_play(EndPlayReason reason) {
-    if (has_scene()) {
-        get_scene().get_renderer().untrack_object(light_);
-    }
-}

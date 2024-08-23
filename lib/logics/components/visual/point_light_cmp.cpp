@@ -3,8 +3,8 @@
 #include "logger/logger.h"
 #include "logics/scene.h"
 
-PointLightComponent::PointLightComponent(const glm::vec3& position,
-                                         const glm::vec3& color)
+PointLightComponent::
+    PointLightComponent(const glm::vec3& position, const glm::vec3& color)
     : position_(position), light_(color) {
     set_position(position_);
 }
@@ -19,17 +19,11 @@ void PointLightComponent::set_position(const glm::vec3& position) {
                                     position_.x, position_.y, position_.z, 1.0);
     // clang-format on
 
-    light_.set_object_matrix(transform);
+    light_->set_object_matrix(transform);
 }
 
 void PointLightComponent::begin_play(Scene& scene) {
     SceneComponent::begin_play(scene);
 
     get_scene().get_renderer().track_object(light_);
-}
-
-void PointLightComponent::end_play(EndPlayReason reason) {
-    if (has_scene()) {
-        get_scene().get_renderer().untrack_object(light_);
-    }
 }

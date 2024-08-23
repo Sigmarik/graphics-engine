@@ -9,11 +9,11 @@
  *
  */
 
-#ifndef __LIB_GRAPHICS_OBJECTS_SCENE_H
-#define __LIB_GRAPHICS_OBJECTS_SCENE_H
+#pragma once
 
 #include <glm/mat4x4.hpp>
-#include <set>
+#include <memory>
+#include <vector>
 
 #include "graphics/primitives/camera.h"
 #include "graphics/primitives/render_frame.h"
@@ -64,6 +64,15 @@ struct Renderable {
     bool hidden_ = false;
 };
 
+template <class T>
+struct Visual : public std::shared_ptr<T> {
+    using std::shared_ptr<T>::shared_ptr;
+
+    template <class... Ts>
+        requires std::constructible_from<T, Ts...>
+    Visual(Ts&&... args) : std::shared_ptr<T>(std::make_shared<T>(args...)) {}
+};
+
 struct RenderManager {
     RenderManager() = default;
     RenderManager(const RenderManager& instance) = default;
@@ -71,21 +80,18 @@ struct RenderManager {
 
     RenderManager& operator=(const RenderManager& instance) = default;
 
-    void render(RenderBundle& bundle) const;
+    void render(RenderBundle& bundle);
 
-    void track_object(const Renderable& object);
-    void untrack_object(const Renderable& object);
+    void track_object(const Visual<Renderable>& object);
 
     void set_viewpoint(Camera* camera) { viewpoint_ = camera; }
     Camera* get_viewpoint() const { return viewpoint_; }
 
    private:
     void render_everything(RenderBundle& bundle, const RenderInput& input,
-                           bool swap_buffers = true) const;
+                           bool swap_buffers = true);
 
     Camera* viewpoint_ = nullptr;
 
-    std::set<const Renderable*> objects_{};
+    std::vector<std::weak_ptr<Renderable>> objects_{};
 };
-
-#endif /* __LIB_GRAPHICS_OBJECTS_SCENE_H */
