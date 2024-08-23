@@ -1,6 +1,6 @@
 # Yet Another GameDev Framework
 
-![screenshot.png](docs/screenshot.png)
+![screenshot.png](docs/assets/screenshot.png)
 
 ## Description
 
@@ -42,11 +42,11 @@ After the build is complete, the executable with all corresponding assets can be
 
 ## Screenshots and snippets
 
-![asset_preview](docs/blend_preview_table.png)
+![asset_preview](docs/assets/blend_preview_table.png)
 
 *Fig. 1. A preview of the table asset in Blender, ready to be either directly imported into the program, or used in a bigger scene. Blue boxes represent exportable colliders.*
 
-![scene_preview](docs/blend_preview_scene.png)
+![scene_preview](docs/assets/blend_preview_scene.png)
 
 *Fig. 2. A preview of the entire pool table.*
 
