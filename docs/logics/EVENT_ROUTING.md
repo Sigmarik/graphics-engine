@@ -283,7 +283,7 @@ The `$THIS$` string always gets replaced with a reference to the component the s
 
 This feature is most useful for creating high-level Blender assets with included scripts. What it allows to do is to create an object with an abstract script, and then use the same script on multiple copies of the object.
 
-![blender_parameters](assets/blender_parameters.png)
+![blender_parameters](assets/blender_script_props.png)
 
 In this particular case, the world-referenced script
 

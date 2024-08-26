@@ -11,8 +11,8 @@ Binary input is an interface over a rebindable control scheme, with each having 
 Binary inputs can be requested from the asset system:
 
 ```C++
-// #include "input/binary_input.h"
-// #include "managers/asset_manager.h"
+#include "input/binary_input.h"
+#include "managers/asset_manager.h"
 
 const BinaryInput* jump_input = AssetManager::request<BinaryInput>("jump.keybind.xml");
 
@@ -37,7 +37,7 @@ bool just_stopped_jumping = jump_input->poll_released();
 Mouse movement input can be retrieved from the [`InputController`](./../../lib/input/input_controller.h) class.
 
 ```C++
-// #include "input/input_controller.h"
+#include "input/input_controller.h"
 
 double mouse_pos_x = InputController::get_mouse_x();
 double mouse_pos_y = InputController::get_mouse_y();

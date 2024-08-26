@@ -14,14 +14,16 @@
 #include "xml/data_extractors.h"
 
 XML_BASED_IMPORTER(Producer, "point_light") {
-    glm::vec3 position = demand<glm::vec3>(data, "position", glm::vec3(0.0));
+    glm::mat4 transform = demand<glm::mat4>(data, "transform", glm::mat4(1.0));
     glm::vec3 color = demand<glm::vec3>(data, "color", glm::vec3(0.0));
 
     float spread = request<float>(data, "spread", 3.0);
     float radius = request<float>(data, "radius", 0.0);
 
-    return new Asset<Producer>([=](const glm::mat4& transform) {
-        Subcomponent<PointLightComponent> light(position, color);
+    return new Asset<Producer>([=](const glm::mat4& root_transform) {
+        glm::vec4 position =
+            transform * root_transform * glm::vec4(0.0, 0.0, 0.0, 1.0);
+        Subcomponent<PointLightComponent> light(glm::vec3(position), color);
 
         light->set_spread(spread);
         light->set_radius(radius);
