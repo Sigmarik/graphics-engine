@@ -16,7 +16,7 @@ The first requirement is satisfied by all visual representations being derived f
 
 The second requirement can be satisfied by adding appropriate parameter setters to the object.
 
-## Adding a visual representation to a component
+## Adding a visual representation to a [component](./../logics/CORE.md)
 
 It is recommended to get familiar with the [logics system](./../logics/CORE.md) of the framework before trying to understand this paragraph.
 

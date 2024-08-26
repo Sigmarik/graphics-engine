@@ -8,7 +8,7 @@ It also provides abstractions for high-level game programming.
 
 Scene is a collection of scene representations from other systems and a set of components populating them.
 
-Scenes often represent a single game level or screen.
+Scenes often represent a single game level or a screen.
 
 ## [Components](./../../lib/logics/scene_component.h)
 
