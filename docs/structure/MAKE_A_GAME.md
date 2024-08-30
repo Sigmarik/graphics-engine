@@ -1,4 +1,4 @@
-# How to make a game using the framework
+# How to make a game with the framework
 
 This guide covers the basics of game development with the framework, as well as gives references to more detailed feature descriptions and usage guides.
 
