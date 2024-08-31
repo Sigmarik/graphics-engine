@@ -16,6 +16,8 @@ XML_BASED_IMPORTER(ExternalLevel, "level") {
     ExternalLevel::Factory factory;
     std::vector<Script> scripts;
 
+    const ExternalLevel::Metadata* meta = nullptr;
+
     for (const tinyxml2::XMLElement* child = data.FirstChildElement();
          child != nullptr; child = child->NextSiblingElement()) {
         if (strcmp(child->Name(), "script") == 0) {
@@ -32,6 +34,10 @@ XML_BASED_IMPORTER(ExternalLevel, "level") {
             continue;
         }
 
+        if (child->Attribute("type", "meta")) {
+            meta = AssetManager::request<ExternalLevel::Metadata>(*child);
+        }
+
         const char* name = nullptr;
         child->QueryStringAttribute("name", &name);
 
@@ -43,8 +49,8 @@ XML_BASED_IMPORTER(ExternalLevel, "level") {
             continue;
         }
 
-        const ExternalLevel::Factory::Producer* producer =
-            AssetManager::request<ExternalLevel::Factory::Producer>(*child);
+        const ExternalLevel::Factory::Producer* producer = AssetManager::
+            request<ExternalLevel::Factory::Producer>(*child);
 
         if (producer == nullptr) {
             ERROR("Failed to request a producer for an object type of \"%s\"\n",
@@ -55,5 +61,5 @@ XML_BASED_IMPORTER(ExternalLevel, "level") {
         factory.register_producer(name, *producer);
     }
 
-    return new Asset<ExternalLevel>(factory, scripts);
+    return new Asset<ExternalLevel>(factory, scripts, meta);
 }
