@@ -9,8 +9,7 @@
  *
  */
 
-#ifndef AMBIENT_LIGHT_H
-#define AMBIENT_LIGHT_H
+#pragma once
 
 #include "glm/vec3.hpp"
 #include "scene.h"
@@ -27,5 +26,3 @@ struct AmbientLight : public Renderable {
    private:
     glm::vec3 color_;
 };
-
-#endif

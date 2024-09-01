@@ -9,8 +9,7 @@
  *
  */
 
-#ifndef PHYS_OBJECT_H
-#define PHYS_OBJECT_H
+#pragma once
 
 #include <glm/vec3.hpp>
 
@@ -32,5 +31,3 @@ struct PhysObject {
         return get_rotation();
     }
 };
-
-#endif

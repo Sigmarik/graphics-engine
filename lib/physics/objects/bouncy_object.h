@@ -9,8 +9,7 @@
  *
  */
 
-#ifndef PHYSICS_BOUNCY_OBJECT_H
-#define PHYSICS_BOUNCY_OBJECT_H
+#pragma once
 
 #include "physics/collider.h"
 #include "physics/phys_object.h"
@@ -37,5 +36,3 @@ struct BouncyObject : public PhysObject {
     glm::vec3 rotation_ = glm::vec3(0.0, 0.0, 0.0);
     glm::vec3 velocity_ = glm::vec3(0.0, 0.0, 0.0);
 };
-
-#endif
