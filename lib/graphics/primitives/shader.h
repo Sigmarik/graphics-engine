@@ -9,8 +9,7 @@
  *
  */
 
-#ifndef SHADER_H
-#define SHADER_H
+#pragma once
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
@@ -40,5 +39,3 @@ struct Shader {
    private:
     GLuint id_ = 0;
 };
-
-#endif

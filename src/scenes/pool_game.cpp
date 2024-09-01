@@ -12,9 +12,6 @@ PoolGame::PoolGame()
 
       main_lamp_(glm::vec3(-1.0, 2.0, -1.2), glm::vec3(1.0, 1.0, 1.2)),
       sun_(glm::vec3(10.0, 7.0, 12.0), glm::vec3(1.5, 1.4, 1.0) * 40.0f) {
-    CollisionGroup level_colliders =
-        *AssetManager::request<CollisionGroup>("assets/models/table.obj");
-
     get_renderer().track_object(contrast_vignette_);
 
     add_component(main_lamp_);
@@ -36,8 +33,9 @@ void PoolGame::phys_tick(double delta_time) {
 
     player->set_input_lock(has_moving_parts());
 
-    static BinaryInput reset_input = *AssetManager::request<BinaryInput>(
-        "assets/controls/reset.keybind.xml");
+    static BinaryInput reset_input =
+        *AssetManager::
+            request<BinaryInput>("assets/controls/reset.keybind.xml");
 
     if (reset_input.poll_pushed()) {
         reset();
@@ -52,8 +50,8 @@ void PoolGame::reset() {
 }
 
 void PoolGame::load() {
-    const ExternalLevel* level = AssetManager::request<ExternalLevel>(
-        "assets/levels/pool_table.level.xml");
+    const ExternalLevel* level = AssetManager::
+        request<ExternalLevel>("assets/levels/pool_table.level.xml");
 
     if (level == nullptr) return;
 
