@@ -15,9 +15,7 @@
 #include "tinyxml2.h"
 
 struct GenericMeta : public ExternalLevel::Metadata {
-    GenericMeta(const tinyxml2::XMLElement& element) {
-        element.DeepClone(&data_);
-    }
+    GenericMeta(const tinyxml2::XMLElement& element);
 
     tinyxml2::XMLElement* xml() { return data_.FirstChildElement(); }
     const tinyxml2::XMLElement* xml() const {

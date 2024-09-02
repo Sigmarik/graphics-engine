@@ -19,7 +19,9 @@
 struct ExternalLevel final {
     using Factory = ComponentFactory<const glm::mat4&>;
 
-    struct Metadata {};
+    struct Metadata {
+        virtual ~Metadata() = default;
+    };
 
     ExternalLevel(const Factory& factory, const std::vector<Script>& scripts,
                   const Metadata* meta)

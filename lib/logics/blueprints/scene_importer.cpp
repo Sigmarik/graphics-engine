@@ -36,6 +36,7 @@ XML_BASED_IMPORTER(ExternalLevel, "level") {
 
         if (child->Attribute("type", "meta")) {
             meta = AssetManager::request<ExternalLevel::Metadata>(*child);
+            continue;
         }
 
         const char* name = nullptr;
