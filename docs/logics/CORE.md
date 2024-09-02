@@ -339,6 +339,90 @@ XML_IMPORTER(Producer, "my_component") {
 
 ```
 
+### Metadata
+
+Level descriptors can also contain metadata, which can be accessed before level being built on a scene.
+
+```XML
+<level>
+
+    <!-- . . . -->
+
+    <width_meta type="meta">
+        <!-- . . . -->
+    </width_meta>
+
+    <!-- . . . -->
+
+</level>
+```
+
+*An example of a level metadata block. `type="meta"` marks the meta block, `width_meta` defines its internal type (similar to component descriptor types).*
+
+To access level metadata, create an appropriate structure publicly inherited from the `ExternalLevel::Metadata` class and define its importer disguised as an `ExternalLevel::Metadata` importer.
+
+```C++
+#include "logics/blueprints/external_level.h"
+
+struct WidthMeta : public ExternalLevel::Metadata {
+    double width = 0.0;
+};
+```
+
+```C++
+XML_IMPORTER(ExternalLevel::Metadata, "width_meta") {
+    return new Asset<WidthMeta>(/* . . . */);
+}
+```
+
+```C++
+double width = 0.0;
+
+const WidthMeta* meta = level.meta<WidthMeta>();
+
+if (meta) width = meta->width;
+
+if (width > 10.0) {
+    level.build(scene, glm::mat4(1.0));
+}
+```
+
+There can only be one meta block per level. In case many blocks are present, only the last one is picked, with all the previous blocks being silently ignored.
+
+If the level does not contain even a single meta block, its `has_meta()` function will return `false`.
+
+```C++
+if (!level.has_meta()) {
+    // Absent meta block
+} else if (!level.meta<SomeMetaFormat>()) {
+    // Incorrect meta block format
+} else {
+    //  . . .
+}
+```
+
+#### [Generic metadata](./../../lib/logics/blueprints/generic_meta.h)
+
+There is a default metadata class available, though it is not recommended to use it for anything except debugging.
+
+```XML
+<generic_meta type="meta" something="anything">
+    <!-- Literally anything -->
+</generic_meta>
+```
+*`<generic_meta ...>` contents are not bound by any format.*
+
+```C++
+#include "logics/blueprints/generic_meta.h"
+
+const GenericMeta* meta = level.meta<GenericMeta>();
+
+if (meta) {
+    const char* anything = meta->xml()->Attribute("something");
+}
+```
+*The `GenericMeta` class acts as an XML mirror, storing a copy of the `<generic_meta ...>` element in itself.*
+
 ### Scripts
 
 High-level event management can be implemented on a scene with [event routing scripts](./EVENT_ROUTING.md).
