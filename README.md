@@ -14,7 +14,7 @@ Its features include, but not limited to:
 - [Hierarchical scene organization system](./docs/logics/CORE.md),
 - [Robust Blender addon for level creation](./docs/logics/BLENDER_ADDON.md),
 - [Asset-based user input system](./docs/input/CORE.md) (soon to be enhanced with an event-driven interface).
-- [High-level scripting language for sequence programming](docs/asset_system/EVENT_ROUTING.md),
+- [High-level scripting language for sequence programming](docs/asset_system/EVENT_ROUTING.md).
 
 Work-in-progress features:
 
