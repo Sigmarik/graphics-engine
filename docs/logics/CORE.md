@@ -357,7 +357,7 @@ Level descriptors can also contain metadata, which can be accessed before level 
 </level>
 ```
 
-*An example of a level metadata block. `type="meta"` marks the meta block, `width_meta` defines its internal type (similar to component descriptor types).*
+*An example of a level metadata block. The `type="meta"` part marks the meta block, `width_meta` defines its internal type (similar to component descriptor types).*
 
 To access level metadata, create an appropriate structure publicly inherited from the `ExternalLevel::Metadata` class and define its importer disguised as an `ExternalLevel::Metadata` importer.
 
@@ -418,7 +418,9 @@ There is a default metadata class available, though it is not recommended to use
 const GenericMeta* meta = level.meta<GenericMeta>();
 
 if (meta) {
-    const char* anything = meta->xml()->Attribute("something");
+    tinyxml2::XMLElement data = meta->xml();
+
+    //  . . .
 }
 ```
 *The `GenericMeta` class acts as an XML mirror, storing a copy of the `<generic_meta ...>` element in itself.*
@@ -483,13 +485,18 @@ Any object having a `type` custom property will be added to the level descriptor
 
 ![properties](./assets/blender_properties.png)
 
+World properties will be exported as metadata if the `type` field is specified.
+
+![world_properties](./assets/blender_world_props.png)
+
 #### Implicit properties
 
 As well as exporting all custom properties, the addon adds a few of its own to every exportable object.
 
 - `transform` - transform matrix of the object,
-- `blender_type` - type of the object,
-- (only for lights) `color` - light color multiplied by intensity.
+- `blender_type` - type of the object in Blender format (e.g. MESH, CURVE, LIGHT),
+- (only for lights) `color` - light color multiplied by intensity,
+- (attribute) `name` - object's name.
 
 Addition of an ambient light component with the same color as the world color is also possible and can be enabled on the export options screen.
 
