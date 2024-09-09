@@ -35,6 +35,8 @@ lib/logics/scene.o
 lib/logics/scene_component.o
 lib/logics/blueprints/external_level.o
 lib/logics/blueprints/scene_importer.o
+lib/logics/blueprints/generic_meta.o
+lib/logics/blueprints/generic_meta_importer.o
 lib/logics/components/visual/static_mesh.o
 lib/logics/components/visual/static_mesh_importer.o
 lib/logics/components/visual/point_light_cmp.o

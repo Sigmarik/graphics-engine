@@ -75,7 +75,7 @@ def export_world(world, file):
     if "type" not in world.keys():
         return
 
-    file.write('<%s name="%s">\n' % (world["type"], world.name))
+    file.write('<%s name="%s" type="meta">\n' % (world["type"], world.name))
     
     for key, value in world.items():
         write_option(key, value, file)    

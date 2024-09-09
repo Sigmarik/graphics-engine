@@ -41,9 +41,8 @@ const T* AssetManager::request(const std::string& path,
                 "(type %0lX)\n",
                 signature.c_str(), importer_id.type_id);
             printf(
-                "ERROR: Failed to find an importer for asset \"%s\", see logs "
-                "for "
-                "more information.\n",
+                "ERROR: Failed to find an importer for the asset at \"%s\", "
+                "see logs for more information.\n",
                 path.c_str());
         }
 
@@ -79,16 +78,16 @@ const T* AssetManager::request(const std::string& path,
 }
 
 template <typename T>
-const T* AssetManager::request(const tinyxml2::XMLElement& element,
-                               std::optional<std::string_view> handle,
-                               RequestFlags flags) {
+const T* AssetManager::
+    request(const tinyxml2::XMLElement& element,
+            std::optional<std::string_view> handle, RequestFlags flags) {
     const char* tag = element.Name();
 
     std::optional<AssetManager::AssetRequest> identifier{};
 
     if (handle) {
-        identifier = AssetManager::AssetRequest(std::string(*handle),
-                                                typeid(T).hash_code());
+        identifier = AssetManager::
+            AssetRequest(std::string(*handle), typeid(T).hash_code());
     }
 
     if (identifier && (flags & RequestFlag::Reimport) == 0) {
@@ -103,13 +102,14 @@ const T* AssetManager::request(const tinyxml2::XMLElement& element,
 
     if (importer == nullptr) {
         if ((flags & RequestFlag::Silent) == 0) {
-            log_printf(ERROR_REPORTS, "error",
-                       "Failed to find importer matching the signature \"%s\" "
-                       "(type %0lX)\n",
-                       tag, importer_id.type_id);
+            log_printf(
+                ERROR_REPORTS, "error",
+                "Failed to find an importer matching the signature \"%s\" "
+                "(type %0lX)\n",
+                tag, importer_id.type_id);
             printf(
-                "ERROR: Failed to find importer for xml asset with tag \"%s\", "
-                "see logs for more information.\n",
+                "ERROR: Failed to find an importer for an xml asset with the "
+                "tag \"%s\", see logs for more information.\n",
                 tag);
         }
 
