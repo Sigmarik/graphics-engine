@@ -28,6 +28,12 @@ static const unsigned char X_MASK = 0x01;
 static const unsigned char Y_MASK = 0x02;
 static const unsigned char Z_MASK = 0x04;
 
+enum class IntersectionType {
+    OVERLAP,
+    OVERSET,
+    UNDERSET,
+};
+
 struct Box {
     Box() = default;
     Box(const glm::vec3& center, const glm::vec3& size)
@@ -50,6 +56,8 @@ struct Box {
     Plane get_face(unsigned id, unsigned char slice_mask) const;
     Plane get_slice(unsigned id) const;
 
+    bool operator==(const Box& other) const;
+
    private:
     glm::vec3 center_ = glm::vec3(0.0, 0.0, 0.0);
     glm::vec3 size_ = glm::vec3(1.0, 1.0, 1.0);
@@ -57,10 +65,13 @@ struct Box {
 
 bool intersect(const Box& alpha, const Box& beta);
 
+bool match_intersection(const Box& alpha, const Box& beta,
+                        IntersectionType intersection);
+
 struct Sphere {
     Sphere() = default;
     Sphere(glm::vec3 center, double radius)
-        : center_(center), radius_(radius){};
+        : center_(center), radius_(radius) {};
 
     glm::vec3 get_center() const { return center_; };
     void set_center(const glm::vec3& center) { center_ = center; }
