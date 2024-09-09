@@ -6,14 +6,33 @@
 
 bool intersect(const Box& alpha, const Box& beta) {
     glm::vec3 delta = alpha.get_center() - beta.get_center();
-    glm::vec3 sum_size = alpha.get_size() + beta.get_size();
+    glm::vec3 sum_size = (alpha.get_size() + beta.get_size()) / 2.0f;
     return abs(delta.x) < sum_size.x && abs(delta.y) < sum_size.y &&
            abs(delta.z) < sum_size.z;
 }
 
+bool match_intersection(const Box& alpha, const Box& beta,
+                        IntersectionType intersection) {
+    switch (intersection) {
+        case IntersectionType::OVERSET: {
+            return alpha.contains(beta);
+        } break;
+        case IntersectionType::UNDERSET: {
+            return beta.contains(alpha);
+        } break;
+        case IntersectionType::OVERLAP: {
+            return intersect(alpha, beta);
+        } break;
+        default:
+            return false;
+    }
+
+    return false;
+}
+
 bool Box::contains(const Box& box) const {
     glm::vec3 delta = center_ - box.center_;
-    glm::vec3 size_diff = size_ - box.size_;
+    glm::vec3 size_diff = (size_ - box.size_) / 2.0f;
     return abs(delta.x) <= size_diff.x && abs(delta.y) <= size_diff.y &&
            abs(delta.z) <= size_diff.z;
 }
@@ -98,6 +117,10 @@ Plane Box::get_slice(unsigned id) const {
         .origin = center_ + normal * size_ / 2.0f,
         .normal = normal,
     };
+}
+
+bool Box::operator==(const Box& other) const {
+    return center_ == other.center_ && size_ == other.size_;
 }
 
 bool intersect(const Sphere& alpha, const Sphere& beta) {
