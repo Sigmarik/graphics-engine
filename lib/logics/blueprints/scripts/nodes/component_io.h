@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "logics/blueprints/scripts/node.h"
+#include "logics/scene_component.h"
 
 namespace nodes {
 

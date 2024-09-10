@@ -22,8 +22,9 @@
 #include "primitives.h"
 
 template <class T>
-struct BoxField {
-    BoxField(const Box& boundary, const glm::vec3& cell_size);
+struct BoxField final {
+    BoxField(const Box& boundary = Box(glm::vec3(0.0f), glm::vec3(1.0f)),
+             const glm::vec3& cell_size = glm::vec3(1.0f));
 
     void register_object(const T& object, const Box& box);
     void move(const T& object, const Box& new_box);

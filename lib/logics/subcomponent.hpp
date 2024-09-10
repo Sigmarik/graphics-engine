@@ -32,8 +32,8 @@ static const struct {
  *
  * @tparam T component type
  */
-template <class T>
-requires std::derived_from<T, SceneComponent>
+template <class T = SceneComponent>
+    requires std::derived_from<T, SceneComponent>
 struct Subcomponent final {
     template <class U>
     friend struct Subcomponent;
@@ -45,7 +45,7 @@ struct Subcomponent final {
      * @brief Construct a subcomponent with undefined value
      *
      */
-    Subcomponent(decltype(SubcomponentNone)){};
+    Subcomponent(decltype(SubcomponentNone)) {};
 
     template <class U, class V>
     friend Subcomponent<U> static_subcomponent_cast(
@@ -60,7 +60,7 @@ struct Subcomponent final {
         const Subcomponent<V>& component);
 
     template <class... Ts>
-    requires std::constructible_from<T, Ts&&...>
+        requires std::constructible_from<T, Ts&&...>
     explicit Subcomponent(Ts&&... args)
         : ptr_(std::make_shared<T>(std::forward<Ts>(args)...)) {}
 
@@ -68,23 +68,23 @@ struct Subcomponent final {
     T* operator->() const { return ptr_.operator->(); }
 
     template <class U>
-    requires std::derived_from<U, T> Subcomponent(const Subcomponent<U>& other)
-        : ptr_(other.ptr_) {}
+        requires std::derived_from<U, T>
+    Subcomponent(const Subcomponent<U>& other) : ptr_(other.ptr_) {}
 
     template <class U>
-    requires std::derived_from<U, T> Subcomponent(Subcomponent<U>&& other)
-        : ptr_(std::move(other.ptr_)) {}
+        requires std::derived_from<U, T>
+    Subcomponent(Subcomponent<U>&& other) : ptr_(std::move(other.ptr_)) {}
 
     template <class U>
-    requires std::derived_from<U, T> Subcomponent& operator=(
-        const Subcomponent<U>& other) {
+        requires std::derived_from<U, T>
+    Subcomponent& operator=(const Subcomponent<U>& other) {
         ptr_ = other.ptr_;
         return *this;
     }
 
     template <class U>
-    requires std::derived_from<U, T> Subcomponent& operator=(
-        Subcomponent&& other) {
+        requires std::derived_from<U, T>
+    Subcomponent& operator=(Subcomponent&& other) {
         ptr_ = std::move(other.ptr_);
         return *this;
     }
@@ -93,9 +93,8 @@ struct Subcomponent final {
 
    private:
     template <class U>
-    requires std::derived_from<U, T> Subcomponent(
-        const std::shared_ptr<U>& component)
-        : ptr_(component) {}
+        requires std::derived_from<U, T>
+    Subcomponent(const std::shared_ptr<U>& component) : ptr_(component) {}
 
     std::shared_ptr<T> ptr_{};
 };
@@ -127,7 +126,7 @@ inline Subcomponent<U> asserting_subcomponent_cast(
  * @tparam T component type
  */
 template <class T = SceneComponent>
-requires std::derived_from<T, SceneComponent>
+    requires std::derived_from<T, SceneComponent>
 struct WeakSubcomponent final {
     WeakSubcomponent() = default;
 
@@ -138,37 +137,35 @@ struct WeakSubcomponent final {
     bool expired() const { return ptr_.expired(); }
 
     template <class U>
-    requires std::derived_from<U, T> WeakSubcomponent(
-        const WeakSubcomponent<U>& other)
-        : ptr_(other.ptr_) {}
+        requires std::derived_from<U, T>
+    WeakSubcomponent(const WeakSubcomponent<U>& other) : ptr_(other.ptr_) {}
 
     template <class U>
-    requires std::derived_from<U, T> WeakSubcomponent(
-        WeakSubcomponent<U>&& other)
+        requires std::derived_from<U, T>
+    WeakSubcomponent(WeakSubcomponent<U>&& other)
         : ptr_(std::move(other.ptr_)) {}
 
     template <class U>
-    requires std::derived_from<U, T> WeakSubcomponent(
-        const Subcomponent<U>& other)
-        : ptr_(other.ptr_) {}
+        requires std::derived_from<U, T>
+    WeakSubcomponent(const Subcomponent<U>& other) : ptr_(other.ptr_) {}
 
     template <class U>
-    requires std::derived_from<U, T> WeakSubcomponent& operator=(
-        const WeakSubcomponent<U>& other) {
+        requires std::derived_from<U, T>
+    WeakSubcomponent& operator=(const WeakSubcomponent<U>& other) {
         ptr_ = other.ptr_;
         return *this;
     }
 
     template <class U>
-    requires std::derived_from<U, T> WeakSubcomponent& operator=(
-        WeakSubcomponent&& other) {
+        requires std::derived_from<U, T>
+    WeakSubcomponent& operator=(WeakSubcomponent&& other) {
         ptr_ = std::move(other.ptr_);
         return *this;
     }
 
     template <class U>
-    requires std::derived_from<U, T> WeakSubcomponent& operator=(
-        const Subcomponent<U>& other) {
+        requires std::derived_from<U, T>
+    WeakSubcomponent& operator=(const Subcomponent<U>& other) {
         ptr_ = other.ptr_;
         return *this;
     }

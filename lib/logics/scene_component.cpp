@@ -43,6 +43,10 @@ SceneComponent::InputChannel* SceneComponent::
     return &found->second.of(this);
 }
 
+void SceneComponent::use_positional_layer(Scene::ComponentLayerId layer) {
+    registration_layers_.insert(layer);
+}
+
 void SceneComponent::begin_play(Scene& scene) {
     // Double begin_play call
     assert(!alive_);
@@ -54,8 +58,13 @@ void SceneComponent::begin_play(Scene& scene) {
 }
 
 void SceneComponent::receive_phys_ticks() {
-    phys_ticker_ = TickEvent::
-        Listener([this](double delta_time) { phys_tick(delta_time); });
+    phys_ticker_ = TickEvent::Listener([this](double delta_time) {
+        phys_tick(delta_time);
+        if (auto_update_box_ || box_update_scheduled_) {
+            update_box();
+            box_update_scheduled_ = false;
+        }
+    });
 
     get_scene().get_phys_tick_event().subscribe(phys_ticker_);
 }
@@ -97,4 +106,8 @@ void SceneComponent::attach(Subcomponent<SceneComponent> child) {
 
     get_destroyed_event().subscribe(child->parent_destroyed_listener_);
     get_spawned_event().subscribe(child->parent_spawned_listener_);
+}
+
+void SceneComponent::update_box() const {
+    get_scene().update_boxable_component(*this);
 }
