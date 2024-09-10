@@ -17,9 +17,13 @@
 
 #include "blueprints/scripts/script.h"
 #include "events.h"
+#include "geometry/box_search.hpp"
 #include "graphics/objects/scene.h"
+#include "hash/guid.h"
 #include "physics/level_geometry.h"
-#include "scene_component.h"
+#include "subcomponent.hpp"
+
+struct SceneComponent;
 
 struct Scene {
     friend struct SceneComponent;
@@ -58,6 +62,12 @@ struct Scene {
 
     std::shared_ptr<Script> add_script(const Script& script);
 
+    using ComponentLayerId = GUID;
+
+    std::set<GUID> get_components_in_area(
+        const Box& box, ComponentLayerId layer,
+        IntersectionType intersection = IntersectionType::OVERLAP) const;
+
    private:
     /**
      * @brief Delete component from the scene in the next tick
@@ -70,7 +80,14 @@ struct Scene {
     void delete_component(SceneComponent& component);
     void process_deletions();
 
+    void add_boxable_component(const SceneComponent& component);
+    void remove_boxable_component(const SceneComponent& component);
+
+    void update_boxable_component(const SceneComponent& component);
+
    private:
+    double width_, height_, cell_size_;
+
     std::map<GUID, Subcomponent<SceneComponent>> shared_components_{};
 
     std::deque<GUID> deletion_queue_{};
@@ -82,4 +99,6 @@ struct Scene {
 
     TickEvent phys_tick_{};
     SubtickEvent draw_tick_{};
+
+    std::map<ComponentLayerId, BoxField<GUID>> box_fields_{};
 };

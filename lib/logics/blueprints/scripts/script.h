@@ -12,8 +12,9 @@
 #pragma once
 
 #include "logics/blueprints/component_factory.hpp"
-#include "logics/scene_component.h"
 #include "parser/lexeme.h"
+
+struct Scene;
 
 struct Script {
     struct Node;
