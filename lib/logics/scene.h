@@ -17,7 +17,7 @@
 
 #include "blueprints/scripts/script.h"
 #include "events.h"
-#include "geometry/box_search.hpp"
+#include "geometry/box_field.hpp"
 #include "graphics/objects/scene.h"
 #include "hash/guid.h"
 #include "physics/level_geometry.h"

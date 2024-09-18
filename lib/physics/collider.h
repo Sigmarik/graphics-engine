@@ -18,6 +18,7 @@
 #include <glm/vec3.hpp>
 
 #include "geometry/primitives.h"
+#include "hash/guid.h"
 
 struct Collider;
 
@@ -46,9 +47,13 @@ struct BoxCollider : public Collider {
     const glm::mat4& get_transform() const { return transform_; }
     void set_transform(const glm::mat4& transform);
 
+    bool operator<(const BoxCollider& other) const;
+
    private:
     Box box_;
     glm::mat4 transform_ = glm::mat4(1.0);
+
+    GUID guid_{};
 };
 
 struct DynamicCollider : public Collider {

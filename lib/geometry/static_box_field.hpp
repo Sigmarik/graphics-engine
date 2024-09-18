@@ -1,5 +1,5 @@
 /**
- * @file box_search.hpp
+ * @file box_field.hpp
  * @author Kudryashov Ilya (kudriashov.it@phystech.edu)
  * @brief Box field & tree data structure
  * @version 0.1
@@ -14,7 +14,6 @@
 #include <math.h>
 
 #include <functional>
-#include <map>
 #include <set>
 #include <vector>
 
@@ -22,16 +21,18 @@
 #include "primitives.h"
 
 template <class T>
-struct BoxField final {
-    BoxField(const Box& boundary = Box(glm::vec3(0.0f), glm::vec3(1.0f)),
-             const glm::vec3& cell_size = glm::vec3(1.0f));
+struct StaticBoxField final {
+    using BoxGetter = std::function<Box(const T&)>;
+
+    StaticBoxField(const BoxGetter& box_retriever,
+                   const Box& boundary = Box(glm::vec3(0.0f), glm::vec3(1.0f)),
+                   const glm::vec3& cell_size = glm::vec3(1.0f));
 
     void register_object(const T& object, const Box& box);
-    void move(const T& object, const Box& new_box);
-    void unregister(const T& object);
 
-    std::set<T> find_intersecting(const Box& box,
-                                  IntersectionType intersection) const;
+    std::set<T> find_intersecting(
+        const Box& box, IntersectionType intersection = IntersectionType::
+                            OVERLAP) const;
 
     Box get_boundary() const { return boundary_; }
 
@@ -40,7 +41,7 @@ struct BoxField final {
         Container(const Box& bounds = Box()) : box(bounds) {}
 
         Box box;
-        std::set<T> content{};
+        std::vector<T> content{};
     };
 
     Container& at(size_t id_x, size_t id_y, size_t id_z);
@@ -55,7 +56,7 @@ struct BoxField final {
     void for_cell_in_box(const Box& box,
                          std::function<void(const Container&)> function) const;
 
-    std::map<T, Box> object_boxes_{};
+    BoxGetter box_getter_;
 
     Box boundary_;
     size_t count_x_, count_y_, count_z_;
@@ -67,8 +68,11 @@ struct BoxField final {
 };
 
 template <class T>
-inline BoxField<T>::BoxField(const Box& boundary, const glm::vec3& cell_size)
-    : boundary_(boundary),
+inline StaticBoxField<T>::
+    StaticBoxField(const BoxGetter& box_retriever, const Box& boundary,
+                   const glm::vec3& cell_size)
+    : box_getter_(box_retriever),
+      boundary_(boundary),
       count_x_((size_t)ceil(boundary_.get_size().x / cell_size.x)),
       count_y_((size_t)ceil(boundary_.get_size().y / cell_size.y)),
       count_z_((size_t)ceil(boundary_.get_size().z / cell_size.z)),
@@ -93,63 +97,15 @@ inline BoxField<T>::BoxField(const Box& boundary, const glm::vec3& cell_size)
 }
 
 template <class T>
-inline void BoxField<T>::register_object(const T& object, const Box& box) {
-    for_cell_in_box(
-        box, [&](Container& container) { container.content.insert(object); });
-
-    object_boxes_[object] = box;
+inline void StaticBoxField<T>::
+    register_object(const T& object, const Box& box) {
+    for_cell_in_box(box, [&](Container& container) {
+        container.content.push_back(object);
+    });
 }
 
 template <class T>
-inline void BoxField<T>::move(const T& object, const Box& new_box) {
-    auto found = object_boxes_.find(object);
-    if (found == object_boxes_.end()) {
-        log_printf(
-            ERROR_REPORTS, "error",
-            "Attempting to move an unregistered object in a box field.\n");
-        return;
-    }
-
-    Box old_box = found->second;
-
-    if (old_box == new_box) return;
-
-    for_cell_in_box(old_box, [&](Container& container) {
-        if (!intersect(container.box, new_box)) {
-            container.content.erase(object);
-        }
-    });
-
-    for_cell_in_box(new_box, [&](Container& container) {
-        if (!intersect(container.box, old_box)) {
-            container.content.insert(object);
-        }
-    });
-
-    object_boxes_[object] = new_box;
-}
-
-template <class T>
-inline void BoxField<T>::unregister(const T& object) {
-    auto found = object_boxes_.find(object);
-    if (found == object_boxes_.end()) {
-        log_printf(
-            ERROR_REPORTS, "error",
-            "Attempting to unregister a non-existent object in a box field.\n");
-        return;
-    }
-
-    Box old_box = found->second;
-
-    for_cell_in_box(old_box, [&](Container& container) {
-        container.content.erase(object);
-    });
-
-    object_boxes_.erase(found);
-}
-
-template <class T>
-inline std::set<T> BoxField<T>::
+inline std::set<T> StaticBoxField<T>::
     find_intersecting(const Box& box, IntersectionType intersection) const {
     std::set<T> result;
 
@@ -157,7 +113,7 @@ inline std::set<T> BoxField<T>::
         for (const T& object : container.content) {
             if (result.contains(object)) continue;
 
-            Box other_box = object_boxes_.at(object);
+            Box other_box = box_getter_(object);
 
             if (match_intersection(box, other_box, intersection)) {
                 result.insert(object);
@@ -168,7 +124,7 @@ inline std::set<T> BoxField<T>::
     return result;
 }
 
-#define __BOX_SEARCH__FOR_CELL_IN_BOX_IMPL()                                   \
+#define __STATIC_BOX_SEARCH__FOR_CELL_IN_BOX_IMPL()                            \
     do {                                                                       \
         size_t start_x = 0, start_y = 0, start_z = 0;                          \
         size_t end_x = 0, end_y = 0, end_z = 0;                                \
@@ -193,13 +149,13 @@ inline std::set<T> BoxField<T>::
     } while (0)
 
 template <class T>
-inline BoxField<T>::Container& BoxField<T>::
+inline StaticBoxField<T>::Container& StaticBoxField<T>::
     at(size_t id_x, size_t id_y, size_t id_z) {
     return field_[id_x * count_y_ * count_z_ + id_y * count_z_ + id_z];
 }
 
 template <class T>
-inline const BoxField<T>::Container& BoxField<T>::
+inline const StaticBoxField<T>::Container& StaticBoxField<T>::
     at(size_t id_x, size_t id_y, size_t id_z) const {
     return field_[id_x * count_y_ * count_z_ + id_y * count_z_ + id_z];
 }
@@ -211,8 +167,8 @@ static size_t clamp_and_floor(double value, size_t low, size_t high) {
 }
 
 template <class T>
-inline void BoxField<T>::find_index(const glm::vec3& point, size_t& id_x,
-                                    size_t& id_y, size_t& id_z) const {
+inline void StaticBoxField<T>::find_index(const glm::vec3& point, size_t& id_x,
+                                          size_t& id_y, size_t& id_z) const {
     glm::vec3 relative = point - boundary_.get_center();
     glm::vec3 from_corner = relative + boundary_.get_size() / 2.0f;
     glm::vec3 indices = from_corner / cell_size_;
@@ -223,14 +179,14 @@ inline void BoxField<T>::find_index(const glm::vec3& point, size_t& id_x,
 }
 
 template <class T>
-inline void BoxField<T>::
+inline void StaticBoxField<T>::
     for_cell_in_box(const Box& box, std::function<void(Container&)> function) {
-    __BOX_SEARCH__FOR_CELL_IN_BOX_IMPL();
+    __STATIC_BOX_SEARCH__FOR_CELL_IN_BOX_IMPL();
 }
 
 template <class T>
-inline void BoxField<T>::
+inline void StaticBoxField<T>::
     for_cell_in_box(const Box& box,
                     std::function<void(const Container&)> function) const {
-    __BOX_SEARCH__FOR_CELL_IN_BOX_IMPL();
+    __STATIC_BOX_SEARCH__FOR_CELL_IN_BOX_IMPL();
 }

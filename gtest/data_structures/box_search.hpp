@@ -1,5 +1,5 @@
 /**
- * @file box_search.hpp
+ * @file box_field.hpp
  * @author Kudryashov Ilya (kudriashov.it@phystech.edu)
  * @brief Box search data structure tests
  * @version 0.1
@@ -9,7 +9,7 @@
  *
  */
 
-#include "geometry/box_search.hpp"
+#include "geometry/box_field.hpp"
 
 using vec3 = glm::vec3;
 
@@ -94,10 +94,11 @@ static void print(const Box& box) {
 }
 
 TEST(BoxField, Stress) {
-    BoxField<size_t> field(Box(vec3(0.0), vec3(20.0)), vec3(3.0));
+    BoxField<size_t> field(Box(vec3(0.0), vec3(20.0, 15.0, 10.0)),
+                           vec3(3.0, 4.0, 5.0));
 
-    const size_t REQUEST_COUNT = 128;
-    const size_t BOX_COUNT = 256;
+    const size_t REQUEST_COUNT = 1024;
+    const size_t BOX_COUNT = 1024;
 
     std::vector<Box> boxes(BOX_COUNT, Box());
 
@@ -115,18 +116,17 @@ TEST(BoxField, Stress) {
             field.find_intersecting(request, IntersectionType::OVERLAP);
 
         for (size_t box_id = 0; box_id < boxes.size(); ++box_id) {
-            if (intersect(boxes[box_id], request)) {
-                EXPECT_TRUE(result.contains(box_id));
+            if (!intersect(boxes[box_id], request)) continue;
+            EXPECT_TRUE(result.contains(box_id));
 
-                if (!result.contains(box_id)) {
-                    printf("Request: ");
-                    print(request);
-                    printf("Box: ");
-                    print(boxes[box_id]);
-                }
-
-                result.erase(box_id);
+            if (!result.contains(box_id)) {
+                printf("Request: ");
+                print(request);
+                printf("Box: ");
+                print(boxes[box_id]);
             }
+
+            result.erase(box_id);
         }
 
         EXPECT_TRUE(result.empty());
@@ -148,20 +148,20 @@ TEST(BoxField, Stress) {
             field.find_intersecting(request, IntersectionType::OVERLAP);
 
         for (size_t box_id = 0; box_id < boxes.size(); ++box_id) {
-            if (intersect(boxes[box_id], request)) {
-                EXPECT_TRUE(result.contains(box_id));
+            if (!intersect(boxes[box_id], request)) continue;
 
-                if (!result.contains(box_id)) {
-                    printf("Request:\t");
-                    print(request);
-                    printf("Current:\t");
-                    print(boxes[box_id]);
-                    printf("History:\t");
-                    print(history[box_id]);
-                }
+            EXPECT_TRUE(result.contains(box_id));
 
-                result.erase(box_id);
+            if (!result.contains(box_id)) {
+                printf("Request:\t");
+                print(request);
+                printf("Current:\t");
+                print(boxes[box_id]);
+                printf("History:\t");
+                print(history[box_id]);
             }
+
+            result.erase(box_id);
         }
 
         EXPECT_TRUE(result.empty());

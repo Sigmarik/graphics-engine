@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 
-#include "data_structures/box_search.hpp"
+#include "data_structures/box_field.hpp"
 #include "pipelining/events.hpp"
 #include "pipelining/state_machines.hpp"
 #include "subcomponents/subcomponents.hpp"
