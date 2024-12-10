@@ -55,4 +55,6 @@ struct GUID {
 
     uint64_t left = 0;
     uint64_t right = 0;
+
+    static GUID zero;
 };

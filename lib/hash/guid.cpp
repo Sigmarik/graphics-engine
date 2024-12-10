@@ -5,6 +5,8 @@
 #include "generation/noise.h"
 #include "logger/logger.h"
 
+GUID GUID::zero = (GUID){.left = 0, .right = 0};
+
 GUID GUID::from_string(const std::string& string) {
     GUID guid;
 
