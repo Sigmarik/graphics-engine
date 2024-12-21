@@ -29,22 +29,33 @@ FiniteTransformer::FiniteTransformer(const FTNode& root) {
 }
 
 struct ProcessingState {
-    std::string prefix;
-    FTNode* node;
-    std::string_view view;
+    std::string prefix{};
+    FTNode* node = nullptr;
+    std::string_view view{};
+
+    unsigned long long hash() const {
+        static std::hash<std::string> hash;
+        return (uintptr_t)node + hash(prefix);
+    }
+
+    friend bool operator<(const ProcessingState& alpha,
+                          const ProcessingState& beta) {
+        return alpha.hash() < beta.hash();
+    }
 };
 
 // Yes, I decided to use a macro. Yes, I deserve all hatred in the world.
-#define REPORT_OR_ABORT()                        \
-    {                                            \
-        if (state.node->terminal_) {             \
-            result.end_guid = state.node->guid_; \
-            result.match = true;                 \
-            result.word = state.prefix;          \
-                                                 \
-            return result;                       \
-        }                                        \
-        continue;                                \
+#define REPORT_OR_ABORT()                                \
+    {                                                    \
+        if (state.node->terminal_) {                     \
+            result.end_guid = state.node->guid_;         \
+            result.match = true;                         \
+            result.word = state.prefix;                  \
+            string.remove_prefix(state.prefix.length()); \
+                                                         \
+            return result;                               \
+        }                                                \
+        continue;                                        \
     }
 
 FiniteTransformer::ProcessedWord FiniteTransformer::
@@ -173,10 +184,8 @@ FTNode FTNode::merge(const FTNode& alpha, const FTNode& beta) {
     }
 
     root.terminal_ = alpha.terminal_ || beta.terminal_;
-}
 
-void FTNode::append_bor(const std::string& word) {
-    append_bor(std::string_view(word));
+    return root;
 }
 
 void FTNode::append_bor(const std::string_view& word) {

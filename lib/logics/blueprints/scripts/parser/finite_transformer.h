@@ -76,7 +76,6 @@ struct FTNode {
 
     static FTNode merge(const FTNode& alpha, const FTNode& beta);
 
-    void append_bor(const std::string& word);
     void append_bor(const std::string_view& word);
 
     FiniteTransformer bake() { return FiniteTransformer(*this); }
