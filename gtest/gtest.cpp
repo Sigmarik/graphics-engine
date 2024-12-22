@@ -12,6 +12,7 @@
 #include <gtest/gtest.h>
 
 #include "parsing/finite_transofmer_ts.hpp"
+#include "parsing/lexemizer_ts.hpp"
 #include "pipelining/events.hpp"
 #include "pipelining/state_machines.hpp"
 #include "subcomponents/subcomponents.hpp"

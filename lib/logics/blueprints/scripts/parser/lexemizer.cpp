@@ -1,76 +1,125 @@
 #include "lexemizer.h"
 
+#include "finite_transformer.h"
+#include "lexemes/strings.h"
 #include "logger/logger.h"
 
-static void remove_whitespace(std::string_view& view) {
-    bool has_changes = false;
+struct LexemeRecognizer {
+    LexemeRecognizer();
 
-    do {
-        has_changes = false;
+    std::optional<Lexeme::LexemePtr> operator()(std::string_view& view);
 
-        while (!view.empty() && std::isspace(view[0])) {
-            has_changes = true;
-            view.remove_prefix(1);
-        }
+   private:
+    void assemble_lex_bor(FTNode& root);
 
-        if (view.starts_with("//") || view.starts_with("#")) {
-            has_changes = true;
-            while (!view.empty() && view[0] != '\n') view.remove_prefix(1);
-        }
-    } while (has_changes);
-}
-
-static std::optional<Lexeme::LexemePtr> lexeme_lookup(std::string_view& view) {
-    for (auto probe : LEXEME_CONSTRUCTORS) {
-        auto lexeme = probe(view);
-
-        if (lexeme) return lexeme;
-    }
-
-    return {};
-}
-
-static void update_position(const char* start, const std::string_view& view,
-                            size_t& line, size_t& column, size_t& index) {
-    size_t new_index = uintptr_t(view.data()) - uintptr_t(start);
-
-    for (; index < new_index; ++index) {
-        if (start[index] == '\n') {
-            column = 0;
-            ++line;
-        } else {
-            ++column;
-        }
-    }
-}
+    std::map<GUID, Lexeme::Info> endpoints_{};
+    FiniteTransformer transformer_{};
+};
 
 std::vector<Lexeme::LexemePtr> lexify(const std::string& text) {
-    std::vector<Lexeme::LexemePtr> result;
+    static LexemeRecognizer lexemizer{};
 
-    std::string_view view(text);
+    std::vector<Lexeme::LexemePtr> lexemes;
 
-    size_t current_line = 0, current_column = 0, current_index = 0;
-    remove_whitespace(view);
+    std::string_view view = text;
 
-    while (!view.empty()) {
-        update_position(text.c_str(), view, current_line, current_column,
-                        current_index);
-        auto lexeme = lexeme_lookup(view);
+    while (view.length() > 0) {
+        std::string_view prev_view = view;
 
-        if (!lexeme) {
-            log_printf(
-                ERROR_REPORTS, "error",
-                "Could not distinguish lexeme at line %lu, column %lu.\n",
-                current_line, current_column);
-            break;
-        }
+        std::optional<Lexeme::LexemePtr> lexeme = lexemizer(view);
 
-        lexeme.value()->assign_coords(current_line, current_column);
+        if (view.length() >= prev_view.length()) break;
 
-        result.push_back(lexeme.value());
+        if (!lexeme) continue;
 
-        remove_whitespace(view);
+        lexemes.push_back(*lexeme);
     }
 
-    return result;
+    return lexemes;
+}
+
+LexemeRecognizer::LexemeRecognizer() {
+    FTNode lex_bor;
+    FTNode whitespace_skipper;
+    FTNode comment_skipper;
+    FTNode simple_string_recognizer;
+    FTNode quoted_string_recognizer;
+    FTNode number_recognizer;
+    FTNode nickname_recognizer;
+
+    assemble_lex_bor(lex_bor);
+
+    whitespace_skipper >> whitespace_skipper.by(" \t\n");
+    whitespace_skipper.mark_terminal();
+
+    FTNode comm_skip_loop, comm_skip_terminal;
+    comment_skipper >> comm_skip_loop.by('#');
+    comm_skip_loop >> comm_skip_loop.except('\n');
+    comm_skip_loop >> comm_skip_terminal.by('\n');
+    comm_skip_loop.mark_terminal();
+    comm_skip_terminal.mark_terminal();
+
+    FTNode nn_loop;
+    nickname_recognizer >> nn_loop.by('@', "");
+    nn_loop >> nn_loop.by_alnum("_");
+    endpoints_[nn_loop.get_guid()] = lexemes::NamedComponent::get_info();
+    nn_loop.mark_terminal();
+
+    simple_string_recognizer >> simple_string_recognizer.by_alnum("_");
+    endpoints_[simple_string_recognizer.get_guid()] = lexemes::String::
+        get_info();
+    simple_string_recognizer.mark_terminal();
+
+    FTNode qs_loop, qs_special, qs_end;
+    quoted_string_recognizer >> qs_loop.by('"', "");
+    qs_loop >> qs_loop.except("\"\\");
+    qs_loop >> qs_special.by('\\', "");
+    qs_special >> qs_loop.by('\"');
+    qs_special >> qs_loop.by('\\');
+    qs_loop >>
+        qs_end.by('"', "\xFF");  // Hint the string constructor that the
+                                 // current string is not a variable name.
+    endpoints_[qs_end.get_guid()] = lexemes::String::get_info();
+    qs_end.mark_terminal();
+
+    FTNode num_mid, num_afterdot, num_end;
+    number_recognizer >> num_mid.by_numeric();
+    num_mid >> num_mid.by_numeric();
+    num_mid >> num_afterdot.by('.');
+    num_afterdot >> num_end.by_numeric();
+    num_end >> num_end.by_numeric();
+    endpoints_[num_end.get_guid()] = lexemes::String::get_info();
+    num_end.mark_terminal();
+
+    FTNode root = FTNode::merge(
+        lex_bor, whitespace_skipper, comment_skipper, simple_string_recognizer,
+        quoted_string_recognizer, number_recognizer, nickname_recognizer);
+
+    transformer_ = root.bake();
+}
+
+std::optional<Lexeme::LexemePtr> LexemeRecognizer::
+operator()(std::string_view& view) {
+    std::string_view view_copy = view;
+    FiniteTransformer::ProcessedWord parsing_result = transformer_(view_copy);
+
+    if (!parsing_result) {
+        log_dup(ERROR_REPORTS, "error", "Unknown token.\n\t%s\n", view.data());
+        return {};
+    }
+
+    view = view_copy;
+
+    if (!endpoints_.contains(parsing_result.end_guid)) return {};
+
+    return endpoints_[parsing_result.end_guid].constructor(parsing_result.word);
+}
+
+void LexemeRecognizer::assemble_lex_bor(FTNode& root) {
+    for (Lexeme::Info info : LEXEME_INFO_TABLE) {
+        for (const std::string& name : info.names) {
+            FTNode* node = root.append_bor(name);
+            endpoints_[node->get_guid()] = info;
+        }
+    }
 }

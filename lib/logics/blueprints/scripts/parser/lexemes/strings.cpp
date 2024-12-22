@@ -67,6 +67,18 @@ std::optional<Lexeme::LexemePtr> lexemes::String::
     return LexemePtr(new String(result, inclusive));
 }
 
+Lexeme::LexemePtr lexemes::String::construct(const std::string& string) {
+    bool exact = false;
+
+    std::string copy = string;
+    if (copy.back() == (char)(-1)) {
+        exact = true;
+        copy.pop_back();
+    }
+
+    return LexemePtr(new String(copy, exact));
+}
+
 std::string lexemes::String::dump() const {
     std::stringstream stream;
     stream << "STRING " << value_;
@@ -88,6 +100,11 @@ std::optional<Lexeme::LexemePtr> lexemes::NamedComponent::
     view.remove_prefix(end_index);
 
     return LexemePtr(new NamedComponent(result));
+}
+
+Lexeme::LexemePtr lexemes::NamedComponent::
+    construct(const std::string& string) {
+    return LexemePtr(new NamedComponent(string));
 }
 
 std::string lexemes::NamedComponent::dump() const {

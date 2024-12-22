@@ -57,8 +57,8 @@ TEST(FiniteTransformer, Branching) {
     ParsingResult success = automaton(view);
 
     EXPECT_TRUE(success);
-    EXPECT_EQ(success.word, "a");
-    EXPECT_EQ(success.end_guid, path_b.get_guid());
+    EXPECT_EQ(success.word, "ab");
+    EXPECT_EQ(success.end_guid, path_ab.get_guid());
 }
 
 TEST(FiniteTransformer, FaultyString) {
@@ -213,7 +213,7 @@ TEST(FiniteTransformer, MemoryManagement) {
 TEST(FiniteTransformer, Replacements) {
     FTNode root, path_a, path_b, path_ab;
 
-    root >> path_a.by('a', 'A');
+    root >> path_a.by('a', "A");
     root >> path_b.by('b');
     path_a >> path_ab.by('b');
 
@@ -236,7 +236,7 @@ TEST(FiniteTransformer, Replacements) {
 TEST(FiniteTransformer, Deletions) {
     FTNode root, path_a, path_b, path_ab;
 
-    root >> path_a.by('a', '\0');
+    root >> path_a.by('a', "");
     root >> path_b.by('b');
     path_a >> path_ab.by('b');
 
@@ -254,4 +254,27 @@ TEST(FiniteTransformer, Deletions) {
     EXPECT_TRUE(success);
     EXPECT_EQ(success.word, "b");
     EXPECT_EQ(success.end_guid, path_ab.get_guid());
+}
+
+TEST(FiniteTransformer, QuotedString) {
+    FTNode qs_loop, qs_special, qs_end, quoted_string_recognizer;
+    quoted_string_recognizer >> qs_loop.by('"', "");
+    qs_loop >> qs_loop.except("\"\\");
+    qs_loop >> qs_special.by('\\', "");
+    qs_special >> qs_loop.by('\"');
+    qs_special >> qs_loop.by('\\');
+    qs_loop >> qs_end.by('"', "");
+    qs_end.mark_terminal();
+
+    FiniteTransformer automaton = quoted_string_recognizer.bake();
+
+    std::string string = "\"hyper_uvut\"";
+
+    std::string_view view(string);
+
+    ParsingResult success = automaton(view);
+
+    EXPECT_TRUE(success);
+    EXPECT_EQ(success.word, "hyper_uvut");
+    EXPECT_EQ(success.end_guid, qs_end.get_guid());
 }

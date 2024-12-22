@@ -19,4 +19,4 @@
 #include "lexemes/operators.h"
 #include "lexemes/strings.h"
 
-extern const std::vector<Lexeme::Constructor> LEXEME_CONSTRUCTORS;
+extern const std::vector<Lexeme::Info> LEXEME_INFO_TABLE;

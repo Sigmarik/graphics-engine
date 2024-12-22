@@ -1,10 +1,13 @@
 #include "finite_transformer.h"
 
 #include <deque>
+#include <iostream>
 #include <set>
 #include <sstream>
 
 using NodePtr = std::shared_ptr<FTNode>;
+
+FiniteTransformer::FiniteTransformer() : FiniteTransformer(FTNode()) {}
 
 FiniteTransformer::FiniteTransformer(const FTNode& root) {
     root_ = nodes_[root.get_guid()] = std::make_shared<FTNode>(root);
@@ -45,17 +48,15 @@ struct ProcessingState {
 };
 
 // Yes, I decided to use a macro. Yes, I deserve all hatred in the world.
-#define REPORT_OR_ABORT()                                \
-    {                                                    \
-        if (state.node->terminal_) {                     \
-            result.end_guid = state.node->guid_;         \
-            result.match = true;                         \
-            result.word = state.prefix;                  \
-            string.remove_prefix(state.prefix.length()); \
-                                                         \
-            return result;                               \
-        }                                                \
-        continue;                                        \
+#define REPORT_OR_ABORT()                        \
+    {                                            \
+        if (state.node->terminal_) {             \
+            result.end_guid = state.node->guid_; \
+            result.match = true;                 \
+            result.word = state.prefix;          \
+            string = state.view;                 \
+        }                                        \
+        continue;                                \
     }
 
 FiniteTransformer::ProcessedWord FiniteTransformer::
@@ -69,6 +70,8 @@ operator()(std::string_view& string) {
 
     std::set<ProcessingState> states = {starting_state};
 
+    unsigned depth = 0;
+
     while (!states.empty()) {
         std::set<ProcessingState> new_states{};
 
@@ -76,6 +79,7 @@ operator()(std::string_view& string) {
             if (state.view.size() == 0) REPORT_OR_ABORT();
 
             char symbol = state.view[0];
+
             auto& connections = state.node->connections_;
             if (!connections.contains(symbol)) REPORT_OR_ABORT();
             auto options = connections[symbol];
@@ -88,9 +92,10 @@ operator()(std::string_view& string) {
                 ProcessingState new_state =
                     (id == options.size() - 1) ? std::move(state) : state;
 
-                if (link.replacement != '\0') {
-                    new_state.prefix.push_back(link.replacement);
+                for (char symbol : link.replacement) {
+                    new_state.prefix.push_back(symbol);
                 }
+
                 new_state.view.remove_prefix(1);
                 new_state.node = link.target;
 
@@ -129,21 +134,29 @@ void FTNode::operator>>(const PendingConnection& addition) {
     }
 }
 
-FTNode::PendingConnection FTNode::by(char symbol) { return by(symbol, symbol); }
+FTNode::PendingConnection FTNode::by(char symbol) {
+    return by(symbol, std::string(1, symbol));
+}
 
 FTNode::PendingConnection FTNode::by(char symbol, char replacement) {
-    return by((std::map<char, char>){{symbol, replacement}});
+    return by(symbol, std::string(1, replacement));
+}
+
+FTNode::PendingConnection FTNode::
+    by(char symbol, const std::string& replacement) {
+    return by((std::map<char, std::string>){{symbol, replacement}});
 }
 
 FTNode::PendingConnection FTNode::by(const std::string& symbols) {
-    std::map<char, char> map{};
+    std::map<char, std::string> map{};
     for (char symbol : symbols) {
-        map[symbol] = symbol;
+        map[symbol] = std::string(1, symbol);
     }
     return by(map);
 }
 
-FTNode::PendingConnection FTNode::by(const std::map<char, char> transitions) {
+FTNode::PendingConnection FTNode::
+    by(const std::map<char, std::string>& transitions) {
     PendingConnection conn{};
     conn.target = this;
     conn.transforms = transitions;
@@ -151,47 +164,55 @@ FTNode::PendingConnection FTNode::by(const std::map<char, char> transitions) {
 }
 
 FTNode::PendingConnection FTNode::except(char symbol) {
-    std::map<char, char> map{};
+    std::map<char, std::string> map{};
     for (char ch = 1; ch != 0; ++ch) {
-        map[ch] = ch;
+        map[ch] = std::string(1, ch);
     }
     map.erase(symbol);
     return by(map);
 }
 
-FTNode::PendingConnection FTNode::except(const std::string& symbols) {
-    std::map<char, char> map{};
+FTNode::PendingConnection FTNode::except(const std::string& exceptions) {
+    std::map<char, std::string> map{};
     for (char symbol = 1; symbol != 0; ++symbol) {
-        map[symbol] = symbol;
+        map[symbol] = std::string(1, symbol);
     }
-    for (char symbol : symbols) {
+    for (char symbol : exceptions) {
         map.erase(symbol);
     }
     return by(map);
 }
 
-FTNode FTNode::merge(const FTNode& alpha, const FTNode& beta) {
-    FTNode root{};
-    for (const auto& [symbol, routes] : alpha.connections_) {
-        for (const auto& route : routes) {
-            root >> route.target->by(symbol, route.replacement);
-        }
-    }
-    for (const auto& [symbol, routes] : beta.connections_) {
-        for (const auto& route : routes) {
-            root >> route.target->by(symbol, route.replacement);
-        }
-    }
-
-    root.terminal_ = alpha.terminal_ || beta.terminal_;
-
-    return root;
+FTNode::PendingConnection FTNode::by_alnum(const std::string& additions) {
+    return by_mask(isalnum, additions);
 }
 
-void FTNode::append_bor(const std::string_view& word) {
+FTNode::PendingConnection FTNode::by_numeric(const std::string& additions) {
+    return by_mask(isdigit, additions);
+}
+
+FTNode::PendingConnection FTNode::by_alphabetic(const std::string& additions) {
+    return by_mask(isalpha, additions);
+}
+
+FTNode::PendingConnection FTNode::
+    by_mask(std::function<bool(char)> predicate, const std::string& additions) {
+    std::map<char, std::string> map{};
+    for (char symbol = 1; symbol != 0; ++symbol) {
+        if (predicate(symbol)) {
+            map[symbol] = std::string(1, symbol);
+        }
+    }
+    for (char symbol : additions) {
+        map[symbol] = std::string(1, symbol);
+    }
+    return by(map);
+}
+
+FTNode* FTNode::append_bor(const std::string_view& word) {
     if (word.length() == 0) {
         mark_terminal();
-        return;
+        return this;
     }
 
     char symbol = word[0];
@@ -204,5 +225,5 @@ void FTNode::append_bor(const std::string_view& word) {
 
     std::string_view copy = word;
     copy.remove_prefix(1);
-    connections_[symbol][0].target->append_bor(copy);
+    return connections_[symbol][0].target->append_bor(copy);
 }

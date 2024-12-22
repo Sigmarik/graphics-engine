@@ -22,6 +22,15 @@ struct String : public Lexeme {
 
     static std::optional<LexemePtr> try_construct(std::string_view& view);
 
+    static LexemePtr construct(const std::string& string);
+    static Info      get_info() {
+        return (Info){
+                 .constructor     = construct,
+                 .try_constructor = try_construct,
+                 .names           = {},
+        };
+    }
+
     std::string get_value() const { return value_; }
     bool        is_exact() const { return exact_; }
 
@@ -37,6 +46,15 @@ struct NamedComponent : public Lexeme {
     NamedComponent(const std::string& name) : name_(name) {}
 
     static std::optional<LexemePtr> try_construct(std::string_view& view);
+
+    static LexemePtr construct(const std::string& string);
+    static Info      get_info() {
+        return (Info){
+                 .constructor     = construct,
+                 .try_constructor = try_construct,
+                 .names           = {},
+        };
+    }
 
     std::string get_name() const { return name_; }
     GUID        get_guid() const { return guid_; }

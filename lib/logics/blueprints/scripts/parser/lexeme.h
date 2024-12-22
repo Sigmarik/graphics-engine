@@ -27,12 +27,21 @@ struct Lexeme {
 
     using LexemePtr = Abstract<Lexeme>;
 
-    using Constructor =
-        std::function<std::optional<LexemePtr>(std::string_view&)>;
+    using TryConstructor = std::
+        function<std::optional<LexemePtr>(std::string_view&)>;
+    using Constructor = std::function<LexemePtr(const std::string&)>;
+
+    struct Info {
+        Lexeme::Constructor constructor{};
+        Lexeme::TryConstructor try_constructor{};
+        std::vector<std::string> names{};
+    };
 
     static std::optional<LexemePtr> try_construct(std::string_view&) {
         return {};
     }
+
+    static Info get_info() { return Info(); }
 
     void assign_coords(size_t line, size_t column) {
         line_ = line, column_ = column;
@@ -54,6 +63,16 @@ struct StrictLexeme : public Lexeme {
         return (compare_and_shift(view, Values.value) || ...)
                    ? LexemePtr(new StrictLexeme<Values...>())
                    : std::optional<LexemePtr>();
+    }
+
+    static LexemePtr construct(const std::string& string) {
+        return LexemePtr(new StrictLexeme<Values...>());
+    }
+
+    static Info get_info() {
+        return (Info){.constructor = construct,
+                      .try_constructor = try_construct,
+                      .names = {Values.value...}};
     }
 
     virtual std::string dump() const override;

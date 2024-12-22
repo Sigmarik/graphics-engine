@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <optional>
@@ -22,6 +23,7 @@
 struct FTNode;
 
 struct FiniteTransformer {
+    FiniteTransformer();
     FiniteTransformer(const FTNode& root);
 
     struct ProcessedWord {
@@ -54,7 +56,7 @@ struct FTNode {
 
     struct PendingConnection {
         FTNode* target = nullptr;
-        std::map<char, char> transforms{};
+        std::map<char, std::string> transforms{};
     };
 
     /**
@@ -67,16 +69,29 @@ struct FTNode {
 
     PendingConnection by(char symbol);
     PendingConnection by(char symbol, char replacement);
+    PendingConnection by(char symbol, const std::string& replacement);
     PendingConnection by(const std::string& symbols);
-    PendingConnection by(const std::map<char, char> transitions);
+    PendingConnection by(const std::map<char, std::string>& transitions);
     PendingConnection except(char symbol);
     PendingConnection except(const std::string& symbols);
+    PendingConnection by_alnum(const std::string& additions = "");
+    PendingConnection by_numeric(const std::string& additions = "");
+    PendingConnection by_alphabetic(const std::string& additions = "");
+    PendingConnection by_mask(std::function<bool(char)> predicate,
+                              const std::string& additions = "");
 
     void mark_terminal() { terminal_ = true; }
 
-    static FTNode merge(const FTNode& alpha, const FTNode& beta);
+    template <class... Args>
+    static FTNode merge(const Args&... nodes) {
+        FTNode root{};
 
-    void append_bor(const std::string_view& word);
+        (root.inmerge(nodes), ...);
+
+        return root;
+    }
+
+    FTNode* append_bor(const std::string_view& word);
 
     FiniteTransformer bake() { return FiniteTransformer(*this); }
 
@@ -85,11 +100,20 @@ struct FTNode {
     GUID get_guid() const { return guid_; }
 
    private:
+    void inmerge(const FTNode& node) {
+        for (const auto& [symbol, routes] : node.connections_) {
+            for (const auto& route : routes) {
+                operator>>(route.target->by(symbol, route.replacement));
+            }
+        }
+        if (node.terminal_) mark_terminal();
+    }
+
     bool terminal_ = false;
 
     struct Connection {
         FTNode* target = nullptr;
-        char replacement = '\0';
+        std::string replacement{};
     };
 
     bool being_processed_ = false;
