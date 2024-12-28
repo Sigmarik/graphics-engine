@@ -20,6 +20,7 @@
 
 #include "logger/logger.h"
 #include "primitives.h"
+#include "transforms.h"
 
 template <class T>
 struct BoxField final {
@@ -203,12 +204,6 @@ template <class T>
 inline const BoxField<T>::Container& BoxField<T>::
     at(size_t id_x, size_t id_y, size_t id_z) const {
     return field_[id_x * count_y_ * count_z_ + id_y * count_z_ + id_z];
-}
-
-static size_t clamp_and_floor(double value, size_t low, size_t high) {
-    if (value < (double)low) return low;
-    if (value >= (double)high) return high - 1;
-    return (size_t)floor(value);
 }
 
 template <class T>
