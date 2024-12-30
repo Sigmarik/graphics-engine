@@ -16,7 +16,7 @@ struct BaseComponent : public SceneComponent {};
 struct DerivedComponent : public BaseComponent {};
 
 struct TrickyConstructor : public SceneComponent {
-    TrickyConstructor(void*) : id(0xDEADBEEF){};
+    TrickyConstructor(void*) : id(0xDEADBEEF) {};
 
     unsigned long long id = 0;
 };
@@ -49,6 +49,7 @@ TEST(Subcomponent, Construction) {
 TEST(Subcomponent, DelayedConstruction) {
     Subcomponent<TrickyConstructor> component{SubcomponentNone};
 
+    //! NOTE: The test below fails if the sanitizer is enabled.
     EXPECT_EXIT(component->id = 0, ::testing::KilledBySignal(SIGSEGV), ".*");
 
     component = Subcomponent<TrickyConstructor>(nullptr);

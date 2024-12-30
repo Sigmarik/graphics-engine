@@ -17,5 +17,3 @@
 glm::vec3 reflect_plane(const glm::vec3& vector, const glm::vec3& normal);
 
 glm::vec3 to_point(const glm::mat4& transform);
-
-size_t clamp_and_floor(double value, size_t low, size_t high);

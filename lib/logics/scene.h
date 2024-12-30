@@ -56,7 +56,8 @@ struct Scene {
     void for_each_component(
         std::function<void(SceneComponent&)> function) const;
 
-    SceneComponent* get_component(GUID guid);
+    template <class T = SceneComponent>
+    T* get_component(GUID guid);
 
     size_t get_component_count() const { return shared_components_.size(); }
 
@@ -67,6 +68,11 @@ struct Scene {
     std::set<GUID> get_components_in_area(
         const Box& box, ComponentLayerId layer,
         IntersectionType intersection = IntersectionType::OVERLAP) const;
+
+    template <class T = SceneComponent>
+    void for_each_component_in_area(const Box& box, ComponentLayerId layer,
+                                    IntersectionType intersection,
+                                    std::function<void(T&)> functor);
 
    private:
     /**
@@ -102,3 +108,29 @@ struct Scene {
 
     std::map<ComponentLayerId, BoxField<GUID>> box_fields_{};
 };
+
+template <class T>
+T* Scene::get_component(GUID guid) {
+    auto shared_found = shared_components_.find(guid);
+    if (shared_found != shared_components_.end()) {
+        return dynamic_cast<T*>(shared_found->second.operator->());
+    }
+
+    return nullptr;
+}
+
+template <class T>
+inline void Scene::
+    for_each_component_in_area(const Box& box, ComponentLayerId layer,
+                               IntersectionType intersection,
+                               std::function<void(T&)> functor) {
+    std::set<GUID> component_guids = get_components_in_area(box, layer);
+
+    for (const GUID& guid : component_guids) {
+        T* component = get_component<T>(guid);
+
+        if (!component) continue;
+
+        functor(*component);
+    }
+}

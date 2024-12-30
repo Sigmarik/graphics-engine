@@ -6,6 +6,8 @@
 #include "managers/asset_manager.h"
 #include "src/scenes/pool_game.h"
 
+const Scene::ComponentLayerId PoolBall::BallLayer;
+
 PoolBall::PoolBall(const glm::vec3& position, const Model& model)
     : bouncer_(position, POOL_BALL_RADIUS) {
     register_output("knocked_down", knocked_down_);
@@ -36,6 +38,14 @@ void PoolBall::phys_tick(double delta_time) {
         knocked_down_.trigger("1");
     }
     is_overboard_ = new_ob;
+
+    if (is_on_board()) {
+        get_scene().for_each_component_in_area<PoolBall>(
+            get_box(), BallLayer, IntersectionType::OVERLAP,
+            [this](PoolBall& ball) { collide(ball); });
+    }
+
+    update_box();
 }
 
 void PoolBall::draw_tick(double delta_time, double subtick_time) {
@@ -57,6 +67,8 @@ void PoolBall::draw_tick(double delta_time, double subtick_time) {
 }
 
 void PoolBall::collide(PoolBall& ball) {
+    if (&ball == this) return;
+
     if (glm::distance(get_position(), ball.get_position()) >
         POOL_BALL_RADIUS * 2.0)
         return;
@@ -93,8 +105,16 @@ void PoolBall::reset() {
     model_->set_hidden(false);
 }
 
+Box PoolBall::get_box() const {
+    return Box(bouncer_.get_position(),
+               glm::vec3((float)POOL_BALL_RADIUS * 2.0));
+}
+
 void PoolBall::begin_play(Scene& scene) {
     SceneComponent::begin_play(scene);
+
+    use_positional_layer(BallLayer);
+    auto_update_box();
 
     receive_phys_ticks();
     receive_draw_ticks();

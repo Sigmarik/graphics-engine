@@ -25,18 +25,21 @@ void Scene::
     }
 }
 
-SceneComponent* Scene::get_component(GUID guid) {
-    auto shared_found = shared_components_.find(guid);
-    if (shared_found != shared_components_.end()) {
-        return shared_found->second.operator->();
-    }
-
-    return nullptr;
-}
-
 std::shared_ptr<Script> Scene::add_script(const Script& script) {
     scripts_.push_back(std::make_shared<Script>(script));
     return scripts_.back();
+}
+
+std::set<GUID> Scene::
+    get_components_in_area(const Box& box, ComponentLayerId layer,
+                           IntersectionType intersection) const {
+    auto found = box_fields_.find(layer);
+
+    if (found == box_fields_.end()) {
+        return std::set<GUID>();
+    }
+
+    return found->second.find_intersecting(box, intersection);
 }
 
 void Scene::delete_component(SceneComponent& component) {
