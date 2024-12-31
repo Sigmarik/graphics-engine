@@ -44,8 +44,6 @@ void PoolBall::phys_tick(double delta_time) {
             get_box(), BallLayer, IntersectionType::OVERLAP,
             [this](PoolBall& ball) { collide(ball); });
     }
-
-    update_box();
 }
 
 void PoolBall::draw_tick(double delta_time, double subtick_time) {
