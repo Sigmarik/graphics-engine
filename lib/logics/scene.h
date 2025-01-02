@@ -17,9 +17,13 @@
 
 #include "blueprints/scripts/script.h"
 #include "events.h"
+#include "geometry/box_field.hpp"
 #include "graphics/objects/scene.h"
+#include "hash/guid.h"
 #include "physics/level_geometry.h"
-#include "scene_component.h"
+#include "subcomponent.hpp"
+
+struct SceneComponent;
 
 struct Scene {
     friend struct SceneComponent;
@@ -52,11 +56,23 @@ struct Scene {
     void for_each_component(
         std::function<void(SceneComponent&)> function) const;
 
-    SceneComponent* get_component(GUID guid);
+    template <class T = SceneComponent>
+    T* get_component(GUID guid);
 
     size_t get_component_count() const { return shared_components_.size(); }
 
     std::shared_ptr<Script> add_script(const Script& script);
+
+    using ComponentLayerId = GUID;
+
+    std::set<GUID> get_components_in_area(
+        const Box& box, ComponentLayerId layer,
+        IntersectionType intersection = IntersectionType::OVERLAP) const;
+
+    template <class T = SceneComponent>
+    void for_each_component_in_area(const Box& box, ComponentLayerId layer,
+                                    IntersectionType intersection,
+                                    std::function<void(T&)> functor);
 
    private:
     /**
@@ -70,7 +86,14 @@ struct Scene {
     void delete_component(SceneComponent& component);
     void process_deletions();
 
+    void add_boxable_component(const SceneComponent& component);
+    void remove_boxable_component(const SceneComponent& component);
+
+    void update_boxable_component(const SceneComponent& component);
+
    private:
+    double width_, height_, cell_size_;
+
     std::map<GUID, Subcomponent<SceneComponent>> shared_components_{};
 
     std::deque<GUID> deletion_queue_{};
@@ -82,4 +105,32 @@ struct Scene {
 
     TickEvent phys_tick_{};
     SubtickEvent draw_tick_{};
+
+    std::map<ComponentLayerId, BoxField<GUID>> box_fields_{};
 };
+
+template <class T>
+T* Scene::get_component(GUID guid) {
+    auto shared_found = shared_components_.find(guid);
+    if (shared_found != shared_components_.end()) {
+        return dynamic_cast<T*>(shared_found->second.operator->());
+    }
+
+    return nullptr;
+}
+
+template <class T>
+inline void Scene::
+    for_each_component_in_area(const Box& box, ComponentLayerId layer,
+                               IntersectionType intersection,
+                               std::function<void(T&)> functor) {
+    std::set<GUID> component_guids = get_components_in_area(box, layer);
+
+    for (const GUID& guid : component_guids) {
+        T* component = get_component<T>(guid);
+
+        if (!component) continue;
+
+        functor(*component);
+    }
+}

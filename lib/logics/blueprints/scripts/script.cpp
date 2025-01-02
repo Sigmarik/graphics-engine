@@ -1,5 +1,7 @@
 #include "script.h"
 
+#include "logics/scene.h"
+#include "logics/scene_component.h"
 #include "parser/lexemizer.h"
 #include "parser/tree_builder.h"
 

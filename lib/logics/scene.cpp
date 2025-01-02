@@ -1,9 +1,13 @@
 #include "scene.h"
 
 #include "logger/logger.h"
+#include "scene_component.h"
 
 Scene::Scene(double width, double height, double cell_size)
-    : collision_(Box(glm::vec3(0.0, 0.0, 0.0), glm::vec3(width, height, width)),
+    : width_(width),
+      height_(height),
+      cell_size_(cell_size),
+      collision_(Box(glm::vec3(0.0, 0.0, 0.0), glm::vec3(width, height, width)),
                  (size_t)(width / cell_size), (size_t)(height / cell_size)) {}
 
 Scene::~Scene() {
@@ -21,22 +25,26 @@ void Scene::
     }
 }
 
-SceneComponent* Scene::get_component(GUID guid) {
-    auto shared_found = shared_components_.find(guid);
-    if (shared_found != shared_components_.end()) {
-        return shared_found->second.operator->();
-    }
-
-    return nullptr;
-}
-
 std::shared_ptr<Script> Scene::add_script(const Script& script) {
     scripts_.push_back(std::make_shared<Script>(script));
     return scripts_.back();
 }
 
+std::set<GUID> Scene::
+    get_components_in_area(const Box& box, ComponentLayerId layer,
+                           IntersectionType intersection) const {
+    auto found = box_fields_.find(layer);
+
+    if (found == box_fields_.end()) {
+        return std::set<GUID>();
+    }
+
+    return found->second.find_intersecting(box, intersection);
+}
+
 void Scene::delete_component(SceneComponent& component) {
     deletion_queue_.push_back(component.get_guid());
+    remove_boxable_component(component);
 }
 
 void Scene::process_deletions() {
@@ -57,10 +65,39 @@ void Scene::process_deletions() {
     }
 }
 
+void Scene::add_boxable_component(const SceneComponent& component) {
+    for (ComponentLayerId layer : component.registration_layers_) {
+        auto found = box_fields_.find(layer);
+        if (found == box_fields_.end()) {
+            BoxField<GUID> field(
+                Box(glm::vec3(0.0), glm::vec3(width_, height_, width_)),
+                glm::vec3((float)cell_size_));
+            found = box_fields_.insert({layer, field}).first;
+        }
+
+        found->second.register_object(component.get_guid(),
+                                      component.get_box());
+    }
+}
+
+void Scene::remove_boxable_component(const SceneComponent& component) {
+    for (ComponentLayerId layer : component.registration_layers_) {
+        box_fields_[layer].unregister(component.get_guid());
+    }
+}
+
+void Scene::update_boxable_component(const SceneComponent& component) {
+    for (ComponentLayerId layer : component.registration_layers_) {
+        box_fields_[layer].move(component.get_guid(), component.get_box());
+    }
+}
+
 void Scene::add_component(Subcomponent<SceneComponent> component) {
     shared_components_.insert({component->get_guid(), component});
 
     component->begin_play(*this);
+
+    add_boxable_component(*component);
 }
 
 void Scene::phys_tick(double delta_time) {

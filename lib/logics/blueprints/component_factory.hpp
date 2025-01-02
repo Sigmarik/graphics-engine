@@ -11,11 +11,14 @@
 
 #pragma once
 
+#include <functional>
 #include <map>
 #include <string>
 
 #include "logger/logger.h"
-#include "logics/scene_component.h"
+#include "logics/subcomponent.hpp"
+
+struct SceneComponent;
 
 using SubcomponentNameMap = std::map<std::string, Subcomponent<SceneComponent>>;
 
@@ -67,8 +70,8 @@ inline SubcomponentNameMap ComponentFactory<Ts...>::build(Ts&&... args) const {
 }
 
 template <class... Ts>
-inline void ComponentFactory<Ts...>::register_producer(
-    const std::string& name, const Producer& producer) {
+inline void ComponentFactory<Ts...>::
+    register_producer(const std::string& name, const Producer& producer) {
     if (instructions_.count(name) > 0) {
         log_printf(ERROR_REPORTS, "error",
                    "Double producer assignment for \"%s\"\n", name.c_str());

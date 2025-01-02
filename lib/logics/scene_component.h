@@ -21,14 +21,12 @@
 #include "hash/guid.h"
 #include "memory/relative_ptr.hpp"
 #include "physics/level_geometry.h"
+#include "scene.h"
 #include "subcomponent.hpp"
-
-struct Scene;
 
 struct SceneComponent {
     friend struct Scene;
 
-    //! TODO: Replace with multievents to allow for multiple senders.
     using Channel = Event<const std::string&>;
     using OutputChannel = Channel;
     using InputChannel = Channel::Multilistener;
@@ -107,6 +105,20 @@ struct SceneComponent {
     virtual void reset() {}
 
    protected:
+    /**
+     * @brief Make the component detectable on a component layer.
+     *
+     * @param[in] layer
+     */
+    void use_positional_layer(Scene::ComponentLayerId layer);
+
+    /**
+     * @brief Get component's bounding box
+     *
+     * @return Box
+     */
+    virtual Box get_box() const { return Box(); };
+
     Event<Scene&>& get_spawned_event() { return spawned_event_; }
 
     /**
@@ -127,7 +139,7 @@ struct SceneComponent {
     /**
      * @brief Subscribe the component to physics tick events
      *
-     * @see `begin_play` method
+     * @see the `begin_play` method
      *
      * @warning Should be called after parent initialization in `begin_play`
      */
@@ -181,6 +193,31 @@ struct SceneComponent {
      */
     void attach(Subcomponent<SceneComponent> child);
 
+    /**
+     * @brief Schedule object box update at the end of the current physics tick.
+     *
+     * @warning Takes effect only after the current tick.
+     *
+     */
+    void schedule_box_update() { box_update_scheduled_ = true; }
+
+    /**
+     * @brief Set weather the component should auto-update the box after each
+     * physics tick.
+     *
+     * @param[in] value
+     */
+    void auto_update_box(bool value = true) { auto_update_box_ = value; }
+
+    /**
+     * @brief Report the box change to the owning scene.
+     *
+     * @warning Should be used only in cases where object's box is checked by
+     * other components before the end of the component's physics tick.
+     *
+     */
+    void update_box() const;
+
    private:
     GUID guid_;
 
@@ -198,6 +235,11 @@ struct SceneComponent {
 
     std::unordered_map<std::string, RelativePtr<OutputChannel>> outputs_{};
     std::unordered_map<std::string, RelativePtr<InputChannel>> inputs_{};
+
+    std::set<Scene::ComponentLayerId> registration_layers_{};
+
+    bool auto_update_box_ = false;
+    bool box_update_scheduled_ = false;
 };
 
 template <class T, class... Ts>

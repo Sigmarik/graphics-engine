@@ -23,7 +23,7 @@ PoolGame::PoolGame()
 void PoolGame::phys_tick(double delta_time) {
     Scene::phys_tick(delta_time);
 
-    process_int_collisions();
+    // process_int_collisions();
 
     Subcomponent<PlayerBall> player = player_.lock();
 

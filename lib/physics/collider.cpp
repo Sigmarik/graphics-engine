@@ -84,9 +84,9 @@ Intersection SphereCollider::intersect_box(const BoxCollider& box) const {
     glm::mat4 world_to_collider = glm::inverse(box.get_transform());
 
     glm::vec4 local_center = world_to_collider * glm::vec4(origin_, 1.0);
-    glm::vec3 local =
-        glm::vec3(local_center.x, local_center.y, local_center.z) /
-        local_center.w;
+    glm::vec3 local = glm::
+                          vec3(local_center.x, local_center.y, local_center.z) /
+                      local_center.w;
 
     unsigned intersects = 0;
 
@@ -203,4 +203,8 @@ void BoxCollider::set_transform(const glm::mat4& transform) {
             WARNINGS, "warning",
             "Trying to assign singular matrix as a box collider transform\n");
     }
+}
+
+bool BoxCollider::operator<(const BoxCollider& other) const {
+    return guid_ < other.guid_;
 }

@@ -40,8 +40,12 @@ struct PoolBall : public SceneComponent {
     void capture() override;
     void reset() override;
 
+    virtual Box get_box() const override;
+
    protected:
     void begin_play(Scene& scene) override;
+
+    static const Scene::ComponentLayerId BallLayer;
 
    private:
     void resolve_positions(PoolBall& ball);

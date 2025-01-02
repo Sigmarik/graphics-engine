@@ -38,7 +38,7 @@ Components go through four major lifecycle events:
 
 #### Construction
 
-During the construction, components define their class members and prepare to be bound to a scene.
+During the construction, components define their class members and do preparations before being bound to the scene.
 
 This event is signified by the component construction call.
 
@@ -242,6 +242,10 @@ struct MyComponent : public SceneComponent {
     InputChannel explode_input_{};
 };
 ```
+
+### [Finding components on a scene](./COMPONENT_TO_COMPONENT.md)
+
+Components can be accessed from the scene either by their GUIDs (`Scene::get_component`) or with a `Scene::get_components_in_area` request.
 
 ## Level descriptors
 
