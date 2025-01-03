@@ -19,6 +19,7 @@
 #include "managers/asset_manager.h"
 #include "managers/tick_manager.h"
 #include "managers/window_manager.h"
+#include "managers/world_timer.h"
 #include "scenes/pool_game.h"
 #include "utils/main_utils.h"
 
@@ -70,7 +71,10 @@ int main(const int argc, char** argv) {
         []() { InputController::poll_events(); },
 
         // Physics
-        [](double delta_time) { world.phys_tick(delta_time); },
+        [](double delta_time) {
+            world.phys_tick(delta_time);
+            WorldTimer::run_scheduled_calls();
+        },
 
         // Graphics
         [&](double delta_time, double subtick_time) {

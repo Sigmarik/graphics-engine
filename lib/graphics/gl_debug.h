@@ -45,8 +45,8 @@
         }                                                                \
     } while (0)
 #else
-#define poll_gl_errors \
-    do {               \
+#define poll_gl_errors() \
+    do {                 \
     } while (0)
 #endif
 

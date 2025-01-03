@@ -11,16 +11,33 @@
 
 #pragma once
 
-#include "inttypes.h"
+#include <inttypes.h>
+
+#include <functional>
+#include <set>
 
 struct WorldTimer final {
     static uint64_t get_time();
 
     static double get_time_sec();
 
+    static void schedule(double delay, const std::function<void()>& call);
+
+    static void run_scheduled_calls();
+
    private:
     WorldTimer();
 
+    struct ScheduledCall {
+        uint64_t time = 0;
+        std::function<void()> call{};
+
+        bool operator<(const ScheduledCall& other) const {
+            return time < other.time;
+        }
+    };
+
     static uint64_t SIM_START_;
-    static WorldTimer instance_;
+
+    static std::set<ScheduledCall> scheduled_calls_;
 };
