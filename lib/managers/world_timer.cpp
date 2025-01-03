@@ -27,7 +27,8 @@ void WorldTimer::schedule(double delay, const std::function<void()>& call) {
 
     ScheduledCall scheduled{};
     scheduled.call = call;
-    scheduled.time = get_time() + (uint64_t)(delay * glfwGetTimerFrequency());
+    scheduled.time =
+        get_time() + (uint64_t)(delay * (double)glfwGetTimerFrequency());
 
     scheduled_calls_.insert(scheduled);
 }

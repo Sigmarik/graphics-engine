@@ -32,7 +32,9 @@ struct WorldTimer final {
         uint64_t time = 0;
         std::function<void()> call{};
 
-        bool operator<(const ScheduledCall& other) { return time < other.time; }
+        bool operator<(const ScheduledCall& other) const {
+            return time < other.time;
+        }
     };
 
     static uint64_t SIM_START_;
