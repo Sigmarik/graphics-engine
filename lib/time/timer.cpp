@@ -50,7 +50,7 @@ void Timer::reset() {
 
 bool Timer::running() const { return !paused_ && !finished(); }
 
-bool Timer::finished() const { return elapsed_time() < duration_; }
+bool Timer::finished() const { return elapsed_time() >= duration_; }
 
 double Timer::elapsed_time() const {
     if (paused_) return ts_progress_;
