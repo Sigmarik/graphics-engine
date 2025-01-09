@@ -12,6 +12,14 @@ uint64_t WorldTimer::get_time() {
     return current - SIM_START_;
 }
 
+uint64_t WorldTimer::sec2ticks(double seconds) {
+    return (uint64_t)(seconds * glfwGetTimerFrequency());
+}
+
+double WorldTimer::ticks2sec(uint64_t ticks) {
+    return (double)ticks / (double)glfwGetTimerFrequency();
+}
+
 double WorldTimer::get_time_sec() {
     uint64_t time = get_time();
     uint64_t frequency = glfwGetTimerFrequency();

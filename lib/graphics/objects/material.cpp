@@ -4,7 +4,7 @@
 
 #include "graphics/gl_debug.h"
 #include "logger/logger.h"
-#include "managers/world_timer.h"
+#include "time/world_timer.h"
 
 void Material::use() const {
     shader_->use();

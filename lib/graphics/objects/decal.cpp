@@ -1,7 +1,7 @@
 #include "decal.h"
 
 #include "graphics/primitives/flat_renderer.h"
-#include "managers/world_timer.h"
+#include "time/world_timer.h"
 
 Decal::Decal(const Material& material, double time_to_live)
     : material_(&material),
