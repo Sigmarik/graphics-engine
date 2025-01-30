@@ -19,6 +19,9 @@
 struct WorldTimer final {
     static uint64_t get_time();
 
+    static uint64_t sec2ticks(double seconds);
+    static double ticks2sec(uint64_t ticks);
+
     static double get_time_sec();
 
     static void schedule(double delay, const std::function<void()>& call);

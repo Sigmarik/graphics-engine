@@ -6,22 +6,22 @@
 
 #include "graphics/gl_debug.h"
 #include "logger/logger.h"
-#include "managers/world_timer.h"
+#include "time/world_timer.h"
 
 static void handle_glfw_errors(int code, const char* description) {
     log_printf(ERROR_REPORTS, "GLFW error", "%s\n", description);
 }
 
 GLFWwindow* WindowManager::window_ = nullptr;
-std::vector<std::weak_ptr<WindowManager::SubtitleDataBlock>>
-    WindowManager::subtitle_info_{};
+std::vector<std::weak_ptr<WindowManager::SubtitleDataBlock>> WindowManager::
+    subtitle_info_{};
 std::string WindowManager::window_title_ = "[UNDEFINED TITLE]";
 double WindowManager::last_title_update_ = 0.0;
 double WindowManager::subtitle_update_dt_ = 0.0;
 bool WindowManager::requires_title_update_ = false;
 
-void WindowManager::init(size_t width, size_t height, const char* title,
-                         bool fullscreen) {
+void WindowManager::
+    init(size_t width, size_t height, const char* title, bool fullscreen) {
     glfwInit();
 
     glfwSetErrorCallback(handle_glfw_errors);
@@ -116,8 +116,8 @@ void WindowManager::refresh() {
     glfwSwapBuffers(get_active_window());
 }
 
-WindowManager::SubtitleEntry WindowManager::add_subtitle_entry(
-    const std::string& key, double expiration_time) {
+WindowManager::SubtitleEntry WindowManager::
+    add_subtitle_entry(const std::string& key, double expiration_time) {
     SubtitleEntry entry(key, expiration_time);
 
     subtitle_info_.push_back(entry.get_data());
@@ -148,8 +148,8 @@ void WindowManager::notify_subtitle_stat_change() {
     subtitle_update_dt_ = subtitle_info_[0].lock()->refresh_dt;
 
     for (const auto& entry : subtitle_info_) {
-        subtitle_update_dt_ =
-            std::min(entry.lock()->refresh_dt, subtitle_update_dt_);
+        subtitle_update_dt_ = std::
+            min(entry.lock()->refresh_dt, subtitle_update_dt_);
     }
 }
 
@@ -162,8 +162,8 @@ void WindowManager::SubtitleEntry::hide() {
 
 WindowManager::SubtitleEntry::~SubtitleEntry() { hide(); }
 
-WindowManager::SubtitleEntry::SubtitleEntry(const std::string& key,
-                                            double refresh_dt)
+WindowManager::SubtitleEntry::
+    SubtitleEntry(const std::string& key, double refresh_dt)
     : data_(std::make_shared<WindowManager::SubtitleDataBlock>()) {
     data_->key = key;
     data_->refresh_dt = refresh_dt;

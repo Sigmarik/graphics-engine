@@ -19,8 +19,8 @@
 #include "managers/asset_manager.h"
 #include "managers/tick_manager.h"
 #include "managers/window_manager.h"
-#include "managers/world_timer.h"
 #include "scenes/pool_game.h"
+#include "time/world_timer.h"
 #include "utils/main_utils.h"
 
 #define MAIN

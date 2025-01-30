@@ -1,14 +1,14 @@
 #include "tick_manager.h"
 
 #include "logger/logger.h"
-#include "managers/world_timer.h"
+#include "time/world_timer.h"
 
 //! WARNING: Linux-only implementation of usleep()
 #include <unistd.h>
 
-TickManager::TickManager(const std::function<void()>& input,
-                         const SimpleUpdate& physics,
-                         const ExterpUpdate& graphics)
+TickManager::
+    TickManager(const std::function<void()>& input, const SimpleUpdate& physics,
+                const ExterpUpdate& graphics)
     : update_input_(input), update_phys_(physics), update_graph_(graphics) {
     reset_timers();
 }
